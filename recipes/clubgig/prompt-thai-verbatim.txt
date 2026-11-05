@@ -1,0 +1,5 @@
+This is the voice track of a Thai speaker talking to camera (a phone recording with pauses, restarts and a count-in).
+Write a VERBATIM Thai transcript of everything said, start to end: every word as spoken, including fillers (นะครับ, อะ,
+เนี่ย), English words in Latin script as spoken (build, feedback), numbers as spoken. Do not correct, summarise or
+translate. Start a new line at every pause longer than about half a second, and begin each line with its start time as
+[mm:ss.s]. Mark a restart or a cut-off word with "--". Output only the transcript lines.

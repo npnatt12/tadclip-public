@@ -1,0 +1,108 @@
+{
+ "about": "Coach Q&A house look (fixed reel to reel). Modelled on how @clubgig_official (Thai relationship-coach reels) edits, studied 2026-10-31: the grammar only, none of their brand, footage or assets.",
+ "world": "a seated coach answering one question; the face is clean most of the runtime (no running captions); the question card is the hook; each point is a stock B-roll insert with a two-tier label, entered and left through a grainy colour swipe; a tilted keyword now and then; a LINE CTA owns the back 35-40 %; a silent logo end card",
+ "layout": "1080x1920 at 30 fps. The face sits roughly y 450-1000. Question card, B-roll label, keyword and CTA all live in the chest band, centred, y 1000-1450 (>= 450 px clear at the bottom for the Instagram UI). Bug at the top edge, y 70-150, small. Question card: 148 px (2x, the owner 10-31), above the head when the chest band is too short.",
+ "layout_px": {
+  "qcard": {
+   "cy": 1240,
+   "maxw": 1000,
+   "size": 148,
+   "min_size": 64,
+   "line_gap": 6,
+   "block_pad_x": 22,
+   "lh": 1.2,
+   "top_min": 170
+  },
+  "label": {
+   "cy": 1060,
+   "maxw": 940,
+   "big": 108,
+   "small": 52,
+   "gap": 8,
+   "block_pad_x": 20
+  },
+  "keyword": {
+   "cy": 1180,
+   "maxw": 900,
+   "size": 115,
+   "min_size": 56,
+   "tilt_deg": -6,
+   "line_gap": 0,
+   "lh": 1.15
+  },
+  "cta": {
+   "top": 1170,
+   "w": 760,
+   "size": 46,
+   "handle_size": 40,
+   "pill_h": 76,
+   "logo": 76
+  },
+  "bug": {
+   "top": 64,
+   "x": 64,
+   "size": 20,
+   "logo_w": 210
+  },
+  "end": {
+   "cy": 900,
+   "title": 92,
+   "sub": 26,
+   "logo_w": 600
+  }
+ },
+ "type": {
+  "family": "Anuphan",
+  "file": "anuphan.ttf",
+  "weights": {
+   "bold": 700,
+   "medium": 500
+  },
+  "note": "Anuphan (OFL, Cadson Demak) covers Thai + Latin in one variable file. The reference uses a heavier rounded Thai sans (Kanit-like); swap family/file here for Kanit 700 if wanted. Text is laid out by the author line by line: Thai has no spaces to wrap on, so the builder never wraps, it shrinks a line to fit and refuses below min_size."
+ },
+ "palette": {
+  "white": "#FFFFFF",
+  "shadow": "0 0 2px rgba(0,0,0,.7), 0 2px 6px rgba(0,0,0,.55), 0 4px 18px rgba(0,0,0,.35)",
+  "block_red": "#C53E2B",
+  "block_maroon": "#7A1F35",
+  "cta_orange": "rgba(222,132,86,.88)",
+  "line_green": "#06C755",
+  "pill": "#FFFFFF",
+  "ink": "#151515",
+  "end_bg": "#FFFFFF",
+  "end_ink": "#1E1E1E",
+  "swipe": [
+   "#F2C230",
+   "#E5532D",
+   "#8FE3EC",
+   "#3DC9D6",
+   "#7DB6DA",
+   "#E8862E"
+  ],
+  "meaning": "the block colour carries the question's key line and the label's small line; orange = the offer; everything else is white on the footage"
+ },
+ "motion": {
+  "fps": 30,
+  "qcard": "chest band when it fits under the chin, else above the head (between y top_min and the head): 2x size, shrunk uniformly only as far as the space forces; lines rise in staggered, the block wipes; off with a 0.2 s fade",
+  "swipe": "0.6 s centred on the cut: the outgoing picture whips up with blur (0.1 s), yellow field with a red-orange foot slides up, cyan brush on white, blue, orange; the cut happens under the colour; an iris opens in the orange onto the incoming shot; grain over all of it; one whoosh",
+  "label": "lands as the iris opens (cut + 0.12 s): big line pops 1.12 -> 1, the small line's block wipes in 0.1 s later; leaves with a 3-frame glitch (x jitter + clip slices) under the outgoing swipe",
+  "keyword": "each line reveals left to right (clip-path) in 0.25 s on its spoken phrase, tilted -6 deg; off with a 0.15 s fade",
+  "cta": "pops in (scale 0.7 -> 1, back.out 1.7, 0.3 s) with a pop + whoosh, a gentle 2 s float, holds to the end card",
+  "snaps": "jump-cut rhythm on one plate: instant reframes 1.0 <-> 1.1 at take changes (origin on the face)",
+  "end": "white card, wordmark fades + rises 20 px in 0.5 s, silence"
+ },
+ "sound": {
+  "rule": "voice + SFX by role, levels relative to this voice's p95 peak like build.mjs (ui -14, whoosh -12, impact -8 dB): a soft hit on the hook (0.13 s), a whoosh on every swipe, a pop as each label lands, a light whoosh per keyword line, pop + whoosh + pop on the CTA, a ding on the end card. No music bed. (the owner 10-31: more SFX, tadclip's mixing)",
+  "kit": {
+   "swipe": "whoosh-cine",
+   "cta": "pop-3",
+   "cta_whoosh": "whoosh-2",
+   "hook": "impact-1",
+   "label": "pop-3",
+   "keyword": "whoosh-1",
+   "cta_pill": "pop-2",
+   "end": "ding-1"
+  }
+ },
+ "vary_per_reel": "the question and which line sits on the block (red or maroon), the points and their stock clips, which phrase gets a keyword (0-2), when the CTA starts (~60 % or the pivot sentence), the CTA text and handle, the bug and end-card text"
+}

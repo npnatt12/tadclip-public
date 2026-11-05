@@ -1,0 +1,9 @@
+{
+  "_about": "ClubGig x Face RESULT: the ClubGig rules on the RESULT paper look. Impacts on a navy card (Kanit with a small line above; Charm handwriting for quotes and asides), stock photos and clips in tilted polaroids beside the face (beat type polaroid), film grain over the plate, a warm piano or lo-fi bed. The face stays as shot.",
+  "brand": { "accent": "#E8B04B", "accentDark": "#B9852A", "ink": "#121D32", "font": "Kanit" },
+  "impact": { "look": "paper" },
+  "captions": { "style": "clubgig", "group": 2, "breakAtCuts": true, "y": 1300 },
+  "sfxProfile": "standard",
+  "music": { "id": "a-baby-story", "db": -18 },
+  "look": { "shader": "film-grain" }
+}

@@ -1,0 +1,192 @@
+<div align="center">
+
+<h1>TadClip</h1>
+
+<p><b>One raw take in.<br>A finished reel out, in ClubGig or in any creator's style.</b></p>
+
+<p>AI video editor for Thai talking-head reels. A Claude Code skill that renders on your Mac.</p>
+
+[![Default style: ClubGig](https://img.shields.io/badge/default-ClubGig-87203F?style=flat)](recipes/clubgig/README.md)
+[![Clone: Hypit's method](https://img.shields.io/badge/clone-Hypit's%20method-6A2C3B?style=flat)](recipes/clone/README.md)
+[![HyperFrames](https://img.shields.io/badge/HyperFrames-0.8.159-black?style=flat)](scripts/HF_VERSION)
+[![Fork of ghost-editor](https://img.shields.io/badge/fork%20of-kurbaitaev%2Fghost--editor-black?style=flat&logo=github)](https://github.com/kurbaitaev/ghost-editor)
+
+<img src="docs/media/raw-to-ready.gif" width="100%" alt="A raw take becoming a finished reel.">
+
+</div>
+
+## Say it in Thai
+
+> ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
+
+That's the whole interface. ClubGig is the default, so there's nothing to set up per reel.
+
+| you say | TadClip does |
+|---|---|
+| `ตัดต่อคลิปนี้` | edits in **ClubGig** |
+| `ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator ให้หน่อย` | studies their reels, layers their format over ClubGig, then edits |
+| a viral link, no clip yet | writes a Thai shooting script; a real person films it; then it edits the take |
+| a style name, like `Seoul list` | uses that style; [every other style](#install) still works |
+
+## Raw take in, reels out
+
+<img src="docs/media/pipeline.svg" width="100%" alt="How it works, animated: spoken tries in a raw take; the bad tries drop out; the best take of each line slides into the reel; you approve it.">
+
+<p align="center"><sub>FROM KG03: <b>2:14 raw take to a 1:33 reel</b> · 15 takes kept · 11 popups · final render in under 10 minutes</sub></p>
+
+## Clone any style
+
+The cloning judgment comes from [Hypit](https://github.com/hypit-ai/hypit): read a video closely, work out why it holds attention, keep that, and change everything else. Its guides live in [`vendor/hypit/`](vendor/hypit/SOURCE.md). TadClip does the editing.
+
+| step | who does it |
+|---|---|
+| find the creator's most-viewed reels | Chrome, logged in as you (a bare `@handle` means Instagram) |
+| fetch them, make frame sheets, measure the cuts | `scripts/creator_study.py` |
+| read why they work, write down the format | Hypit's guides: `reference-video.md`, `transformations.md` |
+| check the format suits this clip | [the fit check](recipes/clone/README.md#does-the-format-fit-the-clip): keep the look, drop what has nothing to work with |
+| save the look, plan the beats | `styles/creator-<handle>.json`, a small overlay on ClubGig |
+| edit, render, QA | TadClip |
+
+Copied: rhythm, placement, type treatment, sound level. **Never copied:** the creator's face, words, logos, music or footage.
+
+The `hypit` program isn't installed. It's only needed for AI-generated B-roll, which costs credits, so TadClip asks first.
+
+## ClubGig
+
+The Thai house style, locked after real notes on real reels. Every default is in [`styles/clubgig.json`](styles/clubgig.json).
+
+<details>
+<summary><b>What every ClubGig reel contains</b> (per 90 seconds)</summary>
+
+| device | budget | rule |
+|---|---|---|
+| hook | question card over a split-screen stock clip from frame 0 | ends with the split, never over the head |
+| popups | about 11 `stair` popups + 3 swipe labels | the speaker's words only; 1.2–4.5 s each; ≤ 9.4 s apart; on the torso |
+| swiped stock points | 3 full-bleed inserts behind a colour swipe | 2–5 s each; a two-tier label in the speaker's words |
+| polaroids | 3 beside the face | never on the face |
+| flash page | 1 white page on a connector word | 0.6–0.9 s |
+| LINE CTA | from the pivot sentence to the end card | steps aside under each popup |
+| punch-ins | 4, only with a popup | 1.16× on top of the 1.3× base |
+| chrome + end card | tagline + the brand's official logo; logo end card | never redrawn |
+| sound | about 30 cues + a lo-fi bed at −18 dB | one cue per popup, a whoosh per swipe |
+
+Full recipe and commands: [recipes/clubgig/README.md](recipes/clubgig/README.md).
+</details>
+
+## Effects
+
+<img src="docs/media/effects-grid.gif" width="100%" alt="Effects close up: route maps, live counters, big word captions, photo stacks, cut-out collage, hand-drawn board, paper with highlights and growing diagrams.">
+
+## Quick start
+
+For an Apple silicon Mac, with [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex). No GitHub account needed.
+
+**1. Open Terminal and paste this one line:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
+```
+
+It takes about 15 minutes, most of it downloads.
+
+**2. Add two free keys.** Your key file opens by itself. Paste a key from each link after its `=` sign, then save:
+
+| Key | Get it here | What it does |
+|---|---|---|
+| `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Thai transcript and B-roll checks |
+| `PEXELS_API_KEY` | [pexels.com/api/key](https://www.pexels.com/api/key/) | stock footage |
+
+**3. Start a new session and edit:**
+
+> ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
+
+> ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator ให้หน่อย ~/Downloads/my-video.mov
+
+**ภาษาไทย:** เปิดแอป Terminal วางบรรทัดด้านบนแล้วกด Enter รอติดตั้งประมาณ 15 นาที พอไฟล์คีย์เปิดขึ้นมา ให้สมัครคีย์ฟรีจากสองลิงก์ด้านบน วางต่อท้ายเครื่องหมาย `=` แล้วกดเซฟ จากนั้นเปิด Claude Code หรือ Codex แล้วสั่งได้เลย
+
+Step-by-step guide and fixes for common problems: [docs/INSTALL.md](docs/INSTALL.md).
+
+<details>
+<summary><b>Styles you can ask for today</b></summary>
+
+| ask | you get |
+|---|---|
+| `ตัดต่อคลิปนี้` | **ClubGig**, the default: stair popups on the torso, swiped stock, polaroids, the brand's chrome and a LINE CTA |
+| `สไตล์ @creator` | that creator's format over ClubGig, saved for next time |
+| `edit this in Clean OS` | an Apple-ad talking head that lives inside your phone |
+| `make a Seoul list` | a voice-over list over fast B-roll and white collage pages |
+| `edit this in RESULT style` | a warm podcast edit with navy cards and polaroids |
+| `edit this in Face RESULT` | RESULT around your face: paper props, polaroids and quote cards beside you, never on you |
+| `edit this in stan style` | a tool tutorial with your screen behind your head |
+| `make an animated explainer` | no camera: a narrator and a world that draws itself |
+| `cut these POV clips into a reel` | smart-glasses or GoPro clips cut into a story |
+| `make a kinetic doc` | a black-and-white archive documentary with one red accent |
+| `edit this in Whiteboard` | a marker board above draws each thought live, you below |
+| `make a Step Deck` | a numbered tips deck: giant italic numerals and word cards |
+| `edit this as a Product page` | a tool review laid out like a product page |
+| `edit this in Tactile paper` | your talk on printed paper that moves like stop-motion |
+| `edit this in Caption News` | big chunked captions, the keyword on a yellow block |
+| `make a News Package` | you as the anchor of a TV news segment |
+| `edit this in Telestrator` | freeze the frame and draw on it like a sports replay |
+| `make a Halftone Dossier` | a retro printed case file |
+| `edit this in Swiss Grid` | a strict grid poster with one red |
+| `make a Data Story` | pencil charts of real, sourced numbers |
+| `edit this in Hologram HUD` | a wireframe scan with target boxes |
+
+Plus seven one-word presets: `clean`, `editorial`, `meme`, `cinematic`, `launch`, `kinetic`, `pop`.
+
+<img src="docs/media/styles-grid.gif" width="100%" alt="Styles playing at once in vertical tiles, each with its name underneath.">
+</details>
+
+<details>
+<summary><b>What you need</b></summary>
+
+- [Claude Code](https://claude.com/claude-code) on a paid Claude plan, or [Codex](https://github.com/openai/codex).
+- A Mac with Apple silicon and Homebrew. `scripts/setup.sh` installs the rest: ffmpeg, Node 22, uv, Python packages, whisper and the Thai transcription venv.
+- A free [Gemini API key](https://aistudio.google.com/apikey) for the Thai transcript and the B-roll checks. Audio and frames go to Google.
+- A free [Pexels key](https://www.pexels.com/api) for stock footage.
+- Your brand's official logo files, tagline and LINE handle.
+
+A 90-second ClubGig reel takes about 45 minutes end to end. The 720p preview takes about 4 minutes and the final render about 10.
+</details>
+
+<details>
+<summary><b>What's inside</b></summary>
+
+| path | role |
+|---|---|
+| `SKILL.md` | what your agent loads: the routes, the pipeline, the rules |
+| `recipes/clubgig/` | the house style: recipe, brand kit, Thai transcript prompt, cut helper |
+| `recipes/clone/` | the creator-style and viral-clone routes, and the fit check |
+| `vendor/hypit/` | Hypit's guides, unmodified, pinned to one commit |
+| `recipes/` | 21 recipes in all, each with a README |
+| `styles/` | presets under every reel: `clubgig.json`, `creator-*.json`, seven one-word presets |
+| `scripts/` | prep, transcription, face tracking, `build.mjs`, `finals.py`, `creator_study.py`, `setup.sh`, `doctor.sh`, QA |
+| `references/` | the `reel.json` spec, take selection, B-roll and sound guides |
+| `examples/gallery/` | real `reel.json` files to copy the shape from |
+| `library/` | sound effects, music beds and emoji, restored during setup |
+| `taste.json` | your corrections across reels, applied as defaults and warnings |
+
+</details>
+
+<details>
+<summary><b>Questions</b></summary>
+
+**Does a creator style copy the person?** No. It copies how the edit behaves. Their face, words, logos and footage stay theirs, and on-screen labels come from your clip's topic.
+
+**Why does `@handle` need Chrome?** Instagram won't list a profile to a logged-out tool, so TadClip reads the links from your logged-in browser. Single reels then download without a login.
+
+**What if the format doesn't suit my clip?** TadClip says so before editing. It keeps the look and drops the devices that have nothing to work with.
+
+**Is the viral clone proven end to end?** Not yet. It has produced a real shooting script, but nothing has been filmed and edited from one.
+
+**Can I sell this?** No. Use it for your own work, commercial work included. Hypit's licence forbids selling or bundling it, or a derivative of it, without a commercial licence.
+
+**Old reels using `style: "icarus"`?** They still build. The old names point to ClubGig.
+
+More: [how it works](docs/HOW-IT-WORKS.md) · [every building block](docs/PLAYBOOK.md) · [licences](docs/THIRD_PARTY/README.md)
+</details>
+
+---
+
+<p align="center">Built on <a href="https://github.com/kurbaitaev/ghost-editor">ghost-editor</a> by <a href="https://github.com/kurbaitaev">@kurbaitaev</a> (MIT), tracked as <code>upstream</code>. Hypit's guides are under the <a href="vendor/hypit/LICENSE">Hypit Open Source License</a>.<br></p>

@@ -1,0 +1,287 @@
+{
+ "title": "Example · ClubGig",
+ "style": "clubgig",
+ "source": "assets/talk.mp4",
+ "words": "build/words.th.json",
+ "fps": 30,
+ "outro": 2.2,
+ "takes": [
+  {
+   "a": 2.8,
+   "b": 7.7
+  },
+  {
+   "a": 8.32,
+   "b": 9.92
+  },
+  {
+   "a": 11.8,
+   "b": 18.45
+  },
+  {
+   "a": 24.55,
+   "b": 27.0
+  },
+  {
+   "a": 27.7,
+   "b": 29.4
+  },
+  {
+   "a": 35.38,
+   "b": 44.7
+  },
+  {
+   "a": 44.95,
+   "b": 63.75
+  },
+  {
+   "a": 65.8,
+   "b": 68.9
+  },
+  {
+   "a": 69.2,
+   "b": 78.45
+  },
+  {
+   "a": 79.66,
+   "b": 83.25
+  },
+  {
+   "a": 83.9,
+   "b": 84.8
+  },
+  {
+   "a": 94.35,
+   "b": 108.78
+  },
+  {
+   "a": 135.45,
+   "b": 146.0
+  }
+ ],
+ "beats": [
+  {
+   "type": "broll",
+   "src": "assets/ins/hook.mp4",
+   "at": 2.8,
+   "to": 6.2,
+   "mode": "split",
+   "h": 900,
+   "shift": 380,
+   "zoom": [
+    1.0,
+    1.06
+   ]
+  },
+  {
+   "type": "impact",
+   "look": "qcard",
+   "role": "question",
+   "at": 2.8,
+   "to": 7.6,
+   "text": "คำพูดจากคลิป|{คำพูดจากคลิป}"
+  },
+  {
+   "type": "impact",
+   "at": 12.75,
+   "to": 16.2,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "topic",
+   "push": true
+  },
+  {
+   "type": "impact",
+   "at": 35.46,
+   "to": 38.0,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "joke"
+  },
+  {
+   "type": "impact",
+   "at": 39.34,
+   "to": 43.4,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "contrast",
+   "push": true,
+   "size": 92
+  },
+  {
+   "type": "impact",
+   "at": 45.01,
+   "to": 48.4,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "note"
+  },
+  {
+   "type": "impact",
+   "at": 49.07,
+   "to": 52.4,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "quote"
+  },
+  {
+   "type": "impact",
+   "at": 60.05,
+   "to": 63.7,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "topic",
+   "push": true
+  },
+  {
+   "type": "impact",
+   "at": 65.89,
+   "to": 68.8,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "contrast"
+  },
+  {
+   "type": "impact",
+   "at": 79.66,
+   "to": 83.2,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "note"
+  },
+  {
+   "type": "impact",
+   "at": 83.97,
+   "to": 95.0,
+   "text": "คำพูดจากคลิป",
+   "role": "question"
+  },
+  {
+   "type": "impact",
+   "at": 99.08,
+   "to": 101.0,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "contrast"
+  },
+  {
+   "type": "impact",
+   "at": 105.94,
+   "to": 108.7,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "celebration"
+  },
+  {
+   "type": "impact",
+   "at": 138.7,
+   "to": 141.1,
+   "text": "คำพูดจากคลิป|คำพูดจากคลิป",
+   "role": "contrast"
+  },
+  {
+   "type": "impact",
+   "at": 141.65,
+   "to": 144.8,
+   "text": "คำพูดจากคลิป|{คำพูดจากคลิป}",
+   "role": "topic",
+   "push": true
+  },
+  {
+   "type": "polaroid",
+   "src": "assets/ins/firstdate.jpg",
+   "at": 35.46,
+   "to": 38.0,
+   "caption": "คำพูดจากคลิป"
+  },
+  {
+   "type": "polaroid",
+   "src": "assets/ins/sunset.mp4",
+   "at": 60.05,
+   "to": 63.7,
+   "w": 300
+  },
+  {
+   "type": "polaroid",
+   "src": "assets/ins/collect.jpg",
+   "at": 101.11,
+   "to": 104.6,
+   "caption": "คำพูดจากคลิป",
+   "w": 290
+  },
+  {
+   "type": "scene",
+   "kind": "word",
+   "at": 135.47,
+   "to": 136.3,
+   "text": "คำพูดจากคลิป",
+   "bg": "#ffffff",
+   "ink": "#111111",
+   "size": 220
+  },
+  {
+   "type": "broll",
+   "src": "assets/broll/m1.mp4",
+   "at": 24.55,
+   "to": 28.85,
+   "swipe": true,
+   "label": [
+    "Example",
+    "คำพูดจากคลิป"
+   ]
+  },
+  {
+   "type": "broll",
+   "clips": [
+    [
+     "assets/broll/a1.mp4",
+     0
+    ],
+    [
+     "assets/broll/a2.mp4",
+     2.6
+    ]
+   ],
+   "at": 52.85,
+   "to": 58.15,
+   "swipe": true,
+   "label": [
+    "คำพูดจากคลิป",
+    "คำพูดจากคลิป"
+   ]
+  },
+  {
+   "type": "broll",
+   "clips": [
+    [
+     "assets/broll/v1.mp4",
+     0
+    ],
+    [
+     "assets/broll/v2.mp4",
+     2.2
+    ]
+   ],
+   "at": 71.6,
+   "to": 76.2,
+   "swipe": true,
+   "label": [
+    "คำพูดจากคลิป",
+    "คำพูดจากคลิป"
+   ]
+  },
+  {
+   "type": "linecta",
+   "at": 76.5,
+   "lines": [
+    "คำพูดจากคลิป",
+    "คำพูดจากคลิป"
+   ],
+   "handle": "@YOURBRAND"
+  },
+  {
+   "type": "endcard",
+   "at": "outro+0",
+   "logo": "brand/brand-lockup-black.png",
+   "bg": "#FFFFFF"
+  }
+ ],
+ "chrome": {
+  "left": "YOUR\nTAGLINE",
+  "logo": "brand/brand-wordmark-white.png",
+  "logoW": 210
+ },
+ "broll": {
+  "fullScreenStock": true
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "version": 1,
+ "about": "Your corrections across reels, recorded with scripts/taste.py add (from: user, quoted as 'you said') next to rules the skill learned (from: skill). A prior, not evidence: reel.json always wins.",
+ "rules": [
+  {
+   "id": "clubgig-framing-larger",
+   "say": "the person's proportion is larger ... zooming in will be much closer than this as well",
+   "from": "user",
+   "kind": "prefer",
+   "origin": "correction",
+   "source": [],
+   "reels": [],
+   "first": "2026-10-31",
+   "last": "2026-10-31",
+   "times": 1,
+   "active": true,
+   "when": {
+    "style": [
+     "clubgig"
+    ]
+   }
+  },
+  {
+   "id": "clubgig-text-on-torso",
+   "say": "the text should be around the torso ... the caption could go down below that. Don't actually put captions every time. Focus on the text popup and use a similar font and popup style",
+   "from": "user",
+   "kind": "prefer",
+   "origin": "correction",
+   "source": [],
+   "reels": [],
+   "first": "2026-10-31",
+   "last": "2026-10-31",
+   "times": 1,
+   "active": true,
+   "when": {
+    "style": [
+     "clubgig"
+    ]
+   }
+  },
+  {
+   "id": "clubgig-popup-density",
+   "say": "reduce the text popup density by 20%",
+   "from": "user",
+   "kind": "prefer",
+   "origin": "correction",
+   "source": [],
+   "reels": [],
+   "first": "2026-10-31",
+   "last": "2026-10-31",
+   "times": 1,
+   "active": true,
+   "when": {
+    "style": [
+     "clubgig"
+    ]
+   }
+  }
+ ],
+ "reels": [],
+ "updated": "2026-10-31"
+}

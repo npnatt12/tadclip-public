@@ -1,0 +1,29 @@
+{
+ "_about": "Registry of this style's components (SYSTEM.md): what each one is, its kind and the regexes (sig) that find it in a built index.html. scripts/components.py plan / check / add / record read and write it. Empty history = nothing used yet.",
+ "reels": {},
+ "history": [],
+ "projects": {},
+ "elements": [
+  {"id": "house-question-card", "kind": "house", "slot": "S1",
+   "desc": "the hook: 2-3 centred lines in the chest band, one on a red/maroon block, on from frame 0, ~5 s",
+   "sig": ["<div id=\"q\\d+\" class=\"clip stack\""], "reels": []},
+  {"id": "house-colour-swipe", "kind": "house", "slot": "transitions",
+   "desc": "0.6 s grainy swipe on every B-roll cut: blur whip, yellow, cyan brush on white, blue, orange, iris open; one whoosh",
+   "sig": ["class=\"iris\""], "reels": []},
+  {"id": "house-broll-label", "kind": "house", "slot": "S2",
+   "desc": "two-tier label on each B-roll insert: big white line + small line on a maroon block; glitches out with the swipe",
+   "sig": ["<div id=\"b\\d+_l\""], "reels": []},
+  {"id": "house-floating-keyword", "kind": "house", "slot": "S3",
+   "desc": "1-2 big white lines tilted -6 deg over the chest, each revealed left to right on its spoken onset",
+   "sig": ["class=\"wt kwd\""], "reels": []},
+  {"id": "house-line-cta", "kind": "house", "slot": "S4",
+   "desc": "orange speech bubble + LINE badge + white handle pill, from ~60 % to the end card, gentle float",
+   "sig": ["<div id=\"cta\""], "reels": []},
+  {"id": "house-bug", "kind": "house", "slot": "chrome",
+   "desc": "small white top chrome: stacked caps tagline left, wordmark right, whole reel",
+   "sig": ["<div id=\"bug\""], "reels": []},
+  {"id": "house-white-endcard", "kind": "house", "slot": "S5",
+   "desc": "silent white logo card, wordmark fades and rises in",
+   "sig": ["<div id=\"end\""], "reels": []}
+ ]
+}

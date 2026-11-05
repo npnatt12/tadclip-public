@@ -1,0 +1,47 @@
+{
+  "_about": "ClubGig: the Thai talking-head house style (Icarus rules + Coach Q&A + Seoul list + Face RESULT), locked 2026-10-31 from KG01; v2 10-31 (the owner on KG02): speaker ~1.3x larger, popups on the torso in the Clubgig stair look, no running captions, ~20 % fewer popups",
+  "_source": { "title": "ClubGig",
+    "saved": "2026-10-31",
+    "base": "clubgig"
+  },
+  "brand": {
+    "accent": "#7A3B44",
+    "accentDark": "#5E2C34",
+    "ink": "#111111",
+    "font": "Kanit"
+  },
+  "captions": {
+    "style": "none",
+    "group": 2,
+    "y": 1380,
+    "breakAtCuts": true
+  },
+  "sfxProfile": "standard",
+  "music": {
+    "id": "lo-fi-02",
+    "db": -18
+  },
+  "look": {},
+  "broll": {
+    "fullScreenStock": true
+  },
+  "scenes": {
+    "word": {
+      "bg": "#ffffff"
+    }
+  },
+  "zoom": {
+    "base": 1.3,
+    "faceAt": [
+      0.5,
+      0.4
+    ]
+  },
+  "impact": {
+    "look": "stair",
+    "place": "torso",
+    "plate": "#6A2C3B",
+    "plate2": "#87203F",
+    "maxGap": 9.4
+  }
+}

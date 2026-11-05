@@ -1,0 +1,9 @@
+{
+  "_about": "ClubGig x Seoul list: the ClubGig rules with the Seoul list type voice. Impact words in Taviraj bold italic (mood, places) or Kanit 800 (facts, contrast) straight on the footage with a dark halo and a small subline under their right end, white flash pages on connector words (scene kind word, bg #fff), stock split screens and photo cards. Mini white captions.",
+  "brand": { "accent": "#FF3B30", "accentDark": "#C8261C", "ink": "#111111", "font": "Kanit" },
+  "impact": { "look": "seoul" },
+  "captions": { "style": "mini", "font": "Kanit Medium", "size": 46, "weight": 500, "stroke": 3, "group": 2, "breakAtCuts": true, "y": 1330 },
+  "sfxProfile": "standard",
+  "music": { "id": "digital-clouds", "db": -18 },
+  "look": {}
+}

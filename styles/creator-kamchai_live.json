@@ -1,0 +1,10 @@
+{
+  "extends": "clubgig",
+  "_about": "Kamchai (@kamchai_live, Instagram) format over ClubGig. Sequence: topic footage on the top half and the speaker in the bottom half for most of the reel, a new shot every 2-3 s; a white and yellow headline on the seam; small captions on a dark strip at the seam; the speaker alone with big white and yellow words on the chest for the name and the payoff; full-bleed footage with a centred title once or twice; a turn near the middle; no wind-down. Beats: broll mode split with clips, impact look headline.",
+  "_source": { "saved": "2026-11-05", "reels": ["Detm2VPS1Mp", "DeUOm5syXua"] },
+  "zoom": { "base": 1.0, "faceAt": [0.5, 0.42] },
+  "captions": { "style": "mini", "font": "Kanit", "size": 40, "weight": 500, "group": 2, "onlyInSplits": true, "splitY": 935, "strip": "rgba(0,0,0,.62)", "breakAtCuts": true },
+  "impact": { "look": "headline", "color": "#FFE11A", "maxGap": 12 },
+  "sfxProfile": "standard",
+  "music": { "id": "lo-fi-02", "db": -22 }
+}

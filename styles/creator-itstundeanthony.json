@@ -1,0 +1,10 @@
+{
+  "extends": "clubgig",
+  "_about": "Tunde Alao (@itstundeanthony, Instagram, 319K) format over ClubGig. Sequence: a white pill question over a hook panel; big yellow italic words stacking on a punch-in; then the speaker high in the frame, a checkbox bar on the chest, framed panels low; a red tick is the payoff in the last second. About 3 cuts a minute. Beats: impact look pill, impact look stack, broll mode panel, verdict.",
+  "_source": { "saved": "2026-11-05", "reels": ["DdWmIHTC322", "De1zlGniBQp", "DfIM7fyIZXI"] },
+  "zoom": { "faceAt": [0.5, 0.27] },
+  "impact": { "color": "#FFE11A", "top": 1010, "maxGap": 14 },
+  "broll": { "panel": { "box": [50, 1010, 980, 640], "frame": "#1FB5A5" } },
+  "sfxProfile": "restrained",
+  "music": { "id": "lo-fi-02", "db": -26 }
+}
