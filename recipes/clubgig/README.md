@@ -54,7 +54,7 @@ python3 $S/recipes/clubgig/islands.py $P/assets/talk.mp4 $P/build/vad.json
 2. **Captions:** copy `recipes/clubgig/cut.py` to `$P/build/cut.py`, write TAKES = (a, b, verbatim Gemini text,
    "?" on questions) from THIS recording's transcript (it refuses the stored KG01 example), run `~/.venvs/mlxw/bin/python -I build/cut.py` -> build/words.th.json + build/takes.json.
 3. **Brand:** ask once for the brand's official logo (white wordmark + dark lockup PNGs), the tagline and the LINE
-   handle + bubble lines. Ask the user for them once.
+   handle + bubble lines. For Clubgig they are saved in the skill: `recipes/clubgig/brand/clubgig/` (copy them to `$P/brand/`).
 4. **Stock:** `python3 $S/scripts/broll_fetch.py search <words> --pexels` (videos) / `photos <words> --dir $P/broll`
    (photos); faceless or distant people first; look at the frames; conform every one:
    `insert_prep.py SRC $P/assets/ins/<name>.mp4 --in S --dur D --ref $P/assets/talk.mp4 --size 1080x1920 --kind stock`

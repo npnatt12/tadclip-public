@@ -11,7 +11,9 @@
 [![HyperFrames](https://img.shields.io/badge/HyperFrames-0.8.159-black?style=flat)](scripts/HF_VERSION)
 [![Fork of ghost-editor](https://img.shields.io/badge/fork%20of-kurbaitaev%2Fghost--editor-black?style=flat&logo=github)](https://github.com/kurbaitaev/ghost-editor)
 
-<img src="docs/media/raw-to-ready.gif" width="100%" alt="A raw take becoming a finished reel.">
+<img src="docs/media/clubgig/same-take.gif" width="100%" alt="The same five seconds three ways, playing side by side. Left, the raw take. Middle, the default ClubGig edit: a full-screen food clip with a Thai label. Right, a creator style layered over ClubGig: the speaker stays on screen with a checkbox bar on the chest and the food clip in a teal-framed panel below.">
+
+<sub>raw take &nbsp;·&nbsp; ClubGig, the default &nbsp;·&nbsp; a creator's format layered over ClubGig</sub>
 
 </div>
 
@@ -28,7 +30,11 @@ That's the whole interface. ClubGig is the default, so there's nothing to set up
 | a viral link, no clip yet | writes a Thai shooting script; a real person films it; then it edits the take |
 | a style name, like `Seoul list` | uses that style; [every other style](#install) still works |
 
+<img src="docs/media/clubgig/workflow.png" width="100%" alt="TadClip workflow. Four things you can say lead to the same pipeline. Saying ตัดต่อคลิปนี้ goes straight to ClubGig. A creator style or a viral link goes through Hypit's method: Chrome lists the reels, creator_study.py fetches and measures them, and the result is either a saved style overlay or a clone brief that a real person films. A named style goes straight through. Every route then runs prep, transcribe, face track, best takes, plan beats, build, approval sheet, preview for your OK, render, QA and -14 LUFS, ending in a reel ready to post.">
+
 ## Raw take in, reels out
+
+<img src="docs/media/clubgig/raw-vs-v2.gif" width="100%" alt="Side by side, playing: left, the raw iPhone take with the speaker's count-in and false start; right, the finished ClubGig reel: a question card over split-screen stock, then Thai text popups on the speaker's torso.">
 
 <img src="docs/media/pipeline.svg" width="100%" alt="How it works, animated: spoken tries in a raw take; the bad tries drop out; the best take of each line slides into the reel; you approve it.">
 
@@ -54,6 +60,8 @@ The `hypit` program isn't installed. It's only needed for AI-generated B-roll, w
 ## ClubGig
 
 The Thai house style, locked after real notes on real reels. Every default is in [`styles/clubgig.json`](styles/clubgig.json).
+
+<img src="docs/media/clubgig/anatomy.png" width="100%" alt="One ClubGig frame, annotated: brand chrome with tagline and official logo; the speaker's face as shot; 1.3x framing with the face at 40 % height; row 1 white Kanit; row 2 on the wine plate; row 3 the stair; popups on the torso with no running captions.">
 
 <details>
 <summary><b>What every ClubGig reel contains</b> (per 90 seconds)</summary>
@@ -145,7 +153,7 @@ Plus seven one-word presets: `clean`, `editorial`, `meme`, `cinematic`, `launch`
 - A Mac with Apple silicon and Homebrew. `scripts/setup.sh` installs the rest: ffmpeg, Node 22, uv, Python packages, whisper and the Thai transcription venv.
 - A free [Gemini API key](https://aistudio.google.com/apikey) for the Thai transcript and the B-roll checks. Audio and frames go to Google.
 - A free [Pexels key](https://www.pexels.com/api) for stock footage.
-- Your brand's official logo files, tagline and LINE handle.
+- For a brand other than Clubgig: its official logo files, tagline and LINE handle. Clubgig's are in [`recipes/clubgig/brand/`](recipes/clubgig/brand/clubgig).
 
 A 90-second ClubGig reel takes about 45 minutes end to end. The 720p preview takes about 4 minutes and the final render about 10.
 </details>
@@ -167,6 +175,7 @@ A 90-second ClubGig reel takes about 45 minutes end to end. The 720p preview tak
 | `library/` | sound effects, music beds and emoji, restored during setup |
 | `taste.json` | your corrections across reels, applied as defaults and warnings |
 
+<img src="docs/media/clubgig/architecture.png" width="100%" alt="Architecture overview: the pipeline from prep to deliver, the toolchain, the quality gates and the ClubGig numbers for KG02.">
 </details>
 
 <details>
@@ -189,4 +198,5 @@ More: [how it works](docs/HOW-IT-WORKS.md) · [every building block](docs/PLAYBO
 
 ---
 
-<p align="center">Built on <a href="https://github.com/kurbaitaev/ghost-editor">ghost-editor</a> by <a href="https://github.com/kurbaitaev">@kurbaitaev</a> (MIT), tracked as <code>upstream</code>. Hypit's guides are under the <a href="vendor/hypit/LICENSE">Hypit Open Source License</a>.<br></p>
+<p align="center">Built on <a href="https://github.com/kurbaitaev/ghost-editor">ghost-editor</a> by <a href="https://github.com/kurbaitaev">@kurbaitaev</a> (MIT), tracked as <code>upstream</code>. Hypit's guides are under the <a href="vendor/hypit/LICENSE">Hypit Open Source License</a>.<br>
+ClubGig is our pilot. Its demos and logos belong to Clubgig, are shown with their permission, and are not covered by this repo's licence.</p>

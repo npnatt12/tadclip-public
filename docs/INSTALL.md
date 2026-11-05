@@ -68,7 +68,7 @@ ClubGig is the default. To copy a creator's style:
 
 > ตัดต่อคลิปนี้ให้เป็นสไตล์ @someone ให้หน่อย ~/Downloads/my-video.mov
 
-You'll be asked once for your brand's logo and LINE handle.
+For a brand other than Clubgig, you'll be asked once for its logo and LINE handle.
 
 **On Codex:** the edit runs in your session instead of in helper agents. `@someone` needs a logged-in browser, so if your agent can't reach one, paste links to 3 of their reels.
 
