@@ -1,56 +1,72 @@
-# Installing TadClip
+# Installing TadClip · วิธีติดตั้ง TadClip
 
 About 15 minutes, most of it downloads. Works in Claude Code and Codex.
 
-## Before you start
+ใช้เวลาประมาณ 15 นาที ส่วนใหญ่คือรอดาวน์โหลด ใช้ได้ทั้ง Claude Code และ Codex
 
-| You need | Get it |
+## Before you start · ก่อนเริ่ม
+
+| You need · สิ่งที่ต้องมี | Details · รายละเอียด |
 |---|---|
-| A Mac with Apple silicon | Linux and Intel Macs are untested |
-| Claude Code or Codex | [Claude Code](https://claude.com/claude-code) · [Codex](https://github.com/openai/codex) |
+| A Mac with Apple silicon · Mac ชิป Apple (M1 ขึ้นไป) | Linux and Intel Macs are untested · ยังไม่ได้ทดสอบบน Linux และ Mac ชิป Intel |
+| Claude Code or Codex · Claude Code หรือ Codex | [Claude Code](https://claude.com/claude-code) · [Codex](https://github.com/openai/codex). Install it first · ลงตัวนี้ก่อน |
 
-## Step 1: Install
+## Step 1: Install · ขั้นที่ 1: ติดตั้ง
 
-Open Terminal (⌘Space, type Terminal) and paste this one line:
+Open Terminal (press ⌘Space, type Terminal, press Enter), paste this line and press Enter:
+
+เปิด Terminal (กด ⌘Space พิมพ์ Terminal แล้วกด Enter) วางบรรทัดนี้แล้วกด Enter:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
 ```
 
-It installs what it needs, including Homebrew, and may ask for your Mac password. It works for Claude Code and Codex: install your agent first, so the skill gets linked in.
+It installs everything it needs, including Homebrew. If it asks for your Mac password, type it: nothing shows while you type. If a window asks to install developer tools, click Install, wait for it to finish, then paste the line again.
 
-## Step 2: Open the key file
+ตัวติดตั้งจะลงทุกอย่างที่ต้องใช้ให้เอง รวมถึง Homebrew ถ้าถามรหัสผ่าน ให้พิมพ์รหัสเครื่อง Mac ตอนพิมพ์จะไม่เห็นตัวอักษร เป็นเรื่องปกติ ถ้ามีหน้าต่างถามเรื่อง developer tools ให้กด Install รอจนเสร็จ แล้ววางบรรทัดเดิมอีกครั้ง
+
+## Step 2: Open the key file · ขั้นที่ 2: เปิดไฟล์คีย์
 
 The installer does this for you. To open it again, paste this into Terminal:
+
+ตัวติดตั้งจะเปิดให้เอง ถ้าอยากเปิดอีกครั้ง วางบรรทัดนี้ใน Terminal:
 
 ```bash
 open -e ~/.claude/skills/tadclip/.env
 ```
 
-Keep the file open for step 3. **Paste keys into this file, never into the chat.** It stays on your Mac and is never committed.
+Keep the file open for step 3. **Paste keys into this file, never into the chat.** It stays on your Mac.
 
-## Step 3: Get your two free keys
+เปิดไฟล์ค้างไว้สำหรับขั้นที่ 3 **วางคีย์ในไฟล์นี้เท่านั้น ห้ามวางในแชต** ไฟล์นี้อยู่ในเครื่องของคุณ ไม่ถูกส่งขึ้นไปไหน
 
-**Gemini** (Thai transcript and B-roll checks)
-1. Open **https://aistudio.google.com/apikey** and sign in with Google.
-2. Click **Create API key**, then copy it.
-3. Paste it right after `GEMINI_API_KEY=`, with no spaces or quotes.
+## Step 3: Get your two free keys · ขั้นที่ 3: ขอคีย์ฟรี 2 ตัว
 
-**Pexels** (stock footage)
-1. Open **https://www.pexels.com/api/key/** and log in, or create a free account.
-2. If it asks about your project, fill in the short form.
-3. Copy your key and paste it right after `PEXELS_API_KEY=`.
+**Gemini** (Thai transcript and B-roll checks · ถอดเสียงภาษาไทยและตรวจ B-roll)
+
+1. Open **https://aistudio.google.com/apikey** and sign in with Google.<br>เปิดลิงก์แล้วล็อกอินด้วยบัญชี Google
+2. Click **Create API key**, then copy it.<br>กด **Create API key** แล้วคัดลอกคีย์
+3. Paste it right after `GEMINI_API_KEY=`, with no spaces or quotes.<br>วางต่อจาก `GEMINI_API_KEY=` ไม่ต้องเว้นวรรค ไม่ต้องใส่เครื่องหมายคำพูด
+
+**Pexels** (stock footage · ฟุตเทจสต็อก)
+
+1. Open **https://www.pexels.com/api/key/** and log in, or create a free account.<br>เปิดลิงก์แล้วล็อกอิน หรือสมัครบัญชีฟรี
+2. If it asks about your project, fill in the short form.<br>ถ้าถามเรื่องโปรเจกต์ ก็กรอกสั้นๆ ได้เลย
+3. Copy your key and paste it right after `PEXELS_API_KEY=`.<br>คัดลอกคีย์ แล้ววางต่อจาก `PEXELS_API_KEY=`
 
 Save the file (⌘S) and close it. It should look like this, with your own keys:
+
+กด ⌘S เพื่อเซฟแล้วปิดไฟล์ หน้าตาจะเป็นแบบนี้ แต่เป็นคีย์ของคุณเอง:
 
 ```text
 GEMINI_API_KEY=your-gemini-key
 PEXELS_API_KEY=your-pexels-key
 ```
 
-## Step 4: Check it
+## Step 4: Check it · ขั้นที่ 4: เช็กความพร้อม
 
-Tell the agent "run the TadClip doctor", or paste this into Terminal:
+Tell your agent "run the TadClip doctor", or paste this into Terminal:
+
+บอก agent ว่า "run the TadClip doctor" หรือวางบรรทัดนี้ใน Terminal:
 
 ```bash
 bash ~/.claude/skills/tadclip/scripts/doctor.sh
@@ -58,37 +74,45 @@ bash ~/.claude/skills/tadclip/scripts/doctor.sh
 
 You're ready when it ends with `0 missing`. Lines marked `opt` are optional.
 
-## Step 5: Edit your first reel
+ถ้าบรรทัดสุดท้ายขึ้น `0 missing` แปลว่าพร้อมใช้ บรรทัดที่ขึ้นว่า `opt` ไม่ต้องทำก็ได้
 
-Start a new session so the agent sees the skill, then say:
+## Step 5: Edit your first reel · ขั้นที่ 5: ตัดคลิปแรก
+
+Start a new session so your agent sees the skill, then say:
+
+เปิดเซสชันใหม่เพื่อให้ agent เห็นสกิล แล้วสั่งแบบนี้:
 
 > ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
 
 ClubGig is the default. To copy a creator's style:
 
+สไตล์เริ่มต้นคือ ClubGig ถ้าอยากได้สไตล์ของครีเอเตอร์คนไหน สั่งแบบนี้:
+
 > ตัดต่อคลิปนี้ให้เป็นสไตล์ @someone ให้หน่อย ~/Downloads/my-video.mov
 
 For a brand other than Clubgig, you'll be asked once for its logo and LINE handle.
 
-**On Codex:** the edit runs in your session instead of in helper agents. `@someone` needs a logged-in browser, so if your agent can't reach one, paste links to 3 of their reels.
+ถ้าใช้แบรนด์อื่นที่ไม่ใช่ Clubgig ระบบจะถามโลโก้กับ LINE ของแบรนด์นั้นครั้งเดียว
 
-## If something goes wrong
+**On Codex · ถ้าใช้ Codex:** the edit runs in your session instead of in helper agents. `@someone` needs a logged-in browser, so if your agent can't reach one, paste links to 3 of their reels.
 
-| What you see | What to do |
+งานตัดต่อจะรันในเซสชันเดียวกันเลย ไม่ได้แยกไปให้ helper agent ส่วน `@someone` ต้องใช้เบราว์เซอร์ที่ล็อกอินไว้ ถ้า agent เข้าไม่ได้ ให้วางลิงก์รีลของคนนั้น 3 ลิงก์แทน
+
+## If something goes wrong · ถ้ามีปัญหา
+
+| What you see · สิ่งที่เห็น | What to do · วิธีแก้ |
 |---|---|
-| `503` from Gemini | Google is busy, your key is fine. Try again later |
-| `429` from Gemini | The free daily limit is used up. It was 20 requests a day when we measured it, resetting at 15:00 Bangkok time ([current limits](https://ai.google.dev/gemini-api/docs/rate-limits)) |
-| `MISS GEMINI_API_KEY` or `MISS PEXELS_API_KEY` | The key isn't in the file, or the file wasn't saved. Repeat steps 2 and 3 |
-| The agent doesn't know TadClip | Start a new session |
-| Any other `MISS` line | It prints its own fix. Run it, or re-run `bash ~/.claude/skills/tadclip/scripts/setup.sh`, which is safe to repeat |
+| `503` or `504` from Gemini | Google is busy, your key is fine. Try again later.<br>Google ยุ่งอยู่ คีย์ไม่มีปัญหา ลองใหม่ทีหลัง |
+| `429` from Gemini | The free daily limit is used up. It was 20 requests a day when we measured it, resetting at 15:00 Bangkok time ([current limits](https://ai.google.dev/gemini-api/docs/rate-limits)).<br>ใช้โควตาฟรีของวันนี้หมดแล้ว ตอนที่เราวัดได้ 20 ครั้งต่อวัน รีเซ็ตตอน 15:00 น. เวลาไทย |
+| `MISS GEMINI_API_KEY` or `MISS PEXELS_API_KEY` | The key isn't in the file, or the file wasn't saved. Repeat steps 2 and 3.<br>ยังไม่มีคีย์ในไฟล์ หรือยังไม่ได้เซฟ ทำขั้นที่ 2 และ 3 อีกครั้ง |
+| The agent doesn't know TadClip<br>agent ไม่รู้จัก TadClip | Start a new session.<br>เปิดเซสชันใหม่ |
+| Any other `MISS` line<br>บรรทัด `MISS` อื่นๆ | It prints its own fix. Run it, or paste the install line again: it's safe to repeat.<br>บรรทัดนั้นจะบอกวิธีแก้ไว้ ทำตามนั้น หรือวางบรรทัดติดตั้งอีกครั้งก็ได้ ทำซ้ำได้ไม่มีผลเสีย |
 
-**Update to the latest version:**
+**Update to the latest version · อัปเดตเวอร์ชันล่าสุด:** paste the install line again · วางบรรทัดติดตั้งเดิมอีกครั้ง
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
-```
+**Privacy · ความเป็นส่วนตัว:** the speaker's audio and frames go to Google for the transcript and checks. On the free tier, Google may use them to improve its products ([terms](https://ai.google.dev/gemini-api/terms)). Get the speaker's OK before you edit someone else's recording.
 
-**Privacy:** the speaker's audio and frames go to Google for the transcript and checks. On the free tier, Google may use them to improve its products ([terms](https://ai.google.dev/gemini-api/terms)). Get the speaker's OK before you edit someone else's recording.
+เสียงและภาพของคนในคลิปจะถูกส่งไปที่ Google เพื่อถอดเสียงและตรวจคลิป ถ้าใช้คีย์ฟรี Google อาจนำไปปรับปรุงผลิตภัณฑ์ของเขาได้ ([ข้อกำหนด](https://ai.google.dev/gemini-api/terms)) ถ้าจะตัดคลิปของคนอื่น ขออนุญาตเจ้าตัวก่อน
 
 ---
 

@@ -11,6 +11,45 @@
 [![HyperFrames](https://img.shields.io/badge/HyperFrames-0.8.159-black?style=flat)](scripts/HF_VERSION)
 [![Fork of ghost-editor](https://img.shields.io/badge/fork%20of-kurbaitaev%2Fghost--editor-black?style=flat&logo=github)](https://github.com/kurbaitaev/ghost-editor)
 
+</div>
+
+## Quick start · เริ่มใช้งาน
+
+For an Apple silicon Mac with [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex) installed. No GitHub account needed. It takes about 15 minutes, most of it downloads.
+
+ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 15 นาที ส่วนใหญ่คือรอดาวน์โหลด
+
+**1. Open Terminal and paste this line · เปิด Terminal แล้ววางบรรทัดนี้**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
+```
+
+Press ⌘Space, type Terminal and press Enter. Paste the line and press Enter. If it asks for your Mac password, type it: nothing shows while you type.
+
+กด ⌘Space พิมพ์ Terminal แล้วกด Enter วางบรรทัดด้านบนแล้วกด Enter อีกครั้ง ถ้าถามรหัสผ่าน ให้พิมพ์รหัสเครื่อง Mac ตอนพิมพ์จะไม่เห็นตัวอักษร เป็นเรื่องปกติ
+
+**2. Add two free keys · ใส่คีย์ฟรี 2 ตัว**
+
+When it finishes, your key file opens by itself. Paste a key from each link right after its `=` sign, then press ⌘S to save.
+
+พอติดตั้งเสร็จ ไฟล์คีย์จะเปิดขึ้นมาเอง ขอคีย์จากลิงก์ด้านล่าง วางต่อท้ายเครื่องหมาย `=` แบบไม่เว้นวรรค แล้วกด ⌘S เพื่อเซฟ
+
+| Key · คีย์ | Get it here · ขอได้ที่ | What it does · ใช้ทำอะไร |
+|---|---|---|
+| `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Thai transcript and B-roll checks · ถอดเสียงภาษาไทยและตรวจ B-roll |
+| `PEXELS_API_KEY` | [pexels.com/api/key](https://www.pexels.com/api/key/) | stock footage · ฟุตเทจสต็อก |
+
+**3. Start a new session and edit · เปิดเซสชันใหม่แล้วสั่งตัดต่อได้เลย**
+
+> ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
+
+> ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator ให้หน่อย ~/Downloads/my-video.mov
+
+Step-by-step guide and fixes · คู่มือทีละขั้นตอนและวิธีแก้ปัญหา: [docs/INSTALL.md](docs/INSTALL.md)
+
+<div align="center">
+
 <img src="docs/media/clubgig/same-take.gif" width="100%" alt="The same five seconds three ways, playing side by side. Left, the raw take. Middle, the default ClubGig edit: a full-screen food clip with a Thai label. Right, a creator style layered over ClubGig: the speaker stays on screen with a checkbox bar on the chest and the food clip in a teal-framed panel below.">
 
 <sub>raw take &nbsp;·&nbsp; ClubGig, the default &nbsp;·&nbsp; a creator's format layered over ClubGig</sub>
@@ -84,35 +123,6 @@ Full recipe and commands: [recipes/clubgig/README.md](recipes/clubgig/README.md)
 ## Effects
 
 <img src="docs/media/effects-grid.gif" width="100%" alt="Effects close up: route maps, live counters, big word captions, photo stacks, cut-out collage, hand-drawn board, paper with highlights and growing diagrams.">
-
-## Quick start
-
-For an Apple silicon Mac, with [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex). No GitHub account needed.
-
-**1. Open Terminal and paste this one line:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
-```
-
-It takes about 15 minutes, most of it downloads.
-
-**2. Add two free keys.** Your key file opens by itself. Paste a key from each link after its `=` sign, then save:
-
-| Key | Get it here | What it does |
-|---|---|---|
-| `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Thai transcript and B-roll checks |
-| `PEXELS_API_KEY` | [pexels.com/api/key](https://www.pexels.com/api/key/) | stock footage |
-
-**3. Start a new session and edit:**
-
-> ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
-
-> ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator ให้หน่อย ~/Downloads/my-video.mov
-
-**ภาษาไทย:** เปิดแอป Terminal วางบรรทัดด้านบนแล้วกด Enter รอติดตั้งประมาณ 15 นาที พอไฟล์คีย์เปิดขึ้นมา ให้สมัครคีย์ฟรีจากสองลิงก์ด้านบน วางต่อท้ายเครื่องหมาย `=` แล้วกดเซฟ จากนั้นเปิด Claude Code หรือ Codex แล้วสั่งได้เลย
-
-Step-by-step guide and fixes for common problems: [docs/INSTALL.md](docs/INSTALL.md).
 
 <details>
 <summary><b>Styles you can ask for today</b></summary>
