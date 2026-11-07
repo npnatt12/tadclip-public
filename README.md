@@ -124,6 +124,8 @@ Full recipe and commands: [recipes/clubgig/README.md](recipes/clubgig/README.md)
 
 <img src="docs/media/effects-grid.gif" width="100%" alt="The 18 effects as a playing grid, each in Thai with ClubGig content and labelled in English and Thai: route maps, live counters, big word captions, photo stacks, cut-out collage, hand-drawn board, paper with highlights, growing diagrams, search and reveal, kinetic type, screen callouts, chalk writing, step numbers, engraving with a lens, live app demo, life in weeks, product drop, B-roll with captions.">
 
+<sub>Every effect takes Thai or English text. Shown here in Thai with ClubGig content.<br>ทุกเอฟเฟกต์ใช้ได้ทั้งข้อความไทยและอังกฤษ ตัวอย่างนี้ใช้ภาษาไทยจากคลิป ClubGig</sub>
+
 <details>
 <summary><b>Styles you can ask for today</b></summary>
 
