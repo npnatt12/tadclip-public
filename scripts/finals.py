@@ -191,7 +191,21 @@ def hf_render(r, quality, dst, log):
     return run(cmd, log, cwd=r["project"]) == 0 and os.path.exists(dst)
 
 
-def preview(r):
+def incomplete(r):
+    """the ClubGig devices build.mjs found missing; a report from an older build has none"""
+    try:
+        return json.load(open(os.path.join(r["project"], "build", "build_report.json"))).get("missing", [])
+    except OSError:
+        return []
+
+
+def held(r):
+    print(f"HELD {r['name']}: not a finished ClubGig reel, missing {'; '.join(incomplete(r))}. Add them, or \"omit\" what the user dropped (--force skips this)")
+
+
+def preview(r, force=False):
+    if not force and incomplete(r):
+        return held(r)
     os.makedirs(r["out"], exist_ok=True)
     out = os.path.join(r["out"], f"{r['name']} (preview).mp4")
     log = os.path.join(r["out"], f"{r['name']} (preview).log")
@@ -208,6 +222,8 @@ def preview(r):
 
 
 def render(r, force=False, no_music=True):
+    if not force and incomplete(r):
+        return held(r)
     os.makedirs(r["out"], exist_ok=True)
     pv = os.path.join(r["out"], f"{r['name']} (preview).mp4")
     idx = os.path.join(r["project"], "index.html")
@@ -597,7 +613,7 @@ def main():
     ap.add_argument("--date"), ap.add_argument("--collection")
     ap.add_argument("--only", help="comma-separated reel names from the manifest")
     ap.add_argument("--allow", action="append", default=[], help="deliver this reel despite a hard QA fail (its name)")
-    ap.add_argument("--force", action="store_true", help="render without a current preview")
+    ap.add_argument("--force", action="store_true", help="render without a current preview, or an incomplete ClubGig reel")
     ap.add_argument("--no-nomusic", action="store_true", help="render: skip the no-music version")
     ap.add_argument("--rounds", type=int, help="deliver: change rounds for the tracker (default: previews after the first)")
     ap.add_argument("--dry", action="store_true")
@@ -611,7 +627,7 @@ def main():
     if a.step == "deliver":
         return deliver(reels, a.allow, a.dry)
     for r in reels:
-        {"preview": preview, "render": lambda r: render(r, a.force, not a.no_nomusic), "nomusic": nomusic, "qa": qa}[a.step](r)
+        {"preview": lambda r: preview(r, a.force), "render": lambda r: render(r, a.force, not a.no_nomusic), "nomusic": nomusic, "qa": qa}[a.step](r)
 
 
 if __name__ == "__main__":

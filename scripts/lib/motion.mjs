@@ -422,6 +422,7 @@ export function buildMusic(m, ctx, execFileSync, path, fs) {
     const man = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
     if (!man[m.id]) throw new Error(`music '${m.id}' not in library/music/manifest.json`);
     fs.mkdirSync(path.join(proj, "assets", "music"), { recursive: true });
+    if (!fs.existsSync(path.join(LIB, "music", man[m.id].file))) { console.error(`ERROR: music '${m.id}' isn't on this machine: python3 scripts/library_restore.py --music-only`); process.exit(1); }
     fs.copyFileSync(path.join(LIB, "music", man[m.id].file), path.join(proj, "assets", "music", man[m.id].file));
     src = `assets/music/${man[m.id].file}`;
   }

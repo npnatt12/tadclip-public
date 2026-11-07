@@ -66,7 +66,7 @@ PYEOF
     *) r=${r##*$'\n'}; fail "GEMINI_API_KEY is set but the test call failed: ${r:0:140}" "check the key at aistudio.google.com/apikey (env or $S/.env)";; esac
 else fail "GEMINI_API_KEY (insert_prep.py, broll_vision.py, broll_qa.py people/match: unchecked shots fail)" "paste a free key from aistudio.google.com/apikey into $S/.env (docs/INSTALL.md, step 3)"; fi
 
-if [ -n "$PEXELS_API_KEY" ] || grep -qs '^PEXELS_API_KEY=.' "$S/.env" "$S/.env.local"; then pass "PEXELS_API_KEY (ClubGig stock)"; else fail "PEXELS_API_KEY (ClubGig's stock inserts: broll_fetch.py search --pexels)" "free key at pexels.com/api, then paste it into $S/.env (docs/INSTALL.md, step 3)"; fi
+if [ -n "$PEXELS_API_KEY" ] || grep -qs '^PEXELS_API_KEY=.' "$S/.env" "$S/.env.local"; then pass "PEXELS_API_KEY (ClubGig stock)"; else echo "  opt   PEXELS_API_KEY not set: stock search falls back to Mixkit, photos to Wikimedia. More choice with a free key -> $S/.env (docs/INSTALL.md, step 3)"; fi
 if [ -n "$ELEVENLABS_API_KEY" ] || grep -qs '^ELEVENLABS_API_KEY=.' "$S/.env"; then pass "ELEVENLABS_API_KEY (narrated explainers)"; else echo "  opt   ELEVENLABS_API_KEY not set: only scripts/tts_elevenlabs.py (explainer voiceover) needs it -> $S/.env"; fi
 [ -x "${DF_VENV:-$S/.venv-df}/bin/deepFilter" ] && pass "DeepFilterNet (scripts/denoise.sh)" || echo "  opt   DeepFilterNet not set up: scripts/denoise.sh installs it on first use (needs python3.11 + uv)"
 

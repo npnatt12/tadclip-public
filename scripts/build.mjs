@@ -39,6 +39,7 @@ import { aiTag } from "./lib/ai-tag.mjs";
 import { deepMerge, loadStyle, styleName } from "./lib/style.mjs";
 import { findTaste, loadTaste, applyTaste, checkTaste, bannedSfx } from "./lib/taste.mjs";
 import { STAN_CSS, isStanBeat, stanPrepare, stanBeat, stanPipTweens, buildChestCaptions, stanMatteWindows } from "./lib/stan.mjs";
+import { clubgigMissing } from "./lib/clubgig_gate.mjs";
 
 const SKILL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LIB = path.join(SKILL, "library");
@@ -228,6 +229,7 @@ const addSfx = (t, id, why, { db = 0, lead = 0, explicit = false } = {}) => {
   if ((BANNED_SFX.has(id) || BANNED_SFX.has(real)) && !explicit && why !== "manual") { warn.push(`taste: default sound '${real}' (${why}) skipped, banned in taste.json`); return; }
   const m = sfxManifest[real];
   if (!m) die(`sfx '${real}' not in library/sfx/manifest.json (${why})`);
+  if (!fs.existsSync(path.join(LIB, "sfx", m.file))) die(`sound '${real}' isn't on this machine: python3 ${path.join(SKILL, "scripts", "library_restore.py")}`);
   fs.copyFileSync(path.join(LIB, "sfx", m.file), path.join(A, "sfx", m.file));
   sfxEvents.push({ t: r3(Math.max(0, t - lead)), id: real, role: m.role, vol: volFor(m.role, db), dur: m.duration, src: `assets/sfx/${m.file}`, why });
 };
@@ -1455,9 +1457,11 @@ console.log(`voice p95 peak ${voiceP95.toFixed(1)} dBFS; sfx role levels vs voic
 console.log(`sfx: ${sfxEvents.length} hits ${JSON.stringify(byRole)}, ${perMin(sfxEvents).toFixed(1)}/min`);
 for (const e of sfxEvents) console.log(`  ${e.t.toFixed(2).padStart(6)}s  ${e.id.padEnd(22)} ${e.role.padEnd(6)} vol ${e.vol}  (${e.why})`);
 if (tasteApplied.length) console.log(`taste defaults (${taste._path}): ${tasteApplied.map((a) => `${a.path} = ${JSON.stringify(a.value)} [${a.id}]`).join("; ")}`);
-// machine-readable summary for approval_sheet.py / render_report.py (no stdout parsing)
+const missing = spec.style === "clubgig" ? clubgigMissing(spec, beatsList, E, SPEECH, sfxEvents.length) : [];
+// machine-readable summary for approval_sheet.py / render_report.py / finals.py (no stdout parsing)
 fs.writeFileSync(path.join(proj, "build", "build_report.json"), JSON.stringify({ total: TOTAL, speech: SPEECH, fps: FPS,
   takes: takes.map((k) => ({ a: k.a, b: k.b, start: r3(k.start), dur: r3(k.dur), hold: k.holdFrames / FPS })),
-  warnings: [...new Set(warn)], taste: taste ? { file: taste._path, applied: tasteApplied } : null }, null, 1));
+  warnings: [...new Set(warn)], missing, taste: taste ? { file: taste._path, applied: tasteApplied } : null }, null, 1));
 if (warn.length) console.log("\nWARNINGS:\n  " + [...new Set(warn)].join("\n  "));
 console.log(`\n-> ${path.join(proj, "index.html")}`);
+if (missing.length) { console.error(`\nERROR: not a finished ClubGig reel, finals.py will hold it. Missing:\n  ${missing.join("\n  ")}`); process.exitCode = 1; }

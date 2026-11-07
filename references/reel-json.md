@@ -321,6 +321,8 @@ Helpers:
 
 ## What the build enforces (warnings, printed after the SFX table)
 
+`style: "clubgig"` must also hold the hook, popups, swiped stock, chrome, LINE CTA, end card and sound: otherwise build.mjs exits 1 and finals.py holds the reel. `"omit": ["linecta"]` (top level) drops a device the user dropped; ids in `scripts/lib/clubgig_gate.mjs`.
+
 - the same meme sound twice in one reel
 - meme sounds < 8 s apart; > 3.5 meme sounds per minute
 - > 14 whoosh/impact/meme hits per minute (a layered whoosh+impact counts once)

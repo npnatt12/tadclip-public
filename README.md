@@ -122,7 +122,7 @@ Full recipe and commands: [recipes/clubgig/README.md](recipes/clubgig/README.md)
 
 ## Effects
 
-<img src="docs/media/effects-grid.gif" width="100%" alt="Effects close up: route maps, live counters, big word captions, photo stacks, cut-out collage, hand-drawn board, paper with highlights and growing diagrams.">
+<img src="docs/media/effects-grid.gif" width="100%" alt="The 18 effects as a playing grid, each in Thai with ClubGig content and labelled in English and Thai: route maps, live counters, big word captions, photo stacks, cut-out collage, hand-drawn board, paper with highlights, growing diagrams, search and reveal, kinetic type, screen callouts, chalk writing, step numbers, engraving with a lens, live app demo, life in weeks, product drop, B-roll with captions.">
 
 <details>
 <summary><b>Styles you can ask for today</b></summary>
@@ -162,7 +162,7 @@ Plus seven one-word presets: `clean`, `editorial`, `meme`, `cinematic`, `launch`
 - [Claude Code](https://claude.com/claude-code) on a paid Claude plan, or [Codex](https://github.com/openai/codex).
 - A Mac with Apple silicon and Homebrew. `scripts/setup.sh` installs the rest: ffmpeg, Node 22, uv, Python packages, whisper and the Thai transcription venv.
 - A free [Gemini API key](https://aistudio.google.com/apikey) for the Thai transcript and the B-roll checks. Audio and frames go to Google.
-- A free [Pexels key](https://www.pexels.com/api) for stock footage.
+- Optional: a free [Pexels key](https://www.pexels.com/api) for more stock footage.
 - For a brand other than Clubgig: its official logo files, tagline and LINE handle. Clubgig's are in [`recipes/clubgig/brand/`](recipes/clubgig/brand/clubgig).
 
 A 90-second ClubGig reel takes about 45 minutes end to end. The 720p preview takes about 4 minutes and the final render about 10.

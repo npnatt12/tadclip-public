@@ -17,6 +17,12 @@ in this style must come out like it. Call: **"ClubGig"**, "edit this in ClubGig"
   linecta, swipe, broll swipe/label/clips, chrome, endcard logo, brand.textShadow).
 - Source: Icarus rules (f2df9e7) + Coach Q&A (recipes/coach-qa) + Seoul list + Face RESULT devices.
 
+## One prompt, the whole reel
+"ตัดต่อคลิปนี้" means every device below, with no follow-up questions. `style: "clubgig"` brings only the look; the hook,
+popups, stock, chrome, LINE CTA and end card are beats you plan. `build.mjs` exits 1 and `finals.py` holds the preview and
+the master until the reel has them (`scripts/lib/clubgig_gate.mjs`). If the user dropped one, name it in reel.json:
+`"omit": ["linecta"]` (hook, hookStock, impact, swipe, chrome, linecta, endcard, sfx). Never remove beats to get past an error.
+
 ## What a reel contains (KG01 budget, 89.5 s; scale by length)
 
 | device | KG01 | rule |
@@ -53,10 +59,12 @@ python3 $S/recipes/clubgig/islands.py $P/assets/talk.mp4 $P/build/vad.json
    asides; keep the whole argument + the CTA; cut on real pauses; total speech <= the user's limit minus the 2.2 s outro.
 2. **Captions:** copy `recipes/clubgig/cut.py` to `$P/build/cut.py`, write TAKES = (a, b, verbatim Gemini text,
    "?" on questions) from THIS recording's transcript (it refuses the stored KG01 example), run `~/.venvs/mlxw/bin/python -I build/cut.py` -> build/words.th.json + build/takes.json.
-3. **Brand:** ask once for the brand's official logo (white wordmark + dark lockup PNGs), the tagline and the LINE
-   handle + bubble lines. For Clubgig they are saved in the skill: `recipes/clubgig/brand/clubgig/` (copy them to `$P/brand/`).
+3. **Brand:** no brand named means Clubgig: copy `recipes/clubgig/brand/clubgig/` to `$P/brand/`; its `brand.json` holds the tagline,
+   LINE handle and bubble lines. Say so next to the preview. Don't stop to ask.
+   Another brand named: ask once for its logo (white wordmark + dark lockup PNGs), tagline, LINE handle and bubble lines.
 4. **Stock:** `python3 $S/scripts/broll_fetch.py search <words> --pexels` (videos) / `photos <words> --dir $P/broll`
-   (photos); faceless or distant people first; look at the frames; conform every one:
+   (photos); no Pexels key: `search` falls back to Mixkit, photos come from `wikimedia_fetch.py`. Faceless or distant
+   people first; look at the frames; conform every one:
    `insert_prep.py SRC $P/assets/ins/<name>.mp4 --in S --dur D --ref $P/assets/talk.mp4 --size 1080x1920 --kind stock`
    (`--size 1080x900` for the hook split, `720x864` for a polaroid clip).
 5. **reel.json:** start from `examples/gallery/clubgig.reel.json`; replace takes, beats (source seconds, on the spoken
@@ -77,4 +85,4 @@ python3 $S/recipes/clubgig/islands.py $P/assets/talk.mp4 $P/build/vad.json
 - Thai line widths come from `library/fonts/thai/metrics.json`; a 2-line impact at 116 px fits ~13 glyphs a line.
 - Gemini: `gemini-flash-latest` (free tier) allows only **20 requests a day** (429 RESOURCE_EXHAUSTED after that; it resets
   daily). Do the transcript call first; insert_prep / broll_vision people checks spend the same quota. Pro has no free quota.
-- The Pexels key lives in the skill's `.env.local` (`PEXELS_API_KEY`).
+- The Pexels key is per machine (`.env` or `.env.local`, never in git). Without one, stock comes from Mixkit.

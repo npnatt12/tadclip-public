@@ -12,7 +12,7 @@
     broll_fetch.py list --dir $P/broll                          the manifest as a table; rows still missing desc/in/out
 
 Sources (`get` needs no API key for either; `search --pexels` reads PEXELS_API_KEY from the environment or the skill's
-.env / .env.local, free at pexels.com/api):
+.env / .env.local, free at pexels.com/api, and searches Mixkit when there is no key):
 - Pexels: a video page URL (https://www.pexels.com/video/<slug>-<id>/), its id, or "pexels:<id>". The original comes from
   the public download link https://www.pexels.com/download/video/<id>/ (a redirect to the uploaded file, often 4K).
   Pexels search pages and the API need a browser or a key, so find clips with a web search for
@@ -222,12 +222,18 @@ def env_key(name):
         m = os.path.exists(p) and re.search(rf"^{name}[ \t]*=[ \t]*['\"]?([^'\"\n]+)", open(p).read(), re.M)
         if m:
             return m.group(1).strip()
-    sys.exit(f"no {name}: export it or add it to the skill's .env")
+    sys.exit(f"no {name}: export it or add it to the skill's .env (keyless: `search` without --pexels for videos, wikimedia_fetch.py for photos)")
 
 
 def cmd_search_pexels(A):
+    try:
+        key = env_key("PEXELS_API_KEY")
+    except SystemExit:
+        print("no PEXELS_API_KEY: searching Mixkit, which needs no key")
+        A.pexels = False
+        return cmd_search(A)
     q = urllib.parse.urlencode({"query": " ".join(A.words), "per_page": A.n, "size": "large", **({} if A.any else {"orientation": "portrait"})})
-    req = urllib.request.Request(f"https://api.pexels.com/videos/search?{q}", headers={"Authorization": env_key("PEXELS_API_KEY"), "User-Agent": UA})
+    req = urllib.request.Request(f"https://api.pexels.com/videos/search?{q}", headers={"Authorization": key, "User-Agent": UA})
     j = json.load(urllib.request.urlopen(req, timeout=60))
     for v in j["videos"]:
         print(f"pexels:{v['id']:<9} {v['width']}x{v['height']:<5} {v['duration']:>3} s  {v['url']}")

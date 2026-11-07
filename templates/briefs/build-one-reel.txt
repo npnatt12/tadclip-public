@@ -18,6 +18,10 @@ $S/scripts/image_pick.py (brief, pull 6-10, score, pick >= 4 or flag the line) a
 landed (blur only inside entrance moves), no ghost layers, small text >= 30 px; previews before finals.
 Notes for this reel: {NOTES}
 
+ClubGig (the default) has no SYSTEM.md, builder or cut folder: skip "Read exactly this" and steps a-f below. Follow
+$S/recipes/clubgig/README.md from the raw recording through its step 6, then do g and h. Every device in its table is
+required; `build.mjs` must exit 0 and `finals.py preview` must not say HELD.
+
 Read exactly this, in this order (not old generators, not the builder source, not the whole SKILL.md):
   1. $S/recipes/{RECIPE}/SYSTEM.md: the invariants, slots and planning procedure (skip the changelog).
   2. The builder's calls: `$PY $S/recipes/{RECIPE}/{BUILDER} --api` where it has one (cleanos.py, seoul.py), else its

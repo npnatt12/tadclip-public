@@ -221,7 +221,7 @@ Seven presets: `clean`, `editorial`, `meme`, `cinematic`, `launch`, `kinetic`, `
   every <= 7.5 s, three full-bleed stock points through a grainy colour swipe with two-tier labels, polaroids beside the
   face, Seoul serif words, a white flash page, chrome with the brand's real logo, a LINE pop-up CTA for the back third, a
   logo end card, dense SFX + a lo-fi bed. THE DEFAULT: every reel gets this look unless the user names another style.
-  Call: "ClubGig", "the KG01 look". Follow its README end to end; copy the shape of `examples/gallery/clubgig.reel.json`.
+  Call: "ClubGig", "the KG01 look". Follow its README end to end; copy the shape of `examples/gallery/clubgig.reel.json`. The preset is only the look: `build.mjs` and `finals.py` hold a reel without the hook, popups, swiped stock, chrome, LINE CTA, end card or sound.
 The visual inventory of every style (playing loops, soundboard, rules) is docs/PLAYBOOK.md.
 **Check the style's prerequisite before planning** (references/broll.md section 6): stan style needs real screen
 recordings, cinematic needs one consistent world of footage. If it is missing, say what is missing and propose another
