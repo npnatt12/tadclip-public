@@ -22,7 +22,7 @@ For an Apple silicon Mac with [Claude Code](https://claude.com/claude-code) or [
 **1. Paste this into Claude Code or Codex · วางข้อความนี้ใน Claude Code หรือ Codex**
 
 ```text
-ติดตั้ง TadClip ให้หน่อย ทำตามส่วน "For the agent doing the install" ใน https://raw.githubusercontent.com/npnatt12/tadclip-public/main/docs/INSTALL.md
+Install TadClip: https://raw.githubusercontent.com/npnatt12/tadclip-public/main/docs/INSTALL.md
 ```
 
 It installs everything into your home folder: no Mac password, no Terminal, no Homebrew. Click Yes when it asks to run a command.
