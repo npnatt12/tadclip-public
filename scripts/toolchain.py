@@ -82,7 +82,7 @@ def hf_pinned():
 
 
 def snapshot():
-    fp = {"host": host(), "date": time.strftime("%Y-%m-%d %H:%M"), "skill_commit": run(["git", "-C", SKILL, "rev-parse", "--short", "HEAD"]).strip()}
+    fp = {"host": host(), "date": time.strftime("%Y-%m-%d %H:%M"), "skill_commit": run(["git", "-C", SKILL, "rev-parse", "--short", "HEAD"]).strip() if os.path.isdir(os.path.join(SKILL, ".git")) else ""}  # zip installs have no git, and /usr/bin/git alone opens the developer-tools window
     v = run(["ffmpeg", "-hide_banner", "-version"]).split("\n")[0]
     m = re.search(r"ffmpeg version (\S+)", v)
     conf = run(["ffmpeg", "-hide_banner", "-buildconf"])

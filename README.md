@@ -19,26 +19,28 @@ For an Apple silicon Mac with [Claude Code](https://claude.com/claude-code) or [
 
 ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 15 นาที ส่วนใหญ่คือรอดาวน์โหลด
 
-**1. Open Terminal and paste this line · เปิด Terminal แล้ววางบรรทัดนี้**
+**1. Paste this into Claude Code or Codex · วางข้อความนี้ใน Claude Code หรือ Codex**
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
+```text
+ติดตั้ง TadClip ให้หน่อย ทำตามส่วน "For the agent doing the install" ใน https://raw.githubusercontent.com/npnatt12/tadclip-public/main/docs/INSTALL.md
 ```
 
-Press ⌘Space, type Terminal and press Enter. Paste the line and press Enter. If it asks for your Mac password, type it: nothing shows while you type.
+It installs everything into your home folder: no Mac password, no Terminal, no Homebrew. Click Yes when it asks to run a command.
 
-กด ⌘Space พิมพ์ Terminal แล้วกด Enter วางบรรทัดด้านบนแล้วกด Enter อีกครั้ง ถ้าถามรหัสผ่าน ให้พิมพ์รหัสเครื่อง Mac ตอนพิมพ์จะไม่เห็นตัวอักษร เป็นเรื่องปกติ
+agent จะลงทุกอย่างไว้ในโฟลเดอร์ของคุณเอง ไม่ถามรหัสผ่านเครื่อง ไม่ต้องเปิด Terminal ไม่ต้องลง Homebrew ถ้าขึ้นถามว่าจะให้รันคำสั่งไหม ให้กด Yes
 
-**2. Add two free keys · ใส่คีย์ฟรี 2 ตัว**
+**2. Add your free key · ใส่คีย์ฟรี**
 
-When it finishes, your key file opens by itself. Paste a key from each link right after its `=` sign, then press ⌘S to save.
+Your key file opens by itself. Paste a Gemini key right after `GEMINI_API_KEY=`, then press ⌘S to save. **Paste keys into this file, never into the chat.**
 
-พอติดตั้งเสร็จ ไฟล์คีย์จะเปิดขึ้นมาเอง ขอคีย์จากลิงก์ด้านล่าง วางต่อท้ายเครื่องหมาย `=` แบบไม่เว้นวรรค แล้วกด ⌘S เพื่อเซฟ
+ไฟล์คีย์จะเปิดขึ้นมาเอง ขอคีย์จากลิงก์ด้านล่าง วางต่อจาก `GEMINI_API_KEY=` แบบไม่เว้นวรรค แล้วกด ⌘S เพื่อเซฟ **วางคีย์ในไฟล์นี้เท่านั้น ห้ามวางในแชต**
 
 | Key · คีย์ | Get it here · ขอได้ที่ | What it does · ใช้ทำอะไร |
 |---|---|---|
 | `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Thai transcript and B-roll checks · ถอดเสียงภาษาไทยและตรวจ B-roll |
-| `PEXELS_API_KEY` | [pexels.com/api/key](https://www.pexels.com/api/key/) | stock footage · ฟุตเทจสต็อก |
+| `PEXELS_API_KEY` (optional · ไม่บังคับ) | [pexels.com/api/key](https://www.pexels.com/api/key/) | more stock footage · ฟุตเทจสต็อกเพิ่ม |
+
+No Claude Code or Codex? Paste this into Terminal instead · ถ้าไม่มี ให้วางบรรทัดนี้ใน Terminal แทน: `curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash`
 
 **3. Start a new session and edit · เปิดเซสชันใหม่แล้วสั่งตัดต่อได้เลย**
 
@@ -162,7 +164,7 @@ Plus seven one-word presets: `clean`, `editorial`, `meme`, `cinematic`, `launch`
 <summary><b>What you need</b></summary>
 
 - [Claude Code](https://claude.com/claude-code) on a paid Claude plan, or [Codex](https://github.com/openai/codex).
-- A Mac with Apple silicon and Homebrew. `scripts/setup.sh` installs the rest: ffmpeg, Node 22, uv, Python packages, whisper and the Thai transcription venv.
+- A Mac with Apple silicon. `scripts/setup.sh` installs the rest into your home folder, without Homebrew or your Mac password: ffmpeg, Node 22, uv, Python packages, whisper and the Thai transcription venv.
 - A free [Gemini API key](https://aistudio.google.com/apikey) for the Thai transcript and the B-roll checks. Audio and frames go to Google.
 - Optional: a free [Pexels key](https://www.pexels.com/api) for more stock footage.
 - For a brand other than Clubgig: its official logo files, tagline and LINE handle. Clubgig's are in [`recipes/clubgig/brand/`](recipes/clubgig/brand/clubgig).

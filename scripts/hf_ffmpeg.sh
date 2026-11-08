@@ -16,7 +16,7 @@ for x in "$@"; do
 done
 set -- "${a[@]}"
 real="${HF_REAL_FFMPEG:-$(command -v ffmpeg)}"
-[ -n "$real" ] || { echo "hf_ffmpeg.sh: ffmpeg not found on PATH (brew install ffmpeg)" >&2; exit 127; }
+[ -n "$real" ] || { echo "hf_ffmpeg.sh: ffmpeg not found on PATH (bash scripts/setup.sh)" >&2; exit 127; }
 py="$(command -v python3)"
 case " $* " in
   *" -/filter_complex "* | *" -filter_complex_script "*)

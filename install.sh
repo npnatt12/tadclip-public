@@ -5,47 +5,34 @@
 set -eu
 # all in main, so a half-downloaded script never runs
 main() {
-  REPO=${TADCLIP_REPO:-https://github.com/npnatt12/tadclip-public.git}
+  REPO=${TADCLIP_REPO:-npnatt12/tadclip-public}
   D="$HOME/.claude/skills/tadclip"
 
   [ "$(uname -s)-$(uname -m)" = "Darwin-arm64" ] || echo "Note: TadClip is built for Apple silicon Macs. It may not work here."
 
-  # git comes with Apple's command line tools
-  if ! xcode-select -p >/dev/null 2>&1; then
-    xcode-select --install 2>/dev/null || true
-    echo "Click Install in the window that opened. When it finishes, run this line again."
-    echo "กด Install ในหน้าต่างที่เปิดขึ้นมา รอจนเสร็จ แล้ววางบรรทัดเดิมอีกครั้ง"
-    exit 1
-  fi
-
-  # Homebrew: its installer asks for your Mac password
-  [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
-  if ! command -v brew >/dev/null; then
-    echo "Installing Homebrew. Type your Mac password if it asks (nothing shows while you type)."
-    echo "กำลังลง Homebrew ถ้าถามรหัสผ่าน ให้พิมพ์รหัสเครื่อง Mac ตอนพิมพ์จะไม่เห็นตัวอักษร เป็นเรื่องปกติ"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" </dev/tty
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-    grep -qs 'brew shellenv' "$HOME/.zprofile" || echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
-  fi
-
-  if [ -d "$D/.git" ]; then
+  # No Homebrew, no Mac password, no developer-tools window: everything goes in your home folder.
+  # git only when Apple's developer tools are already there (without them /usr/bin/git just opens their install window)
+  if [ -d "$D/.git" ] && xcode-select -p >/dev/null 2>&1; then
     git -C "$D" pull -q --ff-only
   else
-    mkdir -p "$(dirname "$D")"
-    git clone -q --depth 1 "$REPO" "$D"
+    # ponytail: files deleted upstream stay behind on an update; harmless, re-install fresh if one ever matters
+    mkdir -p "$D"
+    curl -fsSL "https://codeload.github.com/$REPO/tar.gz/refs/heads/main" | tar -xz --strip-components 1 -C "$D"
   fi
 
   echo "Installing. This takes a few minutes · กำลังติดตั้ง รอสักครู่"
-  bash "$D/scripts/setup.sh" </dev/null || true    # setup ends on "2 missing" until the keys are in
+  bash "$D/scripts/setup.sh" </dev/null || true    # setup ends on "1 missing" until the Gemini key is in
 
-  if ! grep -qs '^GEMINI_API_KEY=.' "$D/.env" || ! grep -qs '^PEXELS_API_KEY=.' "$D/.env"; then
+  if ! grep -qs '^GEMINI_API_KEY=.' "$D/.env"; then
     [ -n "${TADCLIP_NO_OPEN:-}" ] || open -e "$D/.env"
     cat <<'NEXT'
 
-Almost done. Your key file just opened. Paste a free key after each = sign, then save (⌘S):
-ใกล้เสร็จแล้ว ไฟล์คีย์เปิดขึ้นมาแล้ว ขอคีย์ฟรีจากสองลิงก์นี้ วางต่อท้ายเครื่องหมาย = แล้วกด ⌘S เพื่อเซฟ
+Almost done. Your key file just opened. Paste a free Gemini key after GEMINI_API_KEY=, then save (⌘S):
+ใกล้เสร็จแล้ว ไฟล์คีย์เปิดขึ้นมาแล้ว ขอคีย์ Gemini ฟรีจากลิงก์นี้ วางต่อจาก GEMINI_API_KEY= แล้วกด ⌘S เพื่อเซฟ
 
   GEMINI_API_KEY  https://aistudio.google.com/apikey
+
+Optional, for more stock footage · ไม่บังคับ ถ้าอยากได้ฟุตเทจสต็อกเพิ่ม:
   PEXELS_API_KEY  https://www.pexels.com/api/key/
 
 NEXT

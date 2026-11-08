@@ -10,12 +10,12 @@ fail() { echo "  MISS  $1  ->  $2"; bad=$((bad+1)); }
 PY=${MEDIA_PY:-python3}; "$PY" -c "import numpy" 2>/dev/null || { [ -x "$HOME/.venvs/media/bin/python" ] && PY="$HOME/.venvs/media/bin/python"; }
 
 echo "tools"
-command -v ffmpeg >/dev/null && pass "ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')" || fail ffmpeg "brew install ffmpeg"
-ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libvpx && pass "ffmpeg libvpx (alpha WebM memes)" || fail "ffmpeg libvpx" "brew reinstall ffmpeg"
-ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libass && pass "ffmpeg libass" || fail "ffmpeg libass" "brew reinstall ffmpeg"
+command -v ffmpeg >/dev/null && pass "ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')" || fail ffmpeg "bash $S/scripts/setup.sh"
+ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libvpx && pass "ffmpeg libvpx (alpha WebM memes)" || fail "ffmpeg libvpx" "bash $S/scripts/setup.sh"
+ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libass && pass "ffmpeg libass" || fail "ffmpeg libass" "bash $S/scripts/setup.sh"
 [ -x /opt/homebrew/opt/node@22/bin/node ] && export PATH="/opt/homebrew/opt/node@22/bin:$PATH"  # same as hf.sh
-command -v node >/dev/null && [ "$(node -p 'process.versions.node.split(".")[0]')" -ge 22 ] && pass "node $(node -v)" || fail "node >= 22 (HyperFrames)" "brew install node@22"
-command -v uv >/dev/null && pass "uv (creator_study.py runs the latest yt-dlp through it)" || fail "uv (creator_study.py: an old yt-dlp gets 403 from YouTube)" "brew install uv"
+command -v node >/dev/null && [ "$(node -p 'process.versions.node.split(".")[0]')" -ge 22 ] && pass "node $(node -v)" || fail "node >= 22 (HyperFrames)" "bash $S/scripts/setup.sh"
+command -v uv >/dev/null && pass "uv (creator_study.py runs the latest yt-dlp through it)" || fail "uv (creator_study.py: an old yt-dlp gets 403 from YouTube)" "bash $S/scripts/setup.sh"
 "$HOME/.venvs/mlxw/bin/python" -c "import mlx_whisper" 2>/dev/null && pass "mlx-whisper (~/.venvs/mlxw, Thai word times)" || fail "mlx-whisper (ClubGig's Thai word times)" "bash $S/scripts/setup.sh"
 # HyperFrames is pinned in ONE place (scripts/HF_VERSION), read by hf.sh, hf_version.py and build.mjs
 hv=$(cat "$S/scripts/HF_VERSION" 2>/dev/null)
