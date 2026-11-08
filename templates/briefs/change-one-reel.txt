@@ -6,6 +6,7 @@ Reel: {CODE} «{TITLE}», {STYLE} (recipe {RECIPE}, builder {BUILDER}).
 Previous build: {OLD_P} (reel.py = its generator, build/plan.txt = its plan; read them with sed -n, once).
 New cut: {CUT}     New project: {P}     Machine: {MACHINE}, the machine that holds the footage.
   S=~/.claude/skills/tadclip ; PY=~/.venvs/media/bin/python (or any python with numpy + opencv)
+  Start every Bash call with: export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH";
 The user's notes, verbatim: {USER_WORDS}
 What they mean for this reel: {CHANGES}
 Standing rules (the user's; edit to theirs): face as shot, nothing on it; frame 1 the speaker's face with the hook; people

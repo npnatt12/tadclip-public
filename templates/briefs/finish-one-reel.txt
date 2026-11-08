@@ -7,6 +7,7 @@ Manifest: {MANIFEST}   (finals.py reels.json: out, date, collection, language, r
 style, name, how])
 Machine: everything on {MACHINE}, the machine that holds the project. S=~/.claude/skills/tadclip ;
 PY=~/.venvs/media/bin/python (or any python with numpy + opencv)
+Start every Bash call with: export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH";
 Long jobs (render ~2 min a reel, qa a few min, deliver) run in ONE foreground Bash call each with timeout 600000: the open
 shell keeps the HyperFrames render alive (it cancels itself when its parent exits). Never `nohup ... &`, never a background
 job polled turn by turn (each poll re-reads your whole context); a batch that may outrun 10 min: start it with

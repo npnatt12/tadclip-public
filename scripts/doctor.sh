@@ -12,7 +12,9 @@ PY=${MEDIA_PY:-python3}; "$PY" -c "import numpy" 2>/dev/null || { [ -x "$HOME/.v
 echo "tools"
 # setup.sh puts uv, whisper, node, ffmpeg and the python3 wrapper in ~/.local/bin, and that folder on PATH (.zshenv, .zprofile)
 case ":$PATH:" in *":$HOME/.local/bin:"*) [ -d "$HOME/.local/bin" ] && pass "~/.local/bin on PATH";;
-  *) [ -d "$HOME/.local/bin" ] && fail "~/.local/bin not on this session's PATH (uv, whisper and python3 look missing)" "start a new session; if it stays, run bash $S/scripts/setup.sh"
+  # the desktop app keeps the PATH it was opened with, so its sessions miss the install until it restarts (11-09 report):
+  # not a fault. Each command adds the folder itself (SKILL.md step 0); restarting the app makes it stick
+  *) [ -d "$HOME/.local/bin" ] && echo "  note  ~/.local/bin is not on this app's PATH yet: added for these commands. Quit and reopen the Claude app once to make it stick (ปิดแล้วเปิดแอป Claude ใหม่หนึ่งครั้ง)"
      export PATH="$HOME/.local/bin:$PATH";; esac
 command -v ffmpeg >/dev/null && pass "ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')" || fail ffmpeg "bash $S/scripts/setup.sh"
 ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libvpx && pass "ffmpeg libvpx (alpha WebM memes)" || fail "ffmpeg libvpx" "bash $S/scripts/setup.sh"

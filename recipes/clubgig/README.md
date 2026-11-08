@@ -61,6 +61,7 @@ python3 $S/recipes/clubgig/islands.py $P/assets/talk.mp4 $P/build/vad.json
 **Without a Gemini key** (it's optional; `doctor.sh` says `opt GEMINI_API_KEY`), the same reel with three changes, and
 "Gemini off: the Thai text is whisper's, pictures were picked by eye" next to the preview:
 - the takes and TAKES text come from islands.json (per-island mlx-whisper); read it for wrong Thai words and fix the obvious ones;
+  spell the speaker's name as `$S/profile.json` `speaker` has it (whisper wrote one nickname 6 ways on 11-09);
 - `insert_prep.py ... --no-vision` (no people rules are set by default, so nothing fails);
 - pictures: pull them as usual, look at the contact sheet and pick by eye instead of `image_pick.py` scores.
 
@@ -68,8 +69,9 @@ python3 $S/recipes/clubgig/islands.py $P/assets/talk.mp4 $P/build/vad.json
    asides; keep the whole argument + the CTA; cut on real pauses; total speech <= the user's limit minus the 2.2 s outro.
 2. **Captions:** copy `recipes/clubgig/cut.py` to `$P/build/cut.py`, write TAKES = (a, b, verbatim Gemini text,
    "?" on questions) from THIS recording's transcript (it refuses the stored KG01 example), run `~/.venvs/mlxw/bin/python -I build/cut.py` -> build/words.th.json + build/takes.json.
-3. **Brand:** no brand named means Clubgig: copy `recipes/clubgig/brand/clubgig/` to `$P/brand/`; its `brand.json` holds the tagline,
-   LINE handle and bubble lines. Say so next to the preview. Don't stop to ask.
+3. **Brand:** `$S/profile.json` `brand` if set; else no brand named means Clubgig: copy `recipes/clubgig/brand/clubgig/` to `$P/brand/`; its `brand.json` holds the tagline,
+   LINE handle and bubble lines. Say so next to the preview. Don't stop to ask. Keep only the bubble lines that fit
+   this reel's topic (Clubgig's "ปรึกษาปัญหาความรัก" doesn't belong on an AI reel); at least one stays.
    Another brand named: ask once for its logo (white wordmark + dark lockup PNGs), tagline, LINE handle and bubble lines.
 4. **Stock:** `python3 $S/scripts/broll_fetch.py search <words> --pexels` (videos) / `photos <words> --dir $P/broll`
    (photos); no Pexels key: `search` falls back to Mixkit, photos come from `wikimedia_fetch.py`. Faceless or distant

@@ -6,7 +6,7 @@
 set -euo pipefail
 S="$(cd "$(dirname "$0")/.." && pwd)"
 V="${LOOKS_VENV:-$HOME/.venvs/tadclip-looks}"
-PY="${PYTHON311:-$(command -v python3.11 || echo /opt/homebrew/bin/python3.11)}"
+PY="${PYTHON311:-$(command -v python3.11 || uv python find 3.11 2>/dev/null || echo /opt/homebrew/bin/python3.11)}"
 [ -x "$V/bin/python" ] || "$PY" -m venv "$V"
 "$V/bin/pip" install -q --upgrade pip
 "$V/bin/pip" install -q "spectral_film_lut==0.18.12"

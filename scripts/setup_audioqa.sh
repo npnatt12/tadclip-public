@@ -11,7 +11,7 @@ C="${TADCLIP_AUDIOQA_CACHE:-$HOME/.cache/tadclip-audioqa}"
 PKGS=("clearvoice==0.1.2" "silero-vad==6.2.3" "torch==2.8.0" "torchaudio==2.8.0" "torchvision==0.23.0" "numpy==1.26.4"
       "pyloudnorm==0.2.0" "matplotlib==3.11.2" "python_speech_features==0.6" "opencv-python==4.10.0.84" "soundfile==0.12.1")
 if [ ! -x "$V/bin/python" ]; then
-  PY="${PYTHON311:-$(command -v python3.11 || echo /opt/homebrew/bin/python3.11)}"
+  PY="${PYTHON311:-$(command -v python3.11 || uv python find 3.11 2>/dev/null || echo /opt/homebrew/bin/python3.11)}"
   if command -v uv >/dev/null; then uv venv -q -p "$PY" "$V"; else "$PY" -m venv "$V"; fi
 fi
 if command -v uv >/dev/null; then VIRTUAL_ENV="$V" uv pip install -q "${PKGS[@]}" >&2

@@ -41,11 +41,12 @@ def call(**params):
     req = urllib.request.Request(API + "?" + urllib.parse.urlencode(params), headers={"User-Agent": UA})
     for attempt in range(5):
         try:
-            return json.load(urllib.request.urlopen(req, timeout=60))
+            return json.load(urllib.request.urlopen(req, timeout=20))
         except urllib.error.HTTPError as e:              # Commons answers 429 to a quick burst of searches
             if e.code not in (429, 503) or attempt == 4:
                 raise
-            time.sleep(int(e.headers.get("Retry-After") or 0) or 5 * 2 ** attempt)
+            # capped: an hour-long Retry-After once held one search for 7 min (11-09 report); 4 tries then give up
+            time.sleep(min(30, int(e.headers.get("Retry-After") or 0) or 5 * 2 ** attempt))
 
 
 def download(url, dest):
@@ -54,7 +55,7 @@ def download(url, dest):
         return os.path.getsize(dest), False
     for attempt in range(6):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=120) as r, \
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=45) as r, \
                     open(dest + ".part", "wb") as f:
                 while True:
                     b = r.read(1 << 20)
@@ -67,7 +68,7 @@ def download(url, dest):
         except urllib.error.HTTPError as e:
             if e.code not in (429, 503) or attempt == 5:
                 raise
-            time.sleep(int(e.headers.get("Retry-After") or 0) or 10 * 2 ** attempt)
+            time.sleep(min(30, int(e.headers.get("Retry-After") or 0) or 10 * 2 ** attempt))
 
 
 def plain(s):

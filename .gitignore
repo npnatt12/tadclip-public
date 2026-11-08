@@ -35,3 +35,6 @@ library/toolchain/
 
 # Style library loops and posters (scripts/style_page.py previews; rebuilt from styles/registry.json, synced with the library)
 library/style-previews/
+
+# the user's answers after the install (speaker name, brand): stays on their Mac
+profile.json

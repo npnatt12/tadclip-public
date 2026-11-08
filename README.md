@@ -15,9 +15,9 @@
 
 ## Quick start · เริ่มใช้งาน
 
-For an Apple silicon Mac with [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex) installed. No GitHub account needed. It takes about 15 minutes on a fast connection (a few GB to download). If the internet drops, paste the same line again: it picks up where it stopped.
+For an Apple silicon Mac with [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex) installed. No GitHub account needed. It takes about 30-40 minutes (a few GB to download). If the internet drops, paste the same line again: it picks up where it stopped.
 
-ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 15 นาที ถ้าเน็ตเร็ว ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง
+ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 30-40 นาที ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง
 
 **1. Paste this into Claude Code or Codex · วางข้อความนี้ใน Claude Code หรือ Codex**
 
@@ -31,7 +31,7 @@ agent จะลงทุกอย่างไว้ในโฟลเดอร�
 
 No Claude Code or Codex? Paste this into Terminal instead · ถ้าไม่มี ให้วางบรรทัดนี้ใน Terminal แทน: `curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash`
 
-**2. Start a new session and edit · เปิดเซสชันใหม่แล้วสั่งตัดต่อได้เลย**
+**2. Quit and reopen the Claude app once, start a new chat and edit · ปิดแล้วเปิดแอป Claude ใหม่หนึ่งครั้ง เปิดแชตใหม่ แล้วสั่งตัดต่อได้เลย**
 
 > ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
 
@@ -165,11 +165,11 @@ Plus seven one-word presets: `clean`, `editorial`, `meme`, `cinematic`, `launch`
 
 - [Claude Code](https://claude.com/claude-code) on a paid Claude plan, or [Codex](https://github.com/openai/codex).
 - A Mac with Apple silicon. `scripts/setup.sh` installs the rest into your home folder, without Homebrew or your Mac password: ffmpeg, Node 22, uv, Python packages, whisper and the Thai transcription venv.
-- A free [Gemini API key](https://aistudio.google.com/apikey) for the Thai transcript and the B-roll checks. Audio and frames go to Google.
+- Optional: a free [Gemini API key](https://aistudio.google.com/apikey) for a more exact Thai transcript, B-roll checks and picture scoring. Audio and frames go to Google.
 - Optional: a free [Pexels key](https://www.pexels.com/api) for more stock footage.
 - For a brand other than Clubgig: its official logo files, tagline and LINE handle. Clubgig's are in [`recipes/clubgig/brand/`](recipes/clubgig/brand/clubgig).
 
-A 90-second ClubGig reel takes about 45 minutes end to end. The 720p preview takes about 4 minutes and the final render about 10.
+A 90-second ClubGig reel takes about 30-40 minutes to the preview. The 720p preview takes about 4 minutes and the final render about 10.
 </details>
 
 <details>

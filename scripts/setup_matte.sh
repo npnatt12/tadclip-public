@@ -7,7 +7,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 V="${MATTE_VENV:-$HOME/.venvs/tadclip-matte}"
-PY="${PYTHON311:-$(command -v python3.11 || echo /opt/homebrew/bin/python3.11)}"
+PY="${PYTHON311:-$(command -v python3.11 || uv python find 3.11 2>/dev/null || echo /opt/homebrew/bin/python3.11)}"
 [ -x "$V/bin/python" ] || "$PY" -m venv "$V"
 "$V/bin/pip" install -q --upgrade pip
 "$V/bin/pip" install -q -r "$HERE/matte-requirements.txt"

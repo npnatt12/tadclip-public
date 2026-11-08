@@ -28,22 +28,12 @@ main() {
     fi
   fi
 
-  echo "Installing. About 15 minutes on a fast connection · กำลังติดตั้ง ประมาณ 15 นาที"
+  echo "Installing. About 30-40 minutes · กำลังติดตั้ง ประมาณ 30-40 นาที"
   if bash "$D/scripts/setup.sh" </dev/null; then
-    cat <<'NEXT'
-
-Done. Start a new Claude Code or Codex session and say:
-เสร็จแล้ว เปิดเซสชันใหม่ใน Claude Code หรือ Codex แล้วสั่งแบบนี้:
-
-  ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
-
-Optional: for more tailored reels, add two free keys to ~/.claude/skills/tadclip/.env (open -e opens it):
-ไม่บังคับ: ถ้าอยากให้คลิปตรงใจขึ้น ใส่คีย์ฟรี 2 ตัวในไฟล์ ~/.claude/skills/tadclip/.env
-
-  GEMINI_API_KEY  https://aistudio.google.com/apikey   more exact Thai transcript, checked B-roll · ถอดเสียงไทยแม่นขึ้น ตรวจ B-roll
-  PEXELS_API_KEY  https://www.pexels.com/api/key/      more stock footage · ฟุตเทจสต็อกเพิ่ม
-
-NEXT
+    echo
+    cat "$D/docs/WELCOME.th.txt"
+    echo
+    echo "Done. Quit and reopen the Claude app once, then start a new chat and say: ตัดต่อคลิปนี้ ~/Downloads/my-video.mov"
   else
     echo
     echo "Not finished yet (see the MISS lines above). Run the same install again: it skips what's done."

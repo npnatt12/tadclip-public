@@ -9,8 +9,8 @@ S="$(cd "$(dirname "$0")/.." && pwd)"
 IN="$1"; OUT="$2"; ATT="${3:-20}"
 V="${DF_VENV:-$S/.venv-df}"
 if [ ! -x "$V/bin/deepFilter" ]; then
-  PY=$(command -v python3.11 || echo /opt/homebrew/bin/python3.11)
-  [ -x "$PY" ] || { echo "needs python3.11 (brew install python@3.11)"; exit 1; }
+  PY=$(command -v python3.11 || uv python find 3.11 2>/dev/null || echo /opt/homebrew/bin/python3.11)
+  [ -x "$PY" ] || { echo "needs python3.11 (uv python install 3.11)"; exit 1; }
   command -v uv >/dev/null || { echo "needs uv (pip install uv)"; exit 1; }
   echo "setting up DeepFilterNet in $V (one time, ~1 GB with torch)..."
   uv venv -q -p "$PY" "$V"

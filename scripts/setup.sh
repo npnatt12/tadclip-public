@@ -54,7 +54,7 @@ xcode-select -p >/dev/null 2>&1 && python3 -c "import numpy, cv2, PIL, google.ge
 say "English transcription: whisper (~300 MB)"
 command -v whisper >/dev/null || uv tool install -p 3.11 openai-whisper
 
-say "Thai transcription in ~/.venvs/mlxw (~300 MB)"
+say "Thai transcription in ~/.venvs/mlxw (~300 MB, the longest step: up to 20 min)"
 V="$HOME/.venvs/mlxw"
 "$V/bin/python" -c "import mlx_whisper, pythainlp" 2>/dev/null || venv "$V" "$S/scripts/venvs/mlxw.txt"
 

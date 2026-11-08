@@ -269,9 +269,21 @@ def cmd_search(A):
     for slug, vid in re.findall(r'href="/free-stock-video/([a-z0-9-]+?)-(\d+)/"', html):
         if vid not in [v for v, _ in seen]:
             seen.append((vid, slug))
-    for vid, slug in seen[:A.n]:
+    # only clips with a 2160p file carry the free commercial licence: check here (one HEAD each), not after download
+    shown, skipped = 0, 0
+    for vid, slug in seen:
+        if shown >= A.n:
+            break
+        try:
+            ok = original_url("mixkit", vid) is not None
+        except Exception:  # noqa: BLE001  (network blip: show it, `get` checks again)
+            ok = True
+        if not ok:
+            skipped += 1
+            continue
         print(f"mixkit:{vid:<7} https://mixkit.co/free-stock-video/{slug}-{vid}/")
-    print(f"{len(seen)} clips on mixkit.co/free-stock-video/{tag}/ (shown {min(A.n, len(seen))}); `get` keeps only those with a 2160p file")
+        shown += 1
+    print(f"{len(seen)} clips on mixkit.co/free-stock-video/{tag}/; shown {shown} with a 2160p file (free licence), {skipped} without skipped")
 
 
 def main():

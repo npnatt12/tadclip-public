@@ -15,9 +15,22 @@ Skill dir: `~/.claude/skills/tadclip` (below: `$S`). A reel project is any
 directory (`$P`); `build.mjs` copies what it needs into `$P/assets` so the
 project renders on its own.
 
+**Talk to the user in Thai** (the 11-09 test: a Thai user got English prose). Plans, progress answers, the preview
+report and questions: Thai, short, plain words. English only when they write in English or ask for it. Code, paths and
+file names stay as they are.
+
+**Their profile (`$S/profile.json`, asked once after the install, never in git):** `speaker` (the speaker's name as they
+spell it: use it to correct the transcript), `brand` (a folder under `recipes/clubgig/brand/`, or the one they gave).
+Read it before every reel; if it's missing, use the defaults (Clubgig) and don't stop to ask.
+
 ## What the user asked for
 | They say | Do |
 |---|---|
+| "ตรวจเครื่อง", "check the machine" | `bash $S/scripts/doctor.sh`, then say in Thai what's ready and what to do about each MISS |
+| "ดูความคืบหน้า", "progress?" | during a reel: `tail -3 <project>/build/progress.log`, in Thai |
+| "มีสไตล์อะไรบ้าง", "what styles" | the styles table in `README.md` ("Styles you can ask for today"), in Thai, one line each |
+| "ปรับอะไรได้บ้าง", "what can I change" | the "ปรับได้" part of `docs/WELCOME.th.txt` |
+| a change after the preview ("สว่างขึ้น", "ซูมน้อยลง", "เพลงเบาลง", "สั้นลง") | `templates/briefs/change-one-reel.txt`; brightness/colour on the face = `look.grade` + `look.asked` with their words |
 | "ตัดต่อคลิปนี้", "edit this", no style named | **ClubGig**, the default. Don't ask which style. `recipes/clubgig/README.md` |
 | "ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator", "in @creator's style" | Clone route A: study them, overlay on ClubGig, edit. `recipes/clone/README.md` |
 | names a style below (Seoul list, Kinetic doc...) | that style, as written below |
@@ -35,7 +48,7 @@ per reel (two helpers per style each wrote their own lib). Numbers: docs/PLAYBOO
   (`templates/agents/reel-helper.md`, copied to ~/.claude/agents/; shell and file tools only): a general-purpose helper
   starts at ~85 k tokens of tool and skill lists and re-reads them on every call. Long jobs run in one blocking call,
   never a background job polled per turn.
-- **Keep the user posted while a helper runs.** Tell them up front the build takes about an hour. When they ask
+- **Keep the user posted while a helper runs.** Tell them up front the build takes about 30-40 minutes. When they ask
   "progress?", or a notification says the helper is waiting on its own work, answer from
   `tail -3 <project>/build/progress.log` (the helper writes a line per step), not from a file listing. When the helper
   reports, pass on every failed step and choice it lists, not just the preview.
@@ -81,10 +94,11 @@ finals.py deliver -> optional: -14 LUFS into the user's library of finished vide
 ```
 
 ### 0. Check the toolchain once per session
-`bash $S/scripts/doctor.sh`: tools, GEMINI_API_KEY and the media library,
-each with its fix. The Gemini key is needed for the B-roll checks (the free tier is enough), and doctor proves it with
-one test call: insert_prep.py, broll_vision.py and broll_qa.py's people / match checks ask Gemini, and with people rules
-set a shot nobody could check fails the QA. On a fresh machine run `python3 $S/scripts/library_restore.py`
+Start every shell command with `export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH";` (the installer's
+tools live there, and the desktop app keeps the PATH it was opened with until it restarts).
+`bash $S/scripts/doctor.sh`: tools, the optional GEMINI_API_KEY and the media library, each with its fix. Gemini is
+optional: without it the Thai text comes from whisper, pictures are picked by eye and B-roll isn't vision-checked; with
+people rules set, a shot nobody could check fails the QA. On a fresh machine run `python3 $S/scripts/library_restore.py`
 first (SFX, memes, music and the animated emoji aren't in git). Say what is missing; don't
 improvise around it. Lines marked `opt` are optional tools with their own `scripts/setup_<x>.sh`
 (BiRefNet matte, audio QA, film-look LUTs, caption metrics); the core works without them.

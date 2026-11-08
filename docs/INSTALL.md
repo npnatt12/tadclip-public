@@ -1,8 +1,8 @@
 # Installing TadClip · วิธีติดตั้ง TadClip
 
-About 15 minutes on a fast connection (a few GB to download). If the internet drops, run it again: it picks up where it stopped. Works in Claude Code and Codex.
+About 30-40 minutes (a few GB to download). If the internet drops, run it again: it picks up where it stopped. Works in Claude Code and Codex.
 
-ใช้เวลาประมาณ 15 นาที ถ้าเน็ตเร็ว ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง ใช้ได้ทั้ง Claude Code และ Codex
+ใช้เวลาประมาณ 30-40 นาที ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง ใช้ได้ทั้ง Claude Code และ Codex
 
 ## Before you start · ก่อนเริ่ม
 
@@ -86,9 +86,9 @@ You're ready when it ends with `0 missing`. Lines marked `opt` are optional.
 
 ## Step 5: Edit your first reel · ขั้นที่ 5: ตัดคลิปแรก
 
-Start a new session so your agent sees the skill, then say:
+Quit and reopen the Claude app once (so it sees the new tools), start a new chat, then say:
 
-เปิดเซสชันใหม่เพื่อให้ agent เห็นสกิล แล้วสั่งแบบนี้:
+ปิดแอป Claude แล้วเปิดใหม่หนึ่งครั้ง (ให้เห็นเครื่องมือที่เพิ่งลง) เปิดแชตใหม่ แล้วสั่งแบบนี้:
 
 > ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
 
@@ -113,7 +113,7 @@ For a brand other than Clubgig, you'll be asked once for its logo and LINE handl
 | `503` or `504` from Gemini | Google is busy, your key is fine. Try again later.<br>Google ยุ่งอยู่ คีย์ไม่มีปัญหา ลองใหม่ทีหลัง |
 | `429` from Gemini | The free daily limit is used up. It was 20 requests a day when we measured it, resetting at 15:00 Bangkok time ([current limits](https://ai.google.dev/gemini-api/docs/rate-limits)).<br>ใช้โควตาฟรีของวันนี้หมดแล้ว ตอนที่เราวัดได้ 20 ครั้งต่อวัน รีเซ็ตตอน 15:00 น. เวลาไทย |
 | `MISS GEMINI_API_KEY ... test call failed` | The key you pasted doesn't work. Copy it again (step 3), or delete the line: TadClip works without it.<br>คีย์ที่วางไว้ใช้ไม่ได้ คัดลอกใหม่อีกครั้ง (ขั้นที่ 3) หรือลบทิ้งก็ได้ TadClip ใช้ได้โดยไม่ต้องมีคีย์ |
-| The agent doesn't know TadClip<br>agent ไม่รู้จัก TadClip | Start a new session.<br>เปิดเซสชันใหม่ |
+| The agent doesn't know TadClip<br>agent ไม่รู้จัก TadClip | Quit and reopen the Claude app, then start a new chat.<br>ปิดแล้วเปิดแอป Claude ใหม่ แล้วเปิดแชตใหม่ |
 | Any other `MISS` line<br>บรรทัด `MISS` อื่นๆ | It prints its own fix. Run it, or paste the install line again: it's safe to repeat.<br>บรรทัดนั้นจะบอกวิธีแก้ไว้ ทำตามนั้น หรือวางบรรทัดติดตั้งอีกครั้งก็ได้ ทำซ้ำได้ไม่มีผลเสีย |
 
 **Update to the latest version · อัปเดตเวอร์ชันล่าสุด:** paste the install line again · วางบรรทัดติดตั้งเดิมอีกครั้ง
@@ -128,18 +128,18 @@ For a brand other than Clubgig, you'll be asked once for its logo and LINE handl
 
 Tell the user in plain words what you're installing and why. Never ask for keys in the chat.
 
-1. **Run the installer yourself** (don't send the user to Terminal): `bash -c "$(curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh)"`. No password, no developer tools. Run it in the background: it takes about 15 minutes on a fast connection, longer on a slow one. Don't ask for keys: TadClip works without them (step 3 below). Each step prints `== [n/7] ...`: when you check on it, tell the user that line. The last line is `TADCLIP_STATUS=ok`, or `TADCLIP_STATUS=incomplete N missing`: then fix what the MISS lines say (usually the internet dropped) and run it again, it skips what's done. It installs into ~/.claude/skills/tadclip on every agent: some scripts look for files there.
+1. **Run the installer yourself** (don't send the user to Terminal): `bash -c "$(curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh)"`. No password, no developer tools. Run it in the background: it takes about 30-40 minutes (the Thai transcription step is the longest). Don't ask for keys: TadClip works without them (step 3 below). Each step prints `== [n/7] ...`: when you check on it, tell the user that line. The last line is `TADCLIP_STATUS=ok`, or `TADCLIP_STATUS=incomplete N missing`: then fix what the MISS lines say (usually the internet dropped) and run it again, it skips what's done. It installs into ~/.claude/skills/tadclip on every agent: some scripts look for files there.
 2. **What it did:** It installs the tools (ffmpeg, Node 22, uv, Python packages, whisper, the Thai transcription venv), downloads the sounds, music and emoji, installs the `reel-helper` agent, links the skill into `~/.codex/skills` when Codex is there, and creates `.env` from `.env.example`. Everything goes in `~/.local` without Homebrew, so it never asks for the Mac password or Apple's developer tools.
-3. **Keys are optional: don't ask for them during the install.** When it's done, tell the user TadClip works now, and that two free keys make it more tailored (step 3 above): Gemini and Pexels. If they want them, run `open -e ~/.claude/skills/tadclip/.env`, walk them through step 3, and tell them audio and frames go to Google.
-4. **Finish when setup prints `TADCLIP_STATUS=ok`** (or `doctor.sh` ends with `0 missing`). On `incomplete`, fix what the MISS lines say and run setup again: it skips what's done. A Gemini 503 is Google being busy, not a bad key: say so and carry on.
-5. **People rules.** Ask whether they have rules for who or what may appear in B-roll. If they do, write them into `people-rules.json` in the format of `people-rules.example.json`. If not, leave it as it is, and never add rules they didn't ask for.
-6. **Optional extras (ask first; each is one command, and its weights go to `~/.cache`):**
+3. **Keys are optional: don't ask for them during the install.**
+4. **Finish when setup prints `TADCLIP_STATUS=ok`** (or `doctor.sh` ends with `0 missing`). On `incomplete`, fix what the MISS lines say and run setup again: it skips what's done. A `note ~/.local/bin` line is not a fault: the app needs one restart.
+5. **Close in Thai** (unless the user wrote in English): send the text of `~/.claude/skills/tadclip/docs/WELCOME.th.txt` as it is, then nothing long in English. It tells them to quit and reopen the Claude app once, how to start, the time, the optional keys and the three things to tell once.
+6. **The three things, once, all optional.** If they answer: the speaker's name and the brand go into `~/.claude/skills/tadclip/profile.json` (`{"speaker": "...", "brand": "<folder>"}`; a new brand: its logo, tagline and LINE handle into `recipes/clubgig/brand/<name>/` like the Clubgig one). Rules for B-roll go into `people-rules.json` in the format of `people-rules.example.json`; never add rules they didn't ask for. If they want the keys: `open -e ~/.claude/skills/tadclip/.env` and walk them through step 3 above, and tell them audio and frames go to Google.
+7. **Other extras only if they ask** (each one command, weights in `~/.cache`):
    - `ELEVENLABS_API_KEY` in `.env`, from https://elevenlabs.io/app/developers/api-keys: only the vector explainer's narrator.
    - `APIFY_TOKEN` exported in the shell, from https://console.apify.com/settings/integrations: only Google Images search.
    - `bash scripts/setup_looks.sh`: film-stock looks (generates the LUTs, ~1 GB venv, a minute).
    - `bash scripts/setup_matte.sh`: the clean person cut-out for words behind the speaker (~2.4 GB with the model).
    - `bash scripts/setup_audioqa.sh`: pause detection on noisy recordings and voice super-resolution (~1.9 GB).
    - `bash scripts/setup_captions.sh`: only to add a new font to the caption templates.
-7. **Tell the user it's ready.** They need a new session for the skill to show up. Their first reel is one sentence, as in step 5.
 
 **Any other agent** (untested): tell it "Follow `~/.claude/skills/tadclip/SKILL.md` to edit this recording." Every step is a plain shell command.
