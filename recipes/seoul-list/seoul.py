@@ -39,6 +39,8 @@ import re
 import shutil
 import subprocess
 import sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'scripts'))
+from x264 import THREADS as X264_THREADS  # noqa: E402  (scripts/X264_THREADS)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 R = HERE                                            # this recipe: build.mjs, prep.py
@@ -84,7 +86,7 @@ def setup(project, cut=None, tag=None, clip=None):
     # the approved cut, as shot: re-encoded only for 1 s keyframes (no filter, same colour tags), never regraded
     if not os.path.exists(face) or os.path.getmtime(face) < os.path.getmtime(plate) or not os.path.exists(face + '.held'):
         # + 1 s held last frame: only ever under the black iMessage outro page (the outro card's own video stops before it)
-        sh(["ffmpeg", "-v", "error", "-y", "-i", plate, "-an", "-vf", "tpad=stop_mode=clone:stop_duration=1.0", "-c:v", "libx264", "-preset", "medium", "-crf", "12", "-g", "30",
+        sh(["ffmpeg", "-v", "error", "-y", "-i", plate, "-an", "-vf", "tpad=stop_mode=clone:stop_duration=1.0", "-c:v", "libx264", "-threads", X264_THREADS, "-preset", "medium", "-crf", "12", "-g", "30",
             "-keyint_min", "30", "-bf", "2", "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709",
             "-color_trc", "bt709", "-color_range", "tv", "-movflags", "+faststart", face])
         open(face + ".held", "w").write("plate_alt + 1.0 s cloned last frame, 1 s keyframes, no grade")
@@ -238,7 +240,7 @@ def still_clip(name, src, line, why, box=None, dur=3.0, sat=1.1, extra=None):
     out = f"{G['P']}/clips/{name}.mp4"
     n = int(round(dur * FPS)) + 2
     if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(f"{G['P']}/{st}"):
-        sh(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-i", f"{G['P']}/{st}", "-frames:v", str(n), "-r", "30", "-c:v", "libx264", "-crf", "14",
+        sh(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-i", f"{G['P']}/{st}", "-frames:v", str(n), "-r", "30", "-c:v", "libx264", "-threads", X264_THREADS, "-crf", "14",
             "-g", "30", "-pix_fmt", "yuv420p", "-vf", "scale=1080:1920:out_range=tv,format=yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709",
             "-color_trc", "bt709", "-color_range", "tv", out])
     s = _side(f"{G['P']}/{st}")

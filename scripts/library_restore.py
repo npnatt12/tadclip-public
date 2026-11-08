@@ -52,7 +52,7 @@ def main():
                 print(f"FAIL music {mid}: no download url in the manifest")
                 bad += 1
                 continue
-            r = subprocess.run(["curl", "-sfL", "-A", "Mozilla/5.0", "-o", dst, url])
+            r = subprocess.run(["curl", "-sfL", "--retry", "5", "--retry-all-errors", "--retry-delay", "3", "-A", "Mozilla/5.0", "-o", dst, url])
             ok = r.returncode == 0 and os.path.exists(dst) and os.path.getsize(dst) > 100_000
             if not ok and os.path.exists(dst):
                 os.remove(dst)  # never leave an error page posing as an mp3

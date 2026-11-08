@@ -16,6 +16,7 @@ import argparse, json, os, subprocess, sys, tempfile, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from broll_gen import key
 from x264 import THREADS as X264_THREADS  # scripts/X264_THREADS
+import gemini_call  # noqa: E402
 
 ATTEMPTS = """This is a raw phone recording of one man reading a Russian script to the camera, with many retakes.
 The speaker reads from a prompter/phone placed near the lens. The script (numbered lines):
@@ -94,11 +95,12 @@ def generate(cl, types, contents, minlen, temperature=0.2, max_tokens=60000):
     last = None
     for attempt in range(4):
         try:
-            r = cl.models.generate_content(model="gemini-flash-latest", contents=contents,
-                                           config=types.GenerateContentConfig(temperature=temperature, max_output_tokens=max_tokens))
+            r = gemini_call.generate(cl, contents, types.GenerateContentConfig(temperature=temperature, max_output_tokens=max_tokens))
             text = r.text or ""
             if len(text) < minlen: raise RuntimeError(f"short reply ({len(text)} chars)")
             return text
+        except gemini_call.Quota as e:
+            sys.exit(str(e))
         except Exception as e:
             last = e; print("retry:", e, flush=True); time.sleep(15 * (attempt + 1))
     sys.exit(f"failed after 4 tries: {last}")

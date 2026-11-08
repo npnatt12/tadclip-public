@@ -92,7 +92,8 @@ Coach Q&A ports (2026-10-31, the ClubGig style):
 - `verdict` beat: `left`, `right`, `mid`, `pick` (`left`/`right`), `tickAt`, `y` (925): a checkbox bar across the chest to the end of
   the talk; a red tick lands in `pick` at `tickAt` (default 1 s before the end) with a ding.
 - impact `look: "qcard"`: the hook question card, 148 px Kanit 700 white with the outline, one `{...}` line on a red block
-  (`block` to change it), above the head under the chrome, shrunk uniformly only as far as the head allows; complete at frame 0.
+  (`block` to change it), on the torso under the chin, shrunk uniformly only as far as the space above y 1470 allows;
+  complete at frame 0. Pair it with a polaroid clip from 0 (no split under it). `place: "top"`: the old card above the head.
 - `chrome`: `{"left": "YOUR\nTAGLINE", "logo": "brand/<name>-wordmark-white.png", "logoW": 210}` (or
   `"right": "TEXT"`): tagline top left + the brand's OFFICIAL logo top right for the whole talk; top impacts move to y 230.
   Never redraw a logo: cut it from the brand's own material or `brand_kit.py pull`.

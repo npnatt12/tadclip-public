@@ -27,6 +27,9 @@ import sys
 import threading
 import time
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gemini_call  # noqa: E402
+
 import numpy as np
 import cv2
 
@@ -184,17 +187,17 @@ def _check(path, tin=0.0, dur=None, line=None):
         return {"error": f"frames: {e}"}
     prompt = PROMPT.format(n=len(fr), line_part=LINE_PART.format(line=line) if line else "")
     err = None
-    models = [MODEL] + [m for m in ("gemini-flash-latest",) if m != MODEL]
-    for wait in (0, 3, 8, 20):
+    models = [MODEL] + [m for m in gemini_call.MODELS if m != MODEL]
+    for wait in (0, 5):     # gemini_call already retries a busy Google and falls back to the lighter model
         time.sleep(wait)
         model = models[0]
         try:
             from google.genai import types
             safe = [types.SafetySetting(category=c, threshold="BLOCK_NONE") for c in
                     ("HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH", "HARM_CATEGORY_SEXUALLY_EXPLICIT", "HARM_CATEGORY_DANGEROUS_CONTENT")]
-            r = client().models.generate_content(model=model, contents=[types.Part.from_bytes(data=buf.tobytes(), mime_type="image/jpeg"), prompt],
-                                                 config=types.GenerateContentConfig(response_mime_type="application/json", temperature=0,
-                                                                                    safety_settings=safe))
+            r = gemini_call.generate(client(), [types.Part.from_bytes(data=buf.tobytes(), mime_type="image/jpeg"), prompt],
+                                     types.GenerateContentConfig(response_mime_type="application/json", temperature=0, safety_settings=safe),
+                                     models=models)
             if not r.text:          # blocked: try the other model once, then give the reason (no retry loop)
                 fb = getattr(r, "prompt_feedback", None)
                 fr = getattr(r.candidates[0], "finish_reason", None) if getattr(r, "candidates", None) else None
@@ -230,7 +233,7 @@ def _check(path, tin=0.0, dur=None, line=None):
             json.dump(res, open(tmp, "w"), ensure_ascii=False, indent=1)
             os.replace(tmp, cp)
             return res
-        except RuntimeError as e:          # no key: no point retrying
+        except RuntimeError as e:          # no key, or today's quota (gemini_call.Quota): no point retrying
             return {"error": str(e)}
         except Exception as e:             # noqa: BLE001  transient: retry
             err = f"{type(e).__name__}: {str(e)[:200]}"
@@ -266,12 +269,13 @@ def still_motion(path):
     except Exception as e:      # noqa: BLE001
         return {"error": f"frames: {e}"}
     err = None
-    for wait in (0, 3, 8, 20):
+    for wait in (0, 5):
         time.sleep(wait)
         try:
             from google.genai import types
-            r = client().models.generate_content(model=MODEL, contents=[types.Part.from_bytes(data=buf.tobytes(), mime_type="image/jpeg"), MOTION_PROMPT],
-                                                 config=types.GenerateContentConfig(response_mime_type="application/json", temperature=0))
+            r = gemini_call.generate(client(), [types.Part.from_bytes(data=buf.tobytes(), mime_type="image/jpeg"), MOTION_PROMPT],
+                                     types.GenerateContentConfig(response_mime_type="application/json", temperature=0),
+                                     models=[MODEL] + [m for m in gemini_call.MODELS if m != MODEL])
             j = json.loads(r.text or "")
             if isinstance(j, list) and j:
                 j = j[0]

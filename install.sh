@@ -15,34 +15,40 @@ main() {
   if [ -d "$D/.git" ] && xcode-select -p >/dev/null 2>&1; then
     git -C "$D" pull -q --ff-only
   else
-    # ponytail: files deleted upstream stay behind on an update; harmless, re-install fresh if one ever matters
-    mkdir -p "$D"
-    curl -fsSL "https://codeload.github.com/$REPO/tar.gz/refs/heads/main" | tar -xz --strip-components 1 -C "$D"
+    # skip the ~60 MB download when the code hasn't changed since the last run
+    sha=$(curl -fsSL -m 20 "https://api.github.com/repos/$REPO/commits/main" 2>/dev/null | sed -n 's/^  "sha": "\([0-9a-f]*\)".*/\1/p' | head -1)
+    if [ -n "$sha" ] && [ "$sha" = "$(cat "$D/.tadclip-commit" 2>/dev/null)" ]; then
+      echo "TadClip is already the latest version."
+    else
+      echo "Downloading TadClip (~60 MB) · กำลังดาวน์โหลด TadClip"
+      # ponytail: files deleted upstream stay behind on an update; harmless, re-install fresh if one ever matters
+      mkdir -p "$D"
+      curl -fsSL --retry 5 --retry-all-errors "https://codeload.github.com/$REPO/tar.gz/refs/heads/main" | tar -xz --strip-components 1 -C "$D"
+      [ -n "$sha" ] && echo "$sha" > "$D/.tadclip-commit"
+    fi
   fi
 
-  echo "Installing. This takes a few minutes · กำลังติดตั้ง รอสักครู่"
-  bash "$D/scripts/setup.sh" </dev/null || true    # setup ends on "1 missing" until the Gemini key is in
-
-  if ! grep -qs '^GEMINI_API_KEY=.' "$D/.env"; then
-    [ -n "${TADCLIP_NO_OPEN:-}" ] || open -e "$D/.env"
+  echo "Installing. About 15 minutes on a fast connection · กำลังติดตั้ง ประมาณ 15 นาที"
+  if bash "$D/scripts/setup.sh" </dev/null; then
     cat <<'NEXT'
 
-Almost done. Your key file just opened. Paste a free Gemini key after GEMINI_API_KEY=, then save (⌘S):
-ใกล้เสร็จแล้ว ไฟล์คีย์เปิดขึ้นมาแล้ว ขอคีย์ Gemini ฟรีจากลิงก์นี้ วางต่อจาก GEMINI_API_KEY= แล้วกด ⌘S เพื่อเซฟ
-
-  GEMINI_API_KEY  https://aistudio.google.com/apikey
-
-Optional, for more stock footage · ไม่บังคับ ถ้าอยากได้ฟุตเทจสต็อกเพิ่ม:
-  PEXELS_API_KEY  https://www.pexels.com/api/key/
-
-NEXT
-  fi
-  cat <<'NEXT'
-Then start a new Claude Code or Codex session and say:
-จากนั้นเปิดเซสชันใหม่ใน Claude Code หรือ Codex แล้วสั่งแบบนี้:
+Done. Start a new Claude Code or Codex session and say:
+เสร็จแล้ว เปิดเซสชันใหม่ใน Claude Code หรือ Codex แล้วสั่งแบบนี้:
 
   ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
 
+Optional: for more tailored reels, add two free keys to ~/.claude/skills/tadclip/.env (open -e opens it):
+ไม่บังคับ: ถ้าอยากให้คลิปตรงใจขึ้น ใส่คีย์ฟรี 2 ตัวในไฟล์ ~/.claude/skills/tadclip/.env
+
+  GEMINI_API_KEY  https://aistudio.google.com/apikey   more exact Thai transcript, checked B-roll · ถอดเสียงไทยแม่นขึ้น ตรวจ B-roll
+  PEXELS_API_KEY  https://www.pexels.com/api/key/      more stock footage · ฟุตเทจสต็อกเพิ่ม
+
 NEXT
+  else
+    echo
+    echo "Not finished yet (see the MISS lines above). Run the same install again: it skips what's done."
+    echo "ยังติดตั้งไม่ครบ ดูบรรทัด MISS ด้านบน แล้ววางคำสั่งติดตั้งเดิมอีกครั้ง ส่วนที่เสร็จแล้วจะข้ามไปเอง"
+    exit 1
+  fi
 }
 main "$@"

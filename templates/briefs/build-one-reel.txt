@@ -14,13 +14,26 @@ line; pictures: Wikimedia Commons first for anything archival ($S/scripts/wikime
 (google_images.py), stock next, AI only if nothing else fits; every search EN + RU,
 >= 1080 px short side, Google framed only (references/broll.md 3); each picture must say its line at a glance on a
 phone (named, iconic subject; never dim/flat B&W that hides it); choose every picture with
-$S/scripts/image_pick.py (brief, pull 6-10, score, pick >= 4 or flag the line) and put its scores sheet next to the preview; new components every reel (components.py); crisp, legible UI and text: no blur left on any text once it has
+$S/scripts/image_pick.py (brief, pull 6-10, score, pick >= 4 or flag the line; no Gemini key: pick by eye) and put its scores sheet next to the preview; new components every reel (components.py); crisp, legible UI and text: no blur left on any text once it has
 landed (blur only inside entrance moves), no ghost layers, small text >= 30 px; previews before finals.
 Notes for this reel: {NOTES}
 
-ClubGig (the default) has no SYSTEM.md, builder or cut folder: skip "Read exactly this" and steps a-f below. Follow
-$S/recipes/clubgig/README.md from the raw recording through its step 6, then do g and h. Every device in its table is
-required; `build.mjs` must exit 0 and `finals.py preview` must not say HELD.
+ClubGig (the default) has no SYSTEM.md, builder, cut folder or components: skip "Read exactly this" and steps a-f below.
+Follow $S/recipes/clubgig/README.md from the raw recording through its step 6, then do g and h. Every device in its
+table is required. ClubGig's checks instead of e-f: `build.mjs` exits 0, `$S/scripts/hf.sh lint` 0 errors, its approval
+sheet looked at once, and `finals.py preview` does not say HELD. In h, list the devices and their counts, not component ids.
+
+Long steps and progress (the user can't see your tool calls; the 11-08 test run had 8 failed tasks nobody reported):
+- Before each step, append one line to {P}/build/progress.log: `date +%H:%M` + "[n/9] what, how long it usually takes".
+  The session that talks to the user reads its last lines when they ask "progress?".
+- Every long step (transcript, mlx-whisper, insert_prep, picture pull, render) runs in ONE foreground Bash call with
+  timeout 600000. Never `sleep`-poll, never wait on a job in a loop. If a call does end up in the background, wait for
+  its notification, and stop it (TaskStop) if you move on without it: nothing may still be running when you report.
+- Gemini: the scripts already retry a busy Google and fall back to the lighter model. "free daily quota is used up (429)"
+  means no more Gemini today (resets 15:00 Bangkok): don't retry or wait; go on without the vision check (insert_prep
+  --no-vision), flag those shots "people unchecked", and say so in h. A free key may not cover every check of one reel.
+- No GEMINI_API_KEY at all (doctor.sh: `opt GEMINI_API_KEY`): normal, the key is optional. Follow the recipe's "Without a
+  Gemini key" lines; don't stop to ask for a key. Say "Gemini off" in h.
 
 Read exactly this, in this order (not old generators, not the builder source, not the whole SKILL.md):
   1. $S/recipes/{RECIPE}/SYSTEM.md: the invariants, slots and planning procedure (skip the changelog).
@@ -49,7 +62,8 @@ Steps:
      "{NAME} - frame 0.jpg".
   h. Report in <= 25 lines: the preview paths, its size in MB; three lines for the user (frame-1 hook, the opening line,
      length in s); the bed; the components (new ids) and the one idea no earlier reel in this style has had; face on
-     screen %, budgets; anything skipped. Then STOP: no final render, QA, delivery, tracker, skill edits or commits.
+     screen %, budgets; anything skipped; every step that failed or was retried, with the reason (one line each); any
+     choice you made that the user should know (framing, dropped lines, hand-edited data). Then STOP: no final render, QA, delivery, tracker, skill edits or commits.
 
 Keep your context small (it is re-read on every turn): grep / sed -n instead of cat; one overview image per look round;
 never re-read a file you just wrote; no exploring outside the files named here unless a step fails.

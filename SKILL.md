@@ -35,6 +35,10 @@ per reel (two helpers per style each wrote their own lib). Numbers: docs/PLAYBOO
   (`templates/agents/reel-helper.md`, copied to ~/.claude/agents/; shell and file tools only): a general-purpose helper
   starts at ~85 k tokens of tool and skill lists and re-reads them on every call. Long jobs run in one blocking call,
   never a background job polled per turn.
+- **Keep the user posted while a helper runs.** Tell them up front the build takes about an hour. When they ask
+  "progress?", or a notification says the helper is waiting on its own work, answer from
+  `tail -3 <project>/build/progress.log` (the helper writes a line per step), not from a file listing. When the helper
+  reports, pass on every failed step and choice it lists, not just the preview.
 - **No Agent tool (Codex and others):** run the same brief yourself, in this session, and keep the same stops: preview, wait
   for the user's OK, then finish. A `@handle` needs a logged-in browser; without one, ask the user to paste 3 reel links.
 - **Model per step:** Opus (the default) plans and judges: takes, hook, beats, components, `reel.py`, snapshots, the

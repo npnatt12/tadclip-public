@@ -15,9 +15,9 @@
 
 ## Quick start · เริ่มใช้งาน
 
-For an Apple silicon Mac with [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex) installed. No GitHub account needed. It takes about 15 minutes, most of it downloads.
+For an Apple silicon Mac with [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex) installed. No GitHub account needed. It takes about 15 minutes on a fast connection (a few GB to download). If the internet drops, paste the same line again: it picks up where it stopped.
 
-ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 15 นาที ส่วนใหญ่คือรอดาวน์โหลด
+ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 15 นาที ถ้าเน็ตเร็ว ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง
 
 **1. Paste this into Claude Code or Codex · วางข้อความนี้ใน Claude Code หรือ Codex**
 
@@ -29,24 +29,24 @@ It installs everything into your home folder: no Mac password, no Terminal, no H
 
 agent จะลงทุกอย่างไว้ในโฟลเดอร์ของคุณเอง ไม่ถามรหัสผ่านเครื่อง ไม่ต้องเปิด Terminal ไม่ต้องลง Homebrew ถ้าขึ้นถามว่าจะให้รันคำสั่งไหม ให้กด Yes
 
-**2. Add your free key · ใส่คีย์ฟรี**
-
-Your key file opens by itself. Paste a Gemini key right after `GEMINI_API_KEY=`, then press ⌘S to save. **Paste keys into this file, never into the chat.**
-
-ไฟล์คีย์จะเปิดขึ้นมาเอง ขอคีย์จากลิงก์ด้านล่าง วางต่อจาก `GEMINI_API_KEY=` แบบไม่เว้นวรรค แล้วกด ⌘S เพื่อเซฟ **วางคีย์ในไฟล์นี้เท่านั้น ห้ามวางในแชต**
-
-| Key · คีย์ | Get it here · ขอได้ที่ | What it does · ใช้ทำอะไร |
-|---|---|---|
-| `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Thai transcript and B-roll checks · ถอดเสียงภาษาไทยและตรวจ B-roll |
-| `PEXELS_API_KEY` (optional · ไม่บังคับ) | [pexels.com/api/key](https://www.pexels.com/api/key/) | more stock footage · ฟุตเทจสต็อกเพิ่ม |
-
 No Claude Code or Codex? Paste this into Terminal instead · ถ้าไม่มี ให้วางบรรทัดนี้ใน Terminal แทน: `curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash`
 
-**3. Start a new session and edit · เปิดเซสชันใหม่แล้วสั่งตัดต่อได้เลย**
+**2. Start a new session and edit · เปิดเซสชันใหม่แล้วสั่งตัดต่อได้เลย**
 
 > ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
 
 > ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator ให้หน่อย ~/Downloads/my-video.mov
+
+**Optional: more tailored reels · ไม่บังคับ: อยากให้คลิปตรงใจขึ้น**
+
+TadClip works without any key. To make it more tailored, add two free keys: ask your agent to "open the TadClip key file", paste each key after its `=` and press ⌘S. **Paste keys into this file, never into the chat.**
+
+TadClip ใช้ได้เลยโดยไม่ต้องมีคีย์ ถ้าอยากให้คลิปตรงใจขึ้น ใส่คีย์ฟรี 2 ตัว: บอก agent ว่า "เปิดไฟล์คีย์ TadClip" วางคีย์ต่อจากเครื่องหมาย `=` แล้วกด ⌘S **วางคีย์ในไฟล์นี้เท่านั้น ห้ามวางในแชต**
+
+| Key · คีย์ | Get it here · ขอได้ที่ | What it adds · ได้อะไรเพิ่ม |
+|---|---|---|
+| `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | a more exact Thai transcript, B-roll checked against its line, pictures scored for you · ถอดเสียงไทยแม่นขึ้น ตรวจ B-roll ให้ตรงกับประโยค เลือกรูปให้ |
+| `PEXELS_API_KEY` | [pexels.com/api/key](https://www.pexels.com/api/key/) | more stock footage · ฟุตเทจสต็อกเพิ่ม |
 
 Step-by-step guide and fixes · คู่มือทีละขั้นตอนและวิธีแก้ปัญหา: [docs/INSTALL.md](docs/INSTALL.md)
 

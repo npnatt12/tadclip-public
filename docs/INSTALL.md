@@ -1,8 +1,8 @@
 # Installing TadClip · วิธีติดตั้ง TadClip
 
-About 15 minutes, most of it downloads. Works in Claude Code and Codex.
+About 15 minutes on a fast connection (a few GB to download). If the internet drops, run it again: it picks up where it stopped. Works in Claude Code and Codex.
 
-ใช้เวลาประมาณ 15 นาที ส่วนใหญ่คือรอดาวน์โหลด ใช้ได้ทั้ง Claude Code และ Codex
+ใช้เวลาประมาณ 15 นาที ถ้าเน็ตเร็ว ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง ใช้ได้ทั้ง Claude Code และ Codex
 
 ## Before you start · ก่อนเริ่ม
 
@@ -33,11 +33,11 @@ No Claude Code or Codex? Open Terminal (⌘Space, type Terminal, Enter) and past
 curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
 ```
 
-## Step 2: Open the key file · ขั้นที่ 2: เปิดไฟล์คีย์
+## Step 2 (optional): Open the key file · ขั้นที่ 2 (ไม่บังคับ): เปิดไฟล์คีย์
 
-The installer does this for you. To open it again, ask your agent to "open the TadClip key file", or paste this into Terminal:
+TadClip works without any key: skip to step 4. Two free keys make the reels more tailored. To add them, ask your agent to "open the TadClip key file", or paste this into Terminal:
 
-ตัวติดตั้งจะเปิดให้เอง ถ้าอยากเปิดอีกครั้ง บอก agent ว่า "เปิดไฟล์คีย์ TadClip" หรือวางบรรทัดนี้ใน Terminal:
+TadClip ใช้ได้เลยโดยไม่ต้องมีคีย์ ข้ามไปขั้นที่ 4 ได้ ถ้าอยากให้คลิปตรงใจขึ้น ใส่คีย์ฟรี 2 ตัว: บอก agent ว่า "เปิดไฟล์คีย์ TadClip" หรือวางบรรทัดนี้ใน Terminal:
 
 ```bash
 open -e ~/.claude/skills/tadclip/.env
@@ -47,27 +47,27 @@ Keep the file open for step 3. **Paste keys into this file, never into the chat.
 
 เปิดไฟล์ค้างไว้สำหรับขั้นที่ 3 **วางคีย์ในไฟล์นี้เท่านั้น ห้ามวางในแชต** ไฟล์นี้อยู่ในเครื่องของคุณ ไม่ถูกส่งขึ้นไปไหน
 
-## Step 3: Get your free key · ขั้นที่ 3: ขอคีย์ฟรี
+## Step 3 (optional): Get the free keys · ขั้นที่ 3 (ไม่บังคับ): ขอคีย์ฟรี
 
-**Gemini** (Thai transcript and B-roll checks · ถอดเสียงภาษาไทยและตรวจ B-roll)
+**Gemini** (a more exact Thai transcript, B-roll checked against its line, pictures scored for you · ถอดเสียงไทยแม่นขึ้น ตรวจ B-roll ให้ตรงกับประโยค เลือกรูปให้)
 
 1. Open **https://aistudio.google.com/apikey** and sign in with Google.<br>เปิดลิงก์แล้วล็อกอินด้วยบัญชี Google
 2. Click **Create API key**, then copy it.<br>กด **Create API key** แล้วคัดลอกคีย์
 3. Paste it right after `GEMINI_API_KEY=`, with no spaces or quotes.<br>วางต่อจาก `GEMINI_API_KEY=` ไม่ต้องเว้นวรรค ไม่ต้องใส่เครื่องหมายคำพูด
 
-**Pexels** (optional: more stock footage. Without it TadClip uses Mixkit and Wikimedia · ไม่บังคับ: ได้ฟุตเทจสต็อกเพิ่ม ถ้าไม่ใส่ TadClip จะใช้ Mixkit และ Wikimedia แทน)
+**Pexels** (more stock footage. Without it TadClip uses Mixkit and Wikimedia · ได้ฟุตเทจสต็อกเพิ่ม ถ้าไม่ใส่ TadClip จะใช้ Mixkit และ Wikimedia แทน)
 
 1. Open **https://www.pexels.com/api/key/** and log in, or create a free account.<br>เปิดลิงก์แล้วล็อกอิน หรือสมัครบัญชีฟรี
 2. If it asks about your project, fill in the short form.<br>ถ้าถามเรื่องโปรเจกต์ ก็กรอกสั้นๆ ได้เลย
 3. Copy your key and paste it right after `PEXELS_API_KEY=`.<br>คัดลอกคีย์ แล้ววางต่อจาก `PEXELS_API_KEY=`
 
-Save the file (⌘S) and close it. It should look like this, with your own key:
+Save the file (⌘S) and close it. It should look like this, with your own keys:
 
 กด ⌘S เพื่อเซฟแล้วปิดไฟล์ หน้าตาจะเป็นแบบนี้ แต่เป็นคีย์ของคุณเอง:
 
 ```text
 GEMINI_API_KEY=your-gemini-key
-PEXELS_API_KEY=
+PEXELS_API_KEY=your-pexels-key
 ```
 
 ## Step 4: Check it · ขั้นที่ 4: เช็กความพร้อม
@@ -112,7 +112,7 @@ For a brand other than Clubgig, you'll be asked once for its logo and LINE handl
 |---|---|
 | `503` or `504` from Gemini | Google is busy, your key is fine. Try again later.<br>Google ยุ่งอยู่ คีย์ไม่มีปัญหา ลองใหม่ทีหลัง |
 | `429` from Gemini | The free daily limit is used up. It was 20 requests a day when we measured it, resetting at 15:00 Bangkok time ([current limits](https://ai.google.dev/gemini-api/docs/rate-limits)).<br>ใช้โควตาฟรีของวันนี้หมดแล้ว ตอนที่เราวัดได้ 20 ครั้งต่อวัน รีเซ็ตตอน 15:00 น. เวลาไทย |
-| `MISS GEMINI_API_KEY` | The key isn't in the file, or the file wasn't saved. Repeat steps 2 and 3.<br>ยังไม่มีคีย์ในไฟล์ หรือยังไม่ได้เซฟ ทำขั้นที่ 2 และ 3 อีกครั้ง |
+| `MISS GEMINI_API_KEY ... test call failed` | The key you pasted doesn't work. Copy it again (step 3), or delete the line: TadClip works without it.<br>คีย์ที่วางไว้ใช้ไม่ได้ คัดลอกใหม่อีกครั้ง (ขั้นที่ 3) หรือลบทิ้งก็ได้ TadClip ใช้ได้โดยไม่ต้องมีคีย์ |
 | The agent doesn't know TadClip<br>agent ไม่รู้จัก TadClip | Start a new session.<br>เปิดเซสชันใหม่ |
 | Any other `MISS` line<br>บรรทัด `MISS` อื่นๆ | It prints its own fix. Run it, or paste the install line again: it's safe to repeat.<br>บรรทัดนั้นจะบอกวิธีแก้ไว้ ทำตามนั้น หรือวางบรรทัดติดตั้งอีกครั้งก็ได้ ทำซ้ำได้ไม่มีผลเสีย |
 
@@ -128,10 +128,10 @@ For a brand other than Clubgig, you'll be asked once for its logo and LINE handl
 
 Tell the user in plain words what you're installing and why. Never ask for keys in the chat.
 
-1. **Run the installer yourself** (don't send the user to Terminal): `TADCLIP_NO_OPEN=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh)"`. It needs no password and no developer tools. It takes about 15 minutes, so give it a long timeout or run it in the background; if it gets cut off, run it again, it picks up where it stopped. It installs into ~/.claude/skills/tadclip on every agent: some scripts look for files there.
+1. **Run the installer yourself** (don't send the user to Terminal): `bash -c "$(curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh)"`. No password, no developer tools. Run it in the background: it takes about 15 minutes on a fast connection, longer on a slow one. Don't ask for keys: TadClip works without them (step 3 below). Each step prints `== [n/7] ...`: when you check on it, tell the user that line. The last line is `TADCLIP_STATUS=ok`, or `TADCLIP_STATUS=incomplete N missing`: then fix what the MISS lines say (usually the internet dropped) and run it again, it skips what's done. It installs into ~/.claude/skills/tadclip on every agent: some scripts look for files there.
 2. **What it did:** It installs the tools (ffmpeg, Node 22, uv, Python packages, whisper, the Thai transcription venv), downloads the sounds, music and emoji, installs the `reel-helper` agent, links the skill into `~/.codex/skills` when Codex is there, and creates `.env` from `.env.example`. Everything goes in `~/.local` without Homebrew, so it never asks for the Mac password or Apple's developer tools.
-3. **Keys.** Run `open -e ~/.claude/skills/tadclip/.env` and walk the user through step 3 above. Tell them audio and frames go to Google. Wait until they say they've saved it.
-4. **Run `doctor.sh`** until it ends with `0 missing`. A Gemini 503 is Google being busy, not a bad key: say so and carry on.
+3. **Keys are optional: don't ask for them during the install.** When it's done, tell the user TadClip works now, and that two free keys make it more tailored (step 3 above): Gemini and Pexels. If they want them, run `open -e ~/.claude/skills/tadclip/.env`, walk them through step 3, and tell them audio and frames go to Google.
+4. **Finish when setup prints `TADCLIP_STATUS=ok`** (or `doctor.sh` ends with `0 missing`). On `incomplete`, fix what the MISS lines say and run setup again: it skips what's done. A Gemini 503 is Google being busy, not a bad key: say so and carry on.
 5. **People rules.** Ask whether they have rules for who or what may appear in B-roll. If they do, write them into `people-rules.json` in the format of `people-rules.example.json`. If not, leave it as it is, and never add rules they didn't ask for.
 6. **Optional extras (ask first; each is one command, and its weights go to `~/.cache`):**
    - `ELEVENLABS_API_KEY` in `.env`, from https://elevenlabs.io/app/developers/api-keys: only the vector explainer's narrator.

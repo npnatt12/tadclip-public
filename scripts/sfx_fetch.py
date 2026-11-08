@@ -37,6 +37,8 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
+import urllib.error
 import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -115,10 +117,19 @@ def sh(cmd, **kw):
     return subprocess.run(cmd, check=True, capture_output=True, text=True, **kw)
 
 
-def fetch(url):
+def fetch(url, tries=4):
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return r.read()
+    for i in range(tries):  # a blip in the connection shouldn't fail the whole kit
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code < 500 or i == tries - 1:
+                raise
+        except OSError:
+            if i == tries - 1:
+                raise
+        time.sleep(3 * 2 ** i)
 
 
 _mixkit_cache = {}

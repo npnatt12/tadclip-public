@@ -32,6 +32,7 @@ import argparse, glob, hashlib, json, os, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import image_sources as I  # noqa: E402
+import gemini_call  # noqa: E402
 from broll_fetch import load, save  # noqa: E402
 
 MODEL = os.environ.get("IMAGE_PICK_MODEL", "gemini-flash-latest")
@@ -52,13 +53,14 @@ def client():
 
 def ask_json(parts, schema):
     from google.genai import types
-    for attempt in range(3):
+    for attempt in range(2):                                  # gemini_call retries a busy Google and falls back to the lighter model
         try:
-            r = client().models.generate_content(model=MODEL, contents=parts, config=types.GenerateContentConfig(
-                temperature=0, response_mime_type="application/json", response_schema=schema))
+            r = gemini_call.generate(client(), parts, types.GenerateContentConfig(
+                temperature=0, response_mime_type="application/json", response_schema=schema),
+                models=[MODEL] + [m for m in gemini_call.MODELS if m != MODEL])
             return json.loads(r.text)
-        except Exception as e:                                # retried; a failure leaves the row unscored, never passed
-            if attempt == 2:
+        except Exception as e:                                # a failure leaves the row unscored, never passed
+            if attempt == 1 or isinstance(e, gemini_call.Quota):
                 raise
             print(f"  (retry: {str(e)[:80]})")
 

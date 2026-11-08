@@ -10,6 +10,10 @@ fail() { echo "  MISS  $1  ->  $2"; bad=$((bad+1)); }
 PY=${MEDIA_PY:-python3}; "$PY" -c "import numpy" 2>/dev/null || { [ -x "$HOME/.venvs/media/bin/python" ] && PY="$HOME/.venvs/media/bin/python"; }
 
 echo "tools"
+# setup.sh puts uv, whisper, node, ffmpeg and the python3 wrapper in ~/.local/bin, and that folder on PATH (.zshenv, .zprofile)
+case ":$PATH:" in *":$HOME/.local/bin:"*) [ -d "$HOME/.local/bin" ] && pass "~/.local/bin on PATH";;
+  *) [ -d "$HOME/.local/bin" ] && fail "~/.local/bin not on this session's PATH (uv, whisper and python3 look missing)" "start a new session; if it stays, run bash $S/scripts/setup.sh"
+     export PATH="$HOME/.local/bin:$PATH";; esac
 command -v ffmpeg >/dev/null && pass "ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')" || fail ffmpeg "bash $S/scripts/setup.sh"
 ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libvpx && pass "ffmpeg libvpx (alpha WebM memes)" || fail "ffmpeg libvpx" "bash $S/scripts/setup.sh"
 ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libass && pass "ffmpeg libass" || fail "ffmpeg libass" "bash $S/scripts/setup.sh"
@@ -63,8 +67,9 @@ PYEOF
   case "$r" in [Oo]k*) pass "GEMINI_API_KEY works (one test call)";;
     *503*|*UNAVAILABLE*|*504*|*DEADLINE_EXCEEDED*) pass "GEMINI_API_KEY set; Google is busy, so the key is untested: run this again later";;
     *429*|*RESOURCE_EXHAUSTED*) pass "GEMINI_API_KEY works, but today's free quota is used up (429): Gemini steps wait for the reset";;
+    *ConnectError*|*nodename*|*"Errno 8"*|*Timeout*|*"timed out"*|*"Network is unreachable"*) fail "GEMINI_API_KEY set, but Google can't be reached (no internet?), so the key is untested" "check the internet connection, then run this again";;
     *) r=${r##*$'\n'}; fail "GEMINI_API_KEY is set but the test call failed: ${r:0:140}" "check the key at aistudio.google.com/apikey (env or $S/.env)";; esac
-else fail "GEMINI_API_KEY (insert_prep.py, broll_vision.py, broll_qa.py people/match: unchecked shots fail)" "paste a free key from aistudio.google.com/apikey into $S/.env (docs/INSTALL.md, step 3)"; fi
+else echo "  opt   GEMINI_API_KEY not set: reels work without it (Thai text from whisper, pictures picked by eye, no B-roll vision check). More tailored with a free key -> $S/.env (docs/INSTALL.md, step 3)"; fi
 
 if [ -n "$PEXELS_API_KEY" ] || grep -qs '^PEXELS_API_KEY=.' "$S/.env" "$S/.env.local"; then pass "PEXELS_API_KEY (ClubGig stock)"; else echo "  opt   PEXELS_API_KEY not set: stock search falls back to Mixkit, photos to Wikimedia. More choice with a free key -> $S/.env (docs/INSTALL.md, step 3)"; fi
 if [ -n "$ELEVENLABS_API_KEY" ] || grep -qs '^ELEVENLABS_API_KEY=.' "$S/.env"; then pass "ELEVENLABS_API_KEY (narrated explainers)"; else echo "  opt   ELEVENLABS_API_KEY not set: only scripts/tts_elevenlabs.py (explainer voiceover) needs it -> $S/.env"; fi

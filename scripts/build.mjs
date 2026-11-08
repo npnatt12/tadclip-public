@@ -519,6 +519,12 @@ if (!face) warn.push(`no ${path.relative(proj, facePath)}: captions sit at a fix
 // zoom.faceAt [x, y] (0-1): the origin that lands the median face centre there at zoom.base (an explicit reel.json origin wins;
 // clamped to the frame, so a scale > 1 never shows an edge)
 const fmed = (i) => { const v = (face?.samples || []).map((x) => x[i]).filter((x) => x != null).sort((p, q) => p - q); return v[v.length >> 1]; };
+// zoom.faceH (0-1): the most face height on screen. A close-up recording gets less of the preset's zoom (the 11-08 test
+// clip wanted 1.1, not 1.3); a reel.json zoom.base wins. KG01-03 (face ~0.20 of the frame) keep the full 1.3.
+if (zoom.faceH && rawSpec.zoom?.base === undefined && fmed(1) != null && face?.h) {
+  const fit = Math.max(1, Math.min(zoom.base ?? 1, zoom.faceH / ((fmed(2) - fmed(1)) / face.h)));
+  if (fit < (zoom.base ?? 1) - 0.005) { console.log(`zoom: close-up recording, ${fit.toFixed(2)}x instead of ${zoom.base}x (zoom.faceH ${zoom.faceH})`); zoom.base = +fit.toFixed(2); }
+}
 if (zoom.faceAt && !rawSpec.zoom?.origin && fmed(1) != null && (zoom.base ?? 1) > 1) {
   const s = zoom.base, c = [(fmed(3) + fmed(4)) / 2 / face.w, (fmed(1) + fmed(2)) / 2 / face.h];
   zoom.origin = c.map((v, i) => `${(Math.min(1, Math.max(0, (zoom.faceAt[i] - s * v) / (1 - s))) * 100).toFixed(1)}%`).join(" ");
@@ -613,7 +619,7 @@ const IMPACT_LOOKS = {
   stack: { fonts: {} }, // big italic rows popping in one at a time on the torso (creator format)
   pill: { fonts: {} }, // one line on a white pill under the chrome (creator format)
   headline: { fonts: {} }, // upright centred rows on the split seam or the chest, one row in impact.color (creator format)
-  qcard: { fonts: {} }, // Coach Q&A question card: 148 px white lines with the outline, a {...} line on a red block, above the head
+  qcard: { fonts: {} }, // the hook card: up to 148 px white lines with the outline, a {...} line on a red block, on the torso (place "top": under the chrome)
   paper: { fonts: { quote: "Charm", joke: "Charm", celebration: "Charm", topic: "Kanit", note: "Kanit", question: "Kanit", contrast: "Kanit" } },
 };
 const THAI_METRICS_L = () => THAI_METRICS;
@@ -835,7 +841,8 @@ for (const b of beatsList) {
       const media = vid ? `<video id="${id}-v" src="${src}" data-start="${t0}" data-duration="${dur}" data-media-start="${b.in ?? 0}" muted playsinline></video>` : `<img src="${src}"/>`;
       if (vid) b._timedInside = true;
       inner = `<div id="${id}-in" class="ov polaroid" style="left:${x}px;top:${y}px;width:${w + 36}px"><div class="pic" style="height:${ph}px">${media}</div>${b.caption ? `<div class="cap" style="font-family:'${b.font ?? "Charm"}', cursive;font-size:${b.capSize ?? 46}px">${esc(b.caption)}</div>` : `<div style="height:30px"></div>`}</div>`;
-      tl.push(`ft("#${id}-in", { autoAlpha: 0, y: 260, rotation: ${tilt + 16} }, { autoAlpha: 1, y: 0, rotation: ${tilt}, duration: 0.45, ease: "back.out(1.3)" }, ${t0});`);
+      if (t0 > 0.05) tl.push(`ft("#${id}-in", { autoAlpha: 0, y: 260, rotation: ${tilt + 16} }, { autoAlpha: 1, y: 0, rotation: ${tilt}, duration: 0.45, ease: "back.out(1.3)" }, ${t0});`); // the hook's: complete at frame 0
+      else tl.push(`tl.set("#${id}-in", { rotation: ${tilt} }, 0);`);
       if (vid) tl.push(`ft("#${id}-v", { scale: 1 }, { scale: 1.08, duration: ${dur}, ease: "none" }, ${t0});`);
       beatSfx(b, t0, "paper-flip", "polaroid in");
       break;
@@ -921,16 +928,21 @@ for (const b of beatsList) {
         break;
       }
       if (look === "qcard") {
-        // one line per "|"; "{...}" sits on the block. Above the head, under the chrome, shrunk uniformly only as far as needed
+        // one line per "|"; "{...}" sits on the block. On the torso, under the chin like every popup (the user, 2026-11-08:
+        // never above the head), shrunk uniformly only as far as needed. The hook's stock is a polaroid clip, not a split:
+        // a split slides the speaker 560 px down and leaves no torso. place: "top" puts it under the chrome (old KG02/03 look).
         const fam = b.font ?? TFONT, rows = b.text.split("|").map((l) => { const m = /^\{(.*)\}$/.exec(l.trim()); return { text: m ? m[1] : l.trim(), blk: !!m }; });
         let qs = b.size ?? 148;
         const widest = Math.max(...rows.map((r) => thaiW(r.text, qs, fam) + (r.blk ? 44 : 0)));
         if (widest > 1000) qs = Math.floor(qs * 1000 / widest);
-        const sp = faceSpan(t0, t1), top = CHROME_TOP;
+        const sp = faceSpan(t0, t1), onTop = b.place === "top";
+        const top = onTop ? CHROME_TOP : Math.max(sp.seen ? Math.round(sp.bottom + 30) : 1040, spec.impact?.top ?? 0);
         let qh = rows.length * qs * 1.2;
-        const room = sp.seen ? sp.top - 24 - top : 1e9;
+        const room = onTop ? (sp.seen ? sp.top - 24 - top : 1e9) : 1470 - top; // 1470: the Instagram caption UI starts there
         if (qh > room) { qs = Math.floor(qs * room / qh); qh = rows.length * qs * 1.2; }
-        if (qs < 64) warn.push(`qcard at ${b.at}: only ${qs} px fit above the head: use fewer or shorter lines`);
+        if (qs < 64) warn.push(`qcard at ${b.at}: only ${qs} px fit ${onTop ? "above the head" : "on the torso"}: use fewer or shorter lines`);
+        if (!onTop && beatsList.some((o) => o.type === "broll" && o.mode === "split" && E(o.at) < t1 && (o.to === undefined ? E(o.at) + 2.5 : E(o.to)) > t0))
+          warn.push(`qcard at ${b.at}: a split-screen broll under the torso card slides the speaker away: open on a polaroid clip instead`);
         inner = `<div id="${id}-in" class="ov stack" style="left:0;width:${W}px;top:${top}px;z-index:4;font-family:'${fam}', Kanit, sans-serif">${rows.map((r, i) => r.blk
           ? `<div id="${id}-r${i}" class="row"><span class="blk" style="font-size:${qs}px;line-height:1.2;padding:0 22px"><i id="${id}-k${i}" class="blkbg" style="background:${b.block ?? "#C53E2B"}"></i><b>${esc(r.text)}</b></span></div>`
           : `<div id="${id}-r${i}" class="row"><span class="wt" style="font-size:${qs}px;line-height:1.2">${esc(r.text)}</span></div>`).join("")}</div>`;

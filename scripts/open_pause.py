@@ -28,6 +28,8 @@ import json
 import os
 import subprocess
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from x264 import THREADS as X264_THREADS  # noqa: E402  (scripts/X264_THREADS)
 
 import cv2
 import numpy as np
@@ -160,7 +162,7 @@ def main():
             vf = vf.replace(f"fps={FPS},", f"fps={FPS},trim=end_frame=1,tpad=stop_mode=clone:stop={round(p['dur'] * FPS)},")
         out = os.path.join(tmp, f"ins{i}.mp4")
         run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['raw']:.4f}", "-i", raw, "-frames:v", str(round(p["dur"] * FPS)), "-vf", vf, "-an",
-             "-c:v", "libx264", "-crf", "12", "-preset", "medium", "-g", "30", out])
+             "-c:v", "libx264", "-threads", X264_THREADS, "-crf", "12", "-preset", "medium", "-g", "30", out])
         ins.append(out)
         cmp_ = os.path.join(P, "build", f"{a.tag}-{i}-seam.jpg")       # look at it: the plate's last frame | the insert's first
         a_ = frame(plate, p["frame"] - 1, 540, 960)
@@ -179,7 +181,7 @@ def main():
     base, ext = os.path.splitext(os.path.join(P, a.plate))
     out_plate = f"{base}.{a.tag}.mp4"
     run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", ";".join(fc) + ";" + "".join(labels) + f"concat=n={len(labels)}:v=1:a=0[o]",
-         "-map", "[o]", "-r", str(FPS), "-c:v", "libx264", "-preset", "medium", "-crf", "14", "-pix_fmt", "yuv420p", "-g", "30",
+         "-map", "[o]", "-r", str(FPS), "-c:v", "libx264", "-threads", X264_THREADS, "-preset", "medium", "-crf", "14", "-pix_fmt", "yuv420p", "-g", "30",
          "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", out_plate])
 
     # sound: voice segments + raw room tone at the voice's level
