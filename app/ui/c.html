@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TadClip</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="base.css">
+<script>if (localStorage.theme) document.documentElement.dataset.theme = localStorage.theme;   /* before the first paint: no flash */</script>
+<style>
+  /* Model C: a LINE-style chat. TadClip talks in bubbles; the user only taps the quick-reply buttons at the bottom
+     (LINE's own habit), never types unless they want to. */
+  body { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; background: var(--accent-soft); }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 12px 22px; background: var(--card); border-bottom: 1px solid var(--line); }
+  .who { display: flex; align-items: center; gap: 12px; } .who b { font: 600 1.15rem "Kanit"; display: block; line-height: 1.2; } .who small { color: var(--muted); }
+  .av { width: 48px; height: 48px; border-radius: 50%; background: var(--plate); display: grid; place-items: center; flex: none; overflow: hidden; }
+  .av img { width: 40px; }
+  #log { position: relative; overflow-y: auto; padding: 22px 18px 10px; display: flex; flex-direction: column; gap: 14px; max-width: 760px; width: 100%; margin: 0 auto; }
+  .m { display: flex; gap: 10px; align-items: flex-end; max-width: 88%; min-width: 0; } .m > .b { min-width: 0; }   /* a wide carousel scrolls inside its bubble */
+  .m.me { align-self: flex-end; flex-direction: row-reverse; }
+  .m .av { width: 40px; height: 40px; } .m .av img { width: 32px; }
+  .b { background: var(--card); color: var(--ink); padding: 12px 18px; border-radius: 22px 22px 22px 6px; box-shadow: var(--shadow); font-size: 1.1rem; }
+  .me .b { background: var(--accent); color: #fff; border-radius: 22px 22px 6px 22px; }
+  .b .wait { padding: 4px 6px; } .b .ring { width: 120px; } .b .ring span { font-size: 1.5rem; } .b h2 { font-size: 1.2rem; }
+  .b video.phone { width: min(260px, 64vw); } .b .err, .b .pv { padding: 6px; }
+  .b .err .btn, .b .pv .btn, .b .chips, .b .pv .muted, .b form.other, .b .wait .btn { display: none; }   /* actions live in the quick replies */
+  .b .pv { flex-direction: column; align-items: flex-start; gap: 10px; } .b video.phone { height: auto; width: min(240px, 60vw); }
+  .thumb { width: 120px; aspect-ratio: 9/16; border-radius: 14px; object-fit: cover; display: block; background: #000; }
+  .cards { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 10px; max-width: 100%; scroll-snap-type: x mandatory; }
+  .sc { display: flex; flex-direction: column; justify-content: flex-start; flex: none; width: 168px; scroll-snap-align: start; background: var(--card); border: 3px solid var(--line); border-radius: 18px; overflow: hidden; cursor: pointer; padding: 0; text-align: start; color: inherit; font: inherit; }
+  .sc[aria-pressed="true"] { border-color: var(--accent); } .sc img, .sc video { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #000; }
+  .sc div { padding: 8px 12px 12px; } .sc b { font: 600 1rem "Kanit"; display: block; } .sc small { color: var(--muted); font-size: .8rem; line-height: 1.4; display: block; }
+  footer { background: var(--card); border-top: 1px solid var(--line); padding: 12px 14px 16px; }
+  .qr { display: flex; gap: 10px; overflow-x: auto; justify-content: center; flex-wrap: wrap; max-width: 900px; margin: 0 auto; }
+  .qr .btn { min-height: 56px; font-size: 1.05rem; padding: .3em 1.2em; }
+  .qr .chip { border-color: var(--accent); color: var(--accent-text); }
+  footer form.other { max-width: 760px; margin: 12px auto 0; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="who"><div class="av"><img src="clubgig-wordmark-white.png" alt=""></div><div><b>TadClip</b><small id="sub"></small></div></div>
+  <div class="tools"><button class="langbtn" data-act="theme" aria-label="โหมดมืด"></button><button class="langbtn" data-act="speak" aria-label="ฟัง"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button><button class="langbtn" data-lang></button></div>
+</header>
+<div id="log" role="log" aria-live="polite" tabindex="0" aria-label="TadClip"></div>
+<footer><div class="qr" id="qr"></div><form class="other" hidden><label class="sr" for="otherText"></label><input id="otherText" name="t" autocomplete="off"><button class="btn primary small" id="sendBtn"></button></form></footer>
+<input type="file" id="pick" accept="video/*,audio/*,.mov,.mp4,.m4a,.mp3,.wav" multiple hidden>
+<script type="module">
+import { t, lang, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, icon, esc, STYLES, styleName, styleAsk, tile, dropzone, CHIP_ICONS } from "./app.js";
+const log = document.getElementById("log"), qr = document.getElementById("qr");
+let chosen = [], style = "clubgig", picking = false, uploading = "";
+const AV = `<div class="av"><img src="clubgig-wordmark-white.png" alt=""></div>`;
+const bot = (html) => `<div class="m">${AV}<div class="b">${html}</div></div>`;
+const me = (html) => `<div class="m me"><div class="b">${html}</div></div>`;
+const sname = () => styleName(STYLES.find((x) => x.id === style));
+const thumb = (n) => /\.(mov|mp4|m4v)$/i.test(n) ? `<video class="thumb" src="/media/${encodeURIComponent(n)}#t=1" preload="metadata" muted></video>` : `${icon("music")} ${esc(n)}`;
+const btn = (act, ic, label, primary) => `<button class="${primary ? "btn primary" : "chip"}" data-act="${act}">${icon(ic)}<span>${label}</span></button>`;
+
+function render(s) {
+  const w = t(), sc = screen(s), j = s.job;
+  document.querySelector("[data-lang]").textContent = w.lang; document.querySelector("[data-act=speak]").setAttribute("aria-label", w.listen);
+  document.getElementById("sub").textContent = sc === "running" ? w.working : w.tagline;
+  document.querySelector("label[for=otherText]").textContent = w.otherHint;
+  document.getElementById("otherText").placeholder = w.otherHint;
+  document.getElementById("sendBtn").textContent = w.send;
+  let h = bot(esc(w.hello)), q = "";
+  const files = j ? j.files : chosen;
+  if (files.length) h += me(files.map(thumb).join(" "));
+  if (sc === "home") {
+    if (!s.net) h += bot(`${w.err.no_net[0]}<br>${w.err.no_net[1]}`);
+    if (uploading) h += bot(`${w.uploading}: ${esc(uploading)}…`);
+    if (!chosen.length) {
+      const fresh = s.files.filter((f) => f.kind === "video").slice(0, 3);   // cut before or not: re-cutting is normal
+      q = btn("browse", "film", w.browse, true) + fresh.map((f) => `<button class="chip" data-file="${esc(f.name)}">${icon("play")}<span>${esc(f.name)}</span></button>`).join("") + btn("folder", "folder", w.openFolder);
+    } else if (picking) {
+      h += bot(`${w.step2}<div class="cards">${STYLES.map((x) => `<button class="sc" data-style="${esc(x.id)}" aria-pressed="${x.id === style}">${tile(x)}<div><b>${styleName(x)}</b>${x.id === "clubgig" ? `<small>${lang === "th" ? x.th : x.en}</small>` : ""}</div></button>`).join("")}</div><small>${w.moreStylesHint}</small>`);
+      q = btn("unpick", "home", w.back);
+    } else {
+      h += bot(esc(w.willCut(sname())));
+      q = (s.net ? btn("go", "scissors", w.start, true) : "") + btn("pickstyle", "pen", w.changeStyle) + btn("reset", "home", w.back);
+    }
+  } else {
+    const said = j.said || [];
+    if (j.style && j.style !== "clubgig") h += me(esc(w.chosen(j.style.split(" (")[0])));
+    if (said.length) h += me(esc(w.start));
+    for (const x of said.slice(1, -1)) h += bot(icon("check") + " ") + me(esc(x));   // earlier rounds, kept short
+    if (said.length > 1) h += bot(esc(w.previewMsg)) + me(esc(said.at(-1).startsWith("โอเค") ? w.ok : said.at(-1).startsWith("ตกลง") ? w.yes : chipLabel(said.at(-1))));
+    if (sc === "running") { h += bot(waiting(j, { compact: true })); q = btn("stop", "stop", w.stop); }
+    if (sc === "preview") { h += bot(previewScreen(j)); q = btn("ok", "check", w.ok, true) + w.chips.map((c, i) => `<button class="chip" data-chip="${i}">${icon(CHIP_ICONS[i])}<span>${c}</span></button>`).join("") + btn("other", "pen", w.other); }
+    if (sc === "question") { h += bot(`<b>${w.asks}</b><br>${esc(j.result).replace(/\n/g, "<br>")}`); q = btn("yes", "check", w.yes, true) + btn("other", "pen", w.other); }
+    if (sc === "final") { h += bot(finalScreen(j)); q = btn("show", "folder", w.showFile, true) + btn("fresh", "plus", w.another); }
+    if (sc === "error") {
+      h += bot(errorScreen(s)); const code = s.job?.error;
+      q = code === "bad_file" ? btn("fresh", "film", w.browse, true) : code === "crashed" || s.job?.status === "stopped" ? btn("retry", "retry", w.resume, true) + btn("fresh", "home", w.back) : btn("retry", "retry", w.retry, true) + btn("fresh", "home", w.back);
+    }
+  }
+  if (!s.claude) { h = bot(errorScreen(s)); q = `<a class="btn primary" href="https://claude.ai/download" target="_blank" rel="noopener">${icon("upload")}<span>${w.getClaude}</span></a>`; }
+  log.innerHTML = h; qr.innerHTML = q;
+  const lastBot = [...log.querySelectorAll(".m:not(.me)")].at(-1);   // show the newest bubble from its top (a preview is tall)
+  log.scrollTop = lastBot && lastBot.offsetHeight > log.clientHeight - 40 ? lastBot.offsetTop - 12 : log.scrollHeight;
+}
+function chipLabel(x) { const i = t().chips.length && ["สว่างขึ้น", "ซูมน้อยลง", "เพลงเบาลง", "สั้นลง"].indexOf(x); return i >= 0 ? t().chips[i] : x; }
+async function add(files) { uploading = files[0].name; refresh(true); const n = await api.upload(files); uploading = ""; chosen = n; refresh(true); }
+const refresh = poll(render);
+document.getElementById("pick").onchange = (e) => add([...e.target.files]);
+dropzone(document.body, add);
+wire(document.body, refresh, async (b) => {
+  const a = b.dataset.act;
+  if (b.dataset.file) { chosen = [b.dataset.file]; refresh(true); return true; }
+  if (b.dataset.style) { style = b.dataset.style; picking = false; refresh(true); return true; }
+  if (a === "browse") { document.getElementById("pick").click(); return true; }
+  if (a === "pickstyle") { picking = true; refresh(true); return true; }
+  if (a === "unpick") { picking = false; refresh(true); return true; }
+  if (a === "reset") { chosen = []; refresh(true); return true; }
+  if (a === "go") { b.disabled = true; await api.start(chosen, styleAsk(style)); chosen = []; refresh(true); return true; }
+  if (a === "fresh") { chosen = []; style = "clubgig"; }
+  if (a === "other") { const f = document.querySelector("form.other"); f.hidden = false; f.querySelector("input").focus(); return true; }
+  return false;
+});
+api.settings({ ui: "c" });
+</script>
+</body>
+</html>

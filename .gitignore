@@ -38,3 +38,7 @@ library/style-previews/
 
 # the user's answers after the install (speaker name, brand): stays on their Mac
 profile.json
+
+# TadClip app: test tools and their last report (dev only)
+app/test/node_modules/
+app/test/last-report.json

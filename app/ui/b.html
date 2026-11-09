@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TadClip</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="base.css">
+<script>if (localStorage.theme) document.documentElement.dataset.theme = localStorage.theme;   /* before the first paint: no flash */</script>
+<style>
+  /* Model B: one page, three big numbered steps, top to bottom. Nothing hidden behind menus. */
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 18px 28px; }
+  main { max-width: 760px; margin: 0 auto; padding: 8px 24px 64px; }
+  .hero { text-align: center; margin: 6px 0 26px; } .hero p { color: var(--muted); font-size: 1.1rem; }
+  .step { background: var(--card); border-radius: var(--r); box-shadow: var(--shadow); border: 1px solid var(--line); padding: 22px 24px; margin-bottom: 18px; }
+  .step > h2 { display: flex; align-items: center; gap: 14px; font-size: 1.3rem; }
+  .num { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; font: 800 1.3rem "Kanit"; flex: none; }
+  .step.off { opacity: .55; } .step.off .num { background: var(--muted); }
+  .drop { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 26px; border: 3px dashed var(--line); border-radius: 18px; text-align: center; }
+  .drop .i { width: 54px; height: 54px; color: var(--accent); }
+  .files { display: grid; gap: 10px; margin-top: 14px; }
+  .file { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 8px 16px 8px 8px; border-radius: 16px; border: 2px solid var(--line); background: var(--bg); cursor: pointer; text-align: start; font: inherit; color: inherit; width: 100%; }
+  .file[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .file video, .file .ph { width: 48px; height: 64px; border-radius: 8px; object-fit: cover; background: #000; flex: none; display: grid; place-items: center; color: #fff; }
+  .file .nm { flex: 1; overflow-wrap: anywhere; } .file .tick { color: var(--accent); visibility: hidden; } .file[aria-pressed="true"] .tick { visibility: visible; }
+  .styles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-top: 8px; }
+  .style { display: flex; flex-direction: column; justify-content: flex-start; align-self: start; border: 3px solid transparent; border-radius: 18px; padding: 0; overflow: hidden; background: var(--bg); cursor: pointer; text-align: start; color: inherit; font: inherit; }
+  .style img, .style video { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #000; }
+  .style div { padding: 8px 12px 12px; } .style b { font: 600 1rem/1.35 "Kanit"; display: block; text-wrap: balance; } .style small { color: var(--muted); font-size: .85rem; line-height: 1.45; display: block; }
+  .style[aria-pressed="true"] { border-color: var(--accent); }
+  .badge { display: inline-block; background: var(--accent); color: #fff; border-radius: 999px; padding: 0 .6em; font-size: .75rem; margin-left: .3em; vertical-align: middle; }
+  .go { position: sticky; bottom: 0; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 14px 24px 18px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--line); margin: 0 -24px; }
+  .go .btn { min-height: 72px; font-size: 1.4rem; padding: .5em 2.2em; }
+  .go .num { background: var(--accent); }
+  .one { display: flex; gap: 16px; align-items: center; border: 3px solid var(--accent); border-radius: 18px; padding: 8px; background: var(--bg); }
+  .one img, .one video { width: 80px; height: 100px; object-fit: cover; border-radius: 10px; }
+  .one b { font: 600 1.1rem "Kanit"; } .one small { color: var(--muted); display: block; line-height: 1.45; }
+  .row2 { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .solo { max-width: 620px; margin: 0 auto; padding: 10px 24px 64px; }
+  .net { background: var(--accent-soft); text-align: center; padding: 10px; border-radius: 14px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img class="logo-light" src="clubgig-wordmark-black.png" alt="ClubGig"><img class="logo-dark" src="clubgig-wordmark-white.png" alt="ClubGig"><span class="tc">TadClip</span></div>
+  <div class="tools"><button class="langbtn" data-act="theme" aria-label="โหมดมืด"></button><button class="langbtn" data-act="speak" aria-label="ฟัง"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button><button class="langbtn" data-lang></button></div>
+</header>
+<div id="root"></div>
+<script type="module">
+import { t, lang, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, icon, esc, STYLES, styleName, styleAsk, tile, dropzone, fileInput } from "./app.js";
+const root = document.getElementById("root");
+let chosen = new Set(), style = "clubgig", showAll = false, uploading = "";
+
+function home(s) {
+  const w = t(), vids = s.files.filter((f) => f.kind !== "other");
+  if (!chosen.size && vids[0]) chosen.add(vids.find((f) => f.kind === "video" && !f.done)?.name || vids[0].name);   // newest clip, picked for them
+    return `<main>
+    ${s.net ? "" : `<p class="net">${w.err.no_net[0]} · ${w.err.no_net[1]}</p>`}
+    <div class="hero"><h1>${w.tagline}</h1></div>
+    <section class="step"><h2><span class="num">1</span>${w.step1}</h2>
+      <div class="drop" id="drop">${icon("upload")}<p class="big">${uploading ? `${w.uploading}: ${esc(uploading)}` : w.drop}</p>
+        <button class="btn ghost small" data-act="browse">${icon("film")}<span>${w.browse}</span></button>${fileInput()}</div>
+      <div class="files">${vids.map((f) => `<button class="file" data-file="${esc(f.name)}" aria-pressed="${chosen.has(f.name)}">
+        ${f.kind === "video" ? `<video src="/media/${encodeURIComponent(f.name)}#t=1" preload="metadata" muted></video>` : `<span class="ph">${icon("music")}</span>`}
+        <span class="nm">${esc(f.name)}${f.kind === "audio" ? ` · ${w.audio}` : ""}</span>${icon("check", "i tick")}</button>`).join("")}</div>
+    </section>
+    <section class="step${chosen.size ? "" : " off"}"><h2><span class="num">2</span>${w.step2}</h2>
+      ${showAll ? "" : (() => { const x = STYLES.find((y) => y.id === style); return `<div class="row2"><div class="one">${tile(x)}<div><b>${styleName(x)}</b>${x.id === "clubgig" ? `<span class="badge">${w.recommended}</span>` : ""}${x.id === "clubgig" ? `<small>${lang === "th" ? x.th : x.en}</small>` : `<small>${w.moreStylesHint}</small>`}</div></div>
+        <button class="btn ghost small" data-act="more">${w.moreStyles}</button></div>`; })()}
+      <div class="styles" ${showAll ? "" : "hidden"}>${STYLES.map((x) => `<button class="style" data-style="${esc(x.id)}" aria-pressed="${x.id === style}">
+        ${tile(x)}<div><b>${styleName(x)}${x.id === "clubgig" ? `<span class="badge">${w.recommended}</span>` : ""}</b></div></button>`).join("")}</div>
+      ${showAll ? `<p class="muted" style="margin-top:10px">${w.moreStylesHint}</p>` : ""}
+      ${showAll ? `<p style="margin-top:12px"><button class="btn ghost small" data-act="more">${w.lessStyles}</button></p>` : ""}
+    </section>
+    <section class="go" aria-label="${w.step3}"><span class="num" aria-hidden="true">3</span>
+      <button class="btn primary" data-act="go" ${chosen.size && s.net ? "" : "disabled"}>${icon("scissors")}<span>${w.start}</span></button>
+    </section>
+  </main>`;
+}
+
+function render(s) {
+  document.querySelector("[data-lang]").textContent = t().lang; document.querySelector("[data-act=speak]").setAttribute("aria-label", t().listen);
+  const sc = screen(s);
+  root.innerHTML = sc === "home" ? home(s) : `<main class="solo">${
+    sc === "running" ? waiting(s.job) : sc === "preview" ? previewScreen(s.job) : sc === "final" ? finalScreen(s.job) : sc === "question" ? questionScreen(s.job) : errorScreen(s)}</main>`;
+  const inp = root.querySelector("#pick");
+  if (inp) inp.onchange = () => add([...inp.files]);
+}
+async function add(files) {
+  uploading = files[0]?.name || ""; refresh(true);
+  const names = await api.upload(files, (n) => { uploading = n; });
+  uploading = ""; chosen = new Set(names.length ? names : chosen); refresh(true);
+}
+api.settings({ ui: "b" });
+const refresh = poll(render);
+dropzone(document.body, add);
+wire(document.body, refresh, async (b) => {
+  if (b.dataset.file) { const n = b.dataset.file; chosen.has(n) ? chosen.delete(n) : chosen.add(n); refresh(true); return true; }
+  if (b.dataset.style) { style = b.dataset.style; showAll = false; refresh(true); return true; }
+  const a = b.dataset.act;
+  if (a === "more") { showAll = !showAll; refresh(true); return true; }
+  if (a === "browse") { root.querySelector("#pick").click(); return true; }
+  if (a === "go") { b.disabled = true; await api.start([...chosen], styleAsk(style)); chosen.clear(); refresh(true); return true; }
+  if (a === "fresh") { chosen.clear(); }
+  return false;
+});
+</script>
+</body>
+</html>

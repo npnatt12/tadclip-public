@@ -1,0 +1,10 @@
+00:00 [0/9] อ่านคลิปและวางแผน | brief written, helper starting, ~1 min
+00:01 [1/9] เตรียมภาพและเสียง หาตำแหน่งหน้า | prep: talk.mp4 + voice + face track, ~3-5 min
+00:05 [2/9] ฟังและถอดเสียงพูด | transcript: VAD islands + mlx-whisper th, ~3-6 min
+00:10 [3/9] เลือกเทคที่ดีที่สุดของแต่ละประโยค | choose takes, cut.py, ~2 min
+00:12 [4/9] หาภาพประกอบให้ตรงกับที่พูด | picture brief + Wikimedia pull, ~5 min
+00:17 [5/9] หาคลิปสต็อก | Mixkit stock download, ~3 min
+00:20 [6/9] เตรียมภาพประกอบและเช็กสี | insert_prep, grade check, ~4 min
+00:24 [7/9] จัดข้อความ เสียงประกอบ และโลโก้ | reel.json + build + lint, ~3 min
+00:27 [8/9] ทำคลิปตัวอย่าง | preview render 720x1280, ~5-8 min
+00:34 [9/9] ตรวจคลิปตัวอย่างรอบสุดท้าย | frame 0 + swipe check, ~1 min

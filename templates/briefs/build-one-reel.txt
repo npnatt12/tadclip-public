@@ -25,8 +25,9 @@ table is required. ClubGig's checks instead of e-f: `build.mjs` exits 0, `$S/scr
 sheet looked at once, and `finals.py preview` does not say HELD. In h, list the devices and their counts, not component ids.
 
 Long steps and progress (the user can't see your tool calls; the 11-08 test run had 8 failed tasks nobody reported):
-- Before each step, append one line to {P}/build/progress.log: `date +%H:%M` + "[n/9] what, how long it usually takes".
-  The session that talks to the user reads its last lines when they ask "progress?".
+- Before each step, append one line to {P}/build/progress.log: `date +%H:%M` + "[n/9] <what, in plain Thai> | <the same in English>, how long it usually takes", e.g.
+  `23:48 [2/9] หาหน้าและถอดเสียง | face track + transcript, ~5 min`. The TadClip app shows the Thai half to the user
+  as-is, so no file names or jargon; the session that talks to the user reads it when they ask "progress?".
 - Every long step (transcript, mlx-whisper, insert_prep, picture pull, render) runs in ONE foreground Bash call with
   timeout 600000. Never `sleep`-poll, never wait on a job in a loop. If a call does end up in the background, wait for
   its notification, and stop it (TaskStop) if you move on without it: nothing may still be running when you report.

@@ -61,7 +61,7 @@ V="$HOME/.venvs/mlxw"
 say "sound effects, music, emoji (~200 MB)"
 python3 "$S/scripts/library_restore.py" --licensed-only
 
-say "agents (Claude Code, Codex)"
+say "agents (Claude Code, Codex) and the TadClip app"
 mkdir -p "$HOME/.claude/agents"
 cp "$S/templates/agents/reel-helper.md" "$HOME/.claude/agents/"    # overwrite: updates to the helper must reach it
 if [ -d "$HOME/.codex" ]; then
@@ -69,6 +69,7 @@ if [ -d "$HOME/.codex" ]; then
   [ -e "$HOME/.codex/skills/tadclip" ] || ln -s "$S" "$HOME/.codex/skills/tadclip"
   echo "Codex: linked as ~/.codex/skills/tadclip"
 fi
+bash "$S/app/install.sh"    # ~/TadClip with the TadClip.app inside; the page opens at every login
 
 say "check"
 bash "$S/scripts/doctor.sh" | tee "$T/doctor.log"

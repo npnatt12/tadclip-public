@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TadClip app: three models side by side</title>
+<style>
+  body { margin: 0; font: 16px/1.5 system-ui, "Noto Sans Thai Looped", sans-serif; background: #f4f0ec; color: #161113; }
+  header { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid #e3d8d2; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  h1 { font-size: 20px; margin: 0 12px 0 0; }
+  .seg { display: inline-flex; border: 2px solid #7a3b44; border-radius: 999px; overflow: hidden; }
+  .seg button { border: 0; background: #fff; color: #7a3b44; padding: 8px 16px; font: 600 15px system-ui; cursor: pointer; min-height: 40px; }
+  .seg button[aria-pressed="true"] { background: #7a3b44; color: #fff; }
+  table.scores { border-collapse: collapse; margin: 16px 20px; background: #fff; }
+  .scores th, .scores td { border: 1px solid #e3d8d2; padding: 6px 12px; text-align: left; }
+  .grid { display: grid; grid-template-columns: 150px repeat(3, 1fr); gap: 12px; padding: 0 20px 40px; }
+  .grid .h { position: sticky; top: 66px; background: #f4f0ec; font-weight: 700; padding: 8px 0; z-index: 1; }
+  .grid .h small { display: block; font-weight: 400; color: #5d5256; }
+  .row { font-weight: 600; padding-top: 8px; } .row small { display: block; font-weight: 400; color: #5d5256; }
+  figure { margin: 0; } figure img { width: 100%; border-radius: 10px; border: 1px solid #ddd; background: #fff; display: block; cursor: zoom-in; }
+  figure .none { aspect-ratio: 1280/800; display: grid; place-items: center; color: #8a7f83; border: 2px dashed #d8ccc6; border-radius: 10px; font-size: 14px; text-align: center; padding: 8px; }
+  dialog { padding: 0; border: 0; background: transparent; max-width: 96vw; } dialog img { max-width: 96vw; max-height: 92vh; border-radius: 10px; }
+  dialog::backdrop { background: #000b; }
+</style>
+</head>
+<body>
+<header>
+  <h1>TadClip app · B chosen</h1>
+  <span class="seg" id="lang"><button data-v="th" aria-pressed="true">ไทย</button><button data-v="en" aria-pressed="false">English</button></span>
+  <span class="seg" id="theme"><button data-v="light" aria-pressed="true">Light</button><button data-v="dark" aria-pressed="false">Dark</button></span>
+  <span>Run it: <code>open http://127.0.0.1:4747/</code> (A, C: /a.html, /c.html)</span>
+</header>
+<table class="scores">
+  <tr><th>Model</th><th>What the user does</th><th>Clicks*</th><th>Screens</th><th>Words read</th><th>Machine fails</th></tr>
+  <tr><td colspan="6"><small>The light/dark button (top right) and ไทย/EN work on every screen; the page starts in the Mac’s own mode.</small></td></tr>
+  <tr><td><b>A</b> the folder is the app</td><td>puts a clip in ~/TadClip; nothing to press; a sound when the preview is ready</td><td>4</td><td>4</td><td>142</td><td>0</td></tr>
+  <tr><td><b>B</b> one page, three steps</td><td>clip (newest is pre-picked) → style (ClubGig pre-picked) → ตัดต่อให้หน่อย</td><td>7</td><td>5</td><td>268</td><td>0</td></tr>
+  <tr><td><b>C</b> LINE-style chat</td><td>taps quick replies: the clip → ตัดต่อให้หน่อย; never types</td><td>8</td><td>6</td><td>342</td><td>0</td></tr>
+  <tr><td colspan="6"><small>* the whole task: start → a change → stop halfway → change again → OK → final. B and C also open "ดูสไตล์อื่น" and pick an effect. Round 5, 2026-11-09.</small></td></tr>
+</table>
+<div class="grid" id="grid"></div>
+<dialog id="big"><img alt=""></dialog>
+<script>
+const SCREENS = [   // every screen in both languages and both themes (app/test/matrix.mjs)
+  ["home", "หน้าแรก", "First screen"],
+  ["styles", "สไตล์อื่น", "More styles (B, C)"],
+  ["running", "กำลังตัด", "Waiting (30-40 min)"],
+  ["question", "TadClip ถาม", "TadClip asks"],
+  ["preview", "คลิปตัวอย่าง", "Preview"],
+  ["final", "ไฟล์จริง", "Final"],
+  ["err-no_claude", "ไม่มี Claude", "No Claude"],
+  ["err-signed_out", "ยังไม่ล็อกอิน", "Signed out"],
+  ["err-no_net", "ไม่มีเน็ต", "No internet"],
+  ["err-bad_file", "ไฟล์เปิดไม่ได้", "Bad file"],
+  ["err-crashed", "หยุดกลางทาง", "Crashed"],
+  ["err-stopped", "กดหยุด", "Stopped"],
+  ["err-stuck", "Claude ไม่เริ่ม", "Claude didn't start"],
+  ["err-limit", "ครบโควตา", "Usage limit"],
+];
+const MODELS = [["b", "B · 3 ขั้น (เลือกแล้ว)", "one page, three steps · chosen 11-09"], ["a", "A · โฟลเดอร์", "the folder is the app"], ["c", "C · แชต", "LINE-style chat"]];
+let lang = "th", theme = "light";
+function draw() {
+  let h = `<div class="h"></div>` + MODELS.map(([, n, d]) => `<div class="h">${n}<small>${d}</small></div>`).join("");
+  for (const [id, th, en] of SCREENS) {
+    h += `<div class="row">${th}<small>${en}</small></div>`;
+    h += MODELS.map(([m]) => `<figure><img src="shots/${m}-${id}-${lang}-${theme}.jpg" alt="${m} ${en}" loading="lazy" onerror="this.outerHTML='<div class=none>—<br>not in this model</div>'"></figure>`).join("");
+  }
+  document.getElementById("grid").innerHTML = h;
+}
+for (const [id, set] of [["lang", (v) => (lang = v)], ["theme", (v) => (theme = v)]])
+  document.getElementById(id).onclick = (e) => { const b = e.target.closest("button"); if (!b) return; set(b.dataset.v);
+    for (const x of b.parentNode.children) x.setAttribute("aria-pressed", x === b); draw(); };
+document.getElementById("grid").onclick = (e) => { if (e.target.tagName === "IMG") { const d = document.getElementById("big"); d.querySelector("img").src = e.target.src; d.showModal(); } };
+document.getElementById("big").onclick = (e) => e.currentTarget.close();
+draw();
+</script>
+</body>
+</html>

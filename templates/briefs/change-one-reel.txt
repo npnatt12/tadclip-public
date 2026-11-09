@@ -7,6 +7,8 @@ Previous build: {OLD_P} (reel.py = its generator, build/plan.txt = its plan; rea
 New cut: {CUT}     New project: {P}     Machine: {MACHINE}, the machine that holds the footage.
   S=~/.claude/skills/tadclip ; PY=~/.venvs/media/bin/python (or any python with numpy + opencv)
   Start every Bash call with: export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH";
+Progress: before each step, append one line to {P}/build/progress.log: `date +%H:%M` + "[n/N] <plain Thai> | <English>",
+e.g. `02:10 [1/3] ทำไฟล์จริงความละเอียดเต็ม | final render, ~2 min`. The TadClip app shows the Thai half to the user.
 The user's notes, verbatim: {USER_WORDS}
 What they mean for this reel: {CHANGES}
 Standing rules (the user's; edit to theirs): face as shot, nothing on it; frame 1 the speaker's face with the hook; people

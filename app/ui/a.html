@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TadClip</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="base.css">
+<script>if (localStorage.theme) document.documentElement.dataset.theme = localStorage.theme;   /* before the first paint: no flash */</script>
+<style>
+  /* Model A: the folder is the app. This page is only a window onto it: put a clip in the folder (or drop it here),
+     the cut starts by itself, a sound plays when the preview is ready. ClubGig always; no choices on the way in. */
+  body { display: grid; grid-template-rows: auto 1fr; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 18px 28px; }
+  main { display: grid; place-items: center; padding: 10px 24px 48px; }
+  .card:has(.pv) { width: min(1000px, 100%); }   /* the preview needs room for the video beside its buttons */
+  .card { width: min(620px, 100%); background: var(--card); border: 1px solid var(--line); border-radius: 30px; box-shadow: var(--shadow); padding: 34px 32px; }
+  .folder { position: relative; width: 210px; height: 150px; margin: 0 auto 22px; }
+  .folder .back { position: absolute; inset: 14px 0 0; background: var(--plate); border-radius: 18px; }
+  .folder .tab { position: absolute; left: 0; top: 0; width: 86px; height: 34px; background: var(--plate); border-radius: 14px 14px 0 0; }
+  .folder .front { position: absolute; inset: 40px 0 0; background: var(--accent); border-radius: 18px; display: grid; place-items: center; color: #fff; font: 800 1.15rem "Kanit"; letter-spacing: .03em; }
+  .folder .clip { position: absolute; left: 50%; top: 4px; width: 62px; height: 92px; margin-left: -31px; border-radius: 10px; background: linear-gradient(160deg, #f2d7c9, #b97f86); border: 3px solid #fff; transform: rotate(-6deg); }
+  @media (prefers-reduced-motion: no-preference) { .folder .clip { animation: drop 2.6s ease-in-out infinite; } }
+  @keyframes drop { 0%, 20% { transform: translateY(-40px) rotate(-6deg); opacity: 0; } 45% { opacity: 1; } 70%, 100% { transform: translateY(0) rotate(-6deg); opacity: 1; } }
+  .center { text-align: center; } .center .btn { margin: 14px 0 6px; }
+  .hint { color: var(--muted); }
+  .done { margin-top: 26px; border-top: 2px solid var(--line); padding-top: 16px; }
+  .done h3 { font-size: 1rem; color: var(--muted); }
+  .row { display: flex; align-items: center; gap: 12px; min-height: 52px; }
+  .row .i { color: var(--ok); }
+  .net { background: var(--accent-soft); text-align: center; padding: 10px; border-radius: 14px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img class="logo-light" src="clubgig-wordmark-black.png" alt="ClubGig"><img class="logo-dark" src="clubgig-wordmark-white.png" alt="ClubGig"><span class="tc">TadClip</span></div>
+  <div class="tools"><button class="langbtn" data-act="theme" aria-label="โหมดมืด"></button><button class="langbtn" data-act="speak" aria-label="ฟัง"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button><button class="langbtn" data-lang></button></div>
+</header>
+<main><div class="card" id="root"></div></main>
+<script type="module">
+import { t, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, icon, esc, dropzone } from "./app.js";
+const root = document.getElementById("root");
+let uploading = "";
+api.settings({ ui: "a" });   // the folder starts cuts by itself only while this model is the one in use
+
+function home(s) {
+  const w = t(), done = s.files.filter((f) => f.done);
+  return `<div class="center">
+    ${s.net ? "" : `<p class="net">${w.err.no_net[0]} · ${w.err.no_net[1]}</p>`}
+    <div class="folder" aria-hidden="true"><div class="tab"></div><div class="back"></div><div class="clip"></div><div class="front">TadClip</div></div>
+    <h1>${uploading ? `${w.uploading}…` : w.folderHow}</h1>
+    <p class="big hint">${w.folderAuto}</p>
+    <button class="btn primary" data-act="folder">${icon("folder")}<span>${w.openFolder}</span></button>
+    <p class="hint">${w.orDrop}</p>
+  </div>
+  ${done.length ? `<div class="done"><h3>${w.finalReady}</h3>${done.map((f) => `<div class="row">${icon("check")}<span>${esc(f.name)}</span></div>`).join("")}</div>` : ""}`;
+}
+function render(s) {
+  document.querySelector("[data-lang]").textContent = t().lang; document.querySelector("[data-act=speak]").setAttribute("aria-label", t().listen);
+  const sc = screen(s);
+  root.innerHTML = sc === "home" ? home(s) : sc === "running" ? waiting(s.job) : sc === "preview" ? previewScreen(s.job)
+    : sc === "final" ? finalScreen(s.job) : sc === "question" ? questionScreen(s.job) : errorScreen(s);
+}
+const refresh = poll(render);
+dropzone(document.body, async (files) => { uploading = files[0].name; refresh(true); await api.upload(files); uploading = ""; refresh(true); });
+wire(document.body, refresh, async (b) => {
+  if (b.dataset.act === "fresh" && screen(await api.state()) === "error") { await api.fresh(); refresh(true); return true; }
+  return false;
+});
+</script>
+</body>
+</html>

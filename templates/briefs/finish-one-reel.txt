@@ -8,6 +8,8 @@ style, name, how])
 Machine: everything on {MACHINE}, the machine that holds the project. S=~/.claude/skills/tadclip ;
 PY=~/.venvs/media/bin/python (or any python with numpy + opencv)
 Start every Bash call with: export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH";
+Progress: before each step, append one line to {P}/build/progress.log: `date +%H:%M` + "[n/N] <plain Thai> | <English>",
+e.g. `02:10 [1/3] ทำไฟล์จริงความละเอียดเต็ม | final render, ~2 min`. The TadClip app shows the Thai half to the user.
 Long jobs (render ~2 min a reel, qa a few min, deliver) run in ONE foreground Bash call each with timeout 600000: the open
 shell keeps the HyperFrames render alive (it cancels itself when its parent exits). Never `nohup ... &`, never a background
 job polled turn by turn (each poll re-reads your whole context); a batch that may outrun 10 min: start it with
