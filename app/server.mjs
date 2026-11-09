@@ -94,12 +94,14 @@ function progress() {
   return { lines, step: m ? { n: +m[1], of: +m[2], th: th?.trim(), en: (en || th)?.trim() } : null };
 }
 
-function message(files, style) {
+function message(files, style, wish) {
   const vids = files.filter((f) => VIDEO.test(f)).map((f) => path.join(DIR, f));
   const auds = files.filter((f) => AUDIO.test(f)).map((f) => path.join(DIR, f));
   let m = `ตัดต่อคลิปนี้ ${vids.join(" ")}`;   // the same words a user types in chat
-  if (style && style !== "clubgig") m += ` ให้เป็นสไตล์ ${String(style).replace(/\s+/g, " ").slice(0, 120)}`;   // e.g. "ClubGig + แผนที่เส้นทาง (Route maps)"
+  if (style === "scratch") m += " แบบเริ่มจากศูนย์: เลือกเทคที่ดีที่สุดของแต่ละประโยค ตัดช่วงเงียบ ใส่ซับไทยตามเสียงพูดใต้หน้า ไม่ใส่การ์ด ภาพประกอบ เสียงเอฟเฟกต์ เพลง หรือโลโก้ นอกจากที่ผู้ใช้ขอ";
+  else if (style && style !== "clubgig") m += ` ให้เป็นสไตล์ ${String(style).replace(/\s+/g, " ").slice(0, 120)}`;   // e.g. "ClubGig + แผนที่เส้นทาง (Route maps)"
   if (auds.length) m += `\nใช้ไฟล์เสียงนี้ด้วย: ${auds.join(" ")}`;
+  if (wish) m += `\nผู้ใช้อยากได้: "${String(wish).replace(/\s+/g, " ").slice(0, 300)}"`;
   return m + `\n\n(ส่งมาจากแอป TadClip: ผู้ใช้ตอบระหว่างทางไม่ได้ ตัดสินใจเองจนได้คลิปตัวอย่าง เก็บงานไว้ในโฟลเดอร์ ${DIR}/<ชื่อคลิป> ` +
     `จบทุกครั้งด้วยสรุปภาษาไทยง่ายๆ 2-3 บรรทัด ไม่มีศัพท์เทคนิค ` +
     `บอกสิ่งที่ผู้ใช้ต้องดูเองก่อนโพสต์ไว้บรรทัดสุดท้าย)`;
@@ -146,9 +148,11 @@ async function turn(text, resume) {
     if (job.error === "stuck") return fail("stuck");
     const after = job.turnStarted - 2000;
     // the final: the file the editor's summary tells them to post, if it's in the folder; else the newest master
-    const named = (job.result.match(/`([^`]+\.mp4)`/g) || []).map((x) => x.slice(1, -1)).find((f) => inside(DIR, path.relative(DIR, f)) && fs.existsSync(f));
-    const final = named && fs.statSync(named).mtimeMs >= after ? named : newest(["finals", /^(?!.*\((preview|no music)).*\.mp4$/, after]);
-    const prev = newest(["finals", /\(preview\)\.mp4$/, after]);
+    // (11-09 test: the summary named "IMG_2260 (preview).mp4", a copy outside finals/, and it was taken for the final)
+    const named = (job.result.match(/`([^`]+\.mp4)`/g) || []).map((x) => x.slice(1, -1))
+      .filter((f) => inside(DIR, path.relative(DIR, f)) && fs.existsSync(f) && fs.statSync(f).mtimeMs >= after);
+    const final = named.find((f) => !/\((preview|no music)\)/.test(f)) || newest(["finals", /^(?!\.)(?!.*\((preview|no music)).*\.mp4$/, after]);
+    const prev = named.find((f) => /\(preview\)\.mp4$/.test(f)) || newest(["finals", /\(preview\)\.mp4$/, after]);
     if (/login|log in|auth|API key/i.test(job.result) && job.isError) return fail("signed_out");
     if (job.limit) return fail("limit");
     if (code !== 0 || job.isError) return fail("crashed");
@@ -186,16 +190,16 @@ function listFiles() {
   }).sort((a, b) => b.mtime - a.mtime);
 }
 
-async function start(files, style) {
+async function start(files, style, wish = "") {
   if (child) return { error: "busy" };
   const vids = files.filter((f) => VIDEO.test(f));
   if (!vids.length) { job = { id: Date.now().toString(36), files, status: "error", error: "bad_file", started: Date.now() }; save(); return job; }
   for (const f of vids) if (!REPLAY && !(await probe(path.join(DIR, f)))) {
     job = { id: Date.now().toString(36), files, status: "error", error: "bad_file", bad: f, started: Date.now() }; save(); log("error", "bad_file", JSON.stringify(f)); return job;
   }
-  job = { id: Date.now().toString(36), files, style, started: Date.now(), said: [] };
-  log("start", `job=${job.id}`, `files=${JSON.stringify(files)}`, `style=${JSON.stringify(style)}`, `ui=${settings().ui}`);
-  turn(message(files, style));
+  job = { id: Date.now().toString(36), files, style, wish, started: Date.now(), said: [] };
+  log("start", `job=${job.id}`, `files=${JSON.stringify(files)}`, `style=${JSON.stringify(style)}`, `wish=${JSON.stringify(wish)}`, `ui=${settings().ui}`);
+  turn(message(files, style, wish));
   return job;
 }
 
@@ -229,7 +233,7 @@ const server = http.createServer(async (req, res) => {
       job: job && { ...job, ...(job.status === "running" ? progress() : { lines: progress().lines }),
         preview: job.preview && "/media/" + path.relative(DIR, job.preview), final: job.final && "/media/" + path.relative(DIR, job.final) } });
   }
-  if (req.method === "POST" && p === "/api/start") { const b = await body(req); return send(res, 200, await start(b.files || [], b.style || "clubgig")); }
+  if (req.method === "POST" && p === "/api/start") { const b = await body(req); return send(res, 200, await start(b.files || [], b.style || "clubgig", String(b.wish || "").slice(0, 300))); }
   if (req.method === "POST" && p === "/api/reply") {   // a change after the preview, OK, or an answer to its question
     const b = await body(req);
     if (!job?.session || child) return send(res, 409, { error: "busy" });
@@ -237,13 +241,29 @@ const server = http.createServer(async (req, res) => {
     turn(String(b.text || "").slice(0, 500), true);
     return send(res, 200, job);
   }
-  if (req.method === "POST" && p === "/api/retry") { log("retry", `job=${job?.id}`, job?.error || job?.status); if (job && !child) { job.session ? turn("ทำต่อจากที่ค้างไว้", true) : start(job.files, job.style); } return send(res, 200, {}); }
+  if (req.method === "POST" && p === "/api/retry") { log("retry", `job=${job?.id}`, job?.error || job?.status); if (job && !child) { job.session ? turn("ทำต่อจากที่ค้างไว้", true) : start(job.files, job.style, job.wish); } return send(res, 200, {}); }
   if (req.method === "POST" && p === "/api/stop") {   // stopping a change keeps the preview they already had
     if (child) { job.status = job.preview && fs.existsSync(job.preview) ? "preview" : "stopped"; save(); log("stop", `job=${job.id}`, `back to ${job.status}`); child.kill(); }
     return send(res, 200, {});
   }
   if (req.method === "POST" && p === "/api/new") { if (!child) { log("new", `was=${job?.id}`, job?.status); job = null; fs.rmSync(JOB, { force: true }); } return send(res, 200, {}); }
   if (req.method === "POST" && p === "/api/settings") { const b = await body(req); if (b.ui && b.ui !== settings().ui) log("model", b.ui); fs.writeFileSync(path.join(STATE, "settings.json"), JSON.stringify({ ...settings(), ...b })); return send(res, 200, settings()); }
+  // sign-in (11-09 test): the desktop app's sign-in doesn't reach its bundled claude, and auth login wants a real terminal,
+  // so a Terminal window runs it; the waiting job starts by itself once auth status says yes
+  if (req.method === "POST" && p === "/api/signin") {
+    const bin = claudeBin(); if (!bin) return send(res, 200, { error: "no_claude" });
+    const cmd = path.join(STATE, "signin.command"), q = (x) => `'${x.replace(/'/g, `'\\''`)}'`;
+    fs.writeFileSync(cmd, `#!/bin/bash\nclear\necho "เข้าสู่ระบบ Claude ให้ TadClip (ครั้งเดียว) · Sign in to Claude for TadClip (once)"\necho\n${q(bin)} auth login\n` +
+      `echo; echo "เสร็จแล้ว ปิดหน้าต่างนี้ได้ TadClip จะเริ่มตัดต่อเอง · Done: close this window, TadClip starts by itself"\n`, { mode: 0o755 });
+    spawn("open", ["-a", "Terminal", cmd]); log("signin", "opened Terminal");
+    const t0 = Date.now(), wait = setInterval(async () => {
+      if (Date.now() - t0 > 15 * 60000) return clearInterval(wait);
+      if (!(await signedIn(bin))) return;
+      clearInterval(wait); log("signin", "signed in");
+      if (job?.status === "error" && job.error === "signed_out" && !child) { job.session ? turn("ทำต่อจากที่ค้างไว้", true) : start(job.files, job.style, job.wish); }
+    }, 3000);
+    return send(res, 200, {});
+  }
   if (req.method === "POST" && p === "/api/open") { spawn("open", [url.searchParams.get("what") === "final" && job?.final ? "-R" : "", job?.final || DIR].filter(Boolean)); return send(res, 200, {}); }
   if (req.method === "POST" && p === "/api/upload") {   // a file dropped on the page goes into the folder
     const name = path.basename(url.searchParams.get("name") || "");

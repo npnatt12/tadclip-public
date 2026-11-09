@@ -27,4 +27,6 @@ const src = path.join(fx, "preview.mp4"), out = path.join(P, "finals", final ? "
 if (fs.existsSync(src)) fs.copyFileSync(src, out);
 else execFileSync("ffmpeg", ["-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0x6A2C3B:s=360x640:d=4", "-f", "lavfi", "-i", "sine=f=440:d=4",
   "-vf", "drawtext=text='TadClip test':fontcolor=white:fontsize=36:x=(w-tw)/2:y=(h-th)/2", "-shortest", "-pix_fmt", "yuv420p", out]);
-emit({ type: "result", subtype: "success", is_error: false, result: final ? "ทำไฟล์จริงเสร็จแล้ว" : "ได้คลิปตัวอย่างแล้ว ความยาว 58 วินาที ใช้สไตล์ ClubGig" });
+// like the real 11-09 run: the preview is also copied next to the project and its summary names that copy
+const named = path.join(P, `${path.basename(P)}${final ? "" : " (preview)"}.mp4`); fs.copyFileSync(out, named);
+emit({ type: "result", subtype: "success", is_error: false, result: (final ? "ทำไฟล์จริงเสร็จแล้ว" : "ได้คลิปตัวอย่างแล้ว ความยาว 58 วินาที ใช้สไตล์ ClubGig") + ` ไฟล์อยู่ที่ \`${named}\`` });

@@ -32,8 +32,15 @@
     background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--line); margin: 0 -24px; }
   .go .btn { min-height: 72px; font-size: 1.4rem; padding: .5em 2.2em; }
   .go .num { background: var(--accent); }
-  .one { display: flex; gap: 16px; align-items: center; border: 3px solid var(--accent); border-radius: 18px; padding: 8px; background: var(--bg); }
-  .one img, .one video { width: 80px; height: 100px; object-fit: cover; border-radius: 10px; }
+  .pair { display: flex; gap: 12px; flex-wrap: wrap; flex: 1 1 420px; }
+  .one { flex: 1 1 260px; display: flex; gap: 16px; align-items: center; border: 3px solid var(--line); border-radius: 18px; padding: 8px; background: var(--bg); color: inherit; font: inherit; text-align: start; cursor: pointer; }
+  .one[aria-pressed="true"] { border-color: var(--accent); }
+  .one img, .one video, .one .ph { width: 80px; height: 100px; object-fit: cover; border-radius: 10px; flex: none; }
+  .ph.scratch { display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text, var(--accent)); }
+  .style .ph.scratch { width: 100%; aspect-ratio: 1; }
+  .ph.scratch svg { width: 40%; height: 40%; }
+  label.wish { display: block; margin-top: 16px; font-weight: 600; }
+  input.wish { width: 100%; margin-top: 6px; font: inherit; font-size: 1.05rem; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: inherit; min-height: 48px; }
   .one b { font: 600 1.1rem "Kanit"; } .one small { color: var(--muted); display: block; line-height: 1.45; }
   .row2 { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
   .solo { max-width: 620px; margin: 0 auto; padding: 10px 24px 64px; }
@@ -49,7 +56,7 @@
 <script type="module">
 import { t, lang, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, icon, esc, STYLES, styleName, styleAsk, tile, dropzone, fileInput } from "./app.js";
 const root = document.getElementById("root");
-let chosen = new Set(), style = "clubgig", showAll = false, uploading = "";
+let chosen = new Set(), style = "clubgig", showAll = false, uploading = "", wish = "";
 
 function home(s) {
   const w = t(), vids = s.files.filter((f) => f.kind !== "other");
@@ -65,12 +72,13 @@ function home(s) {
         <span class="nm">${esc(f.name)}${f.kind === "audio" ? ` · ${w.audio}` : ""}</span>${icon("check", "i tick")}</button>`).join("")}</div>
     </section>
     <section class="step${chosen.size ? "" : " off"}"><h2><span class="num">2</span>${w.step2}</h2>
-      ${showAll ? "" : (() => { const x = STYLES.find((y) => y.id === style); return `<div class="row2"><div class="one">${tile(x)}<div><b>${styleName(x)}</b>${x.id === "clubgig" ? `<span class="badge">${w.recommended}</span>` : ""}${x.id === "clubgig" ? `<small>${lang === "th" ? x.th : x.en}</small>` : `<small>${w.moreStylesHint}</small>`}</div></div>
-        <button class="btn ghost small" data-act="more">${w.moreStyles}</button></div>`; })()}
+      ${showAll ? "" : `<div class="row2"><div class="pair">${STYLES.filter((x) => ["clubgig", "scratch", style].includes(x.id)).map((x) => `<button class="one" data-style="${esc(x.id)}" aria-pressed="${x.id === style}">${tile(x)}<div><b>${styleName(x)}</b>${x.id === "clubgig" ? `<span class="badge">${w.recommended}</span>` : ""}<small>${x.id === "clubgig" ? (lang === "th" ? x.th : x.en) : x.dth ? (lang === "th" ? x.dth : x.den) : w.moreStylesHint}</small></div></button>`).join("")}</div>
+        <button class="btn ghost small" data-act="more">${w.moreStyles}</button></div>`}
       <div class="styles" ${showAll ? "" : "hidden"}>${STYLES.map((x) => `<button class="style" data-style="${esc(x.id)}" aria-pressed="${x.id === style}">
         ${tile(x)}<div><b>${styleName(x)}${x.id === "clubgig" ? `<span class="badge">${w.recommended}</span>` : ""}</b></div></button>`).join("")}</div>
       ${showAll ? `<p class="muted" style="margin-top:10px">${w.moreStylesHint}</p>` : ""}
       ${showAll ? `<p style="margin-top:12px"><button class="btn ghost small" data-act="more">${w.lessStyles}</button></p>` : ""}
+      <label class="wish" for="wish">${w.wish}</label><input id="wish" class="wish" value="${esc(wish)}" placeholder="${w.wishEg}" maxlength="300" autocomplete="off">
     </section>
     <section class="go" aria-label="${w.step3}"><span class="num" aria-hidden="true">3</span>
       <button class="btn primary" data-act="go" ${chosen.size && s.net ? "" : "disabled"}>${icon("scissors")}<span>${w.start}</span></button>
@@ -85,6 +93,8 @@ function render(s) {
     sc === "running" ? waiting(s.job) : sc === "preview" ? previewScreen(s.job) : sc === "final" ? finalScreen(s.job) : sc === "question" ? questionScreen(s.job) : errorScreen(s)}</main>`;
   const inp = root.querySelector("#pick");
   if (inp) inp.onchange = () => add([...inp.files]);
+  const wi = root.querySelector("#wish");
+  if (wi) wi.oninput = () => (wish = wi.value);
 }
 async function add(files) {
   uploading = files[0]?.name || ""; refresh(true);
@@ -100,7 +110,7 @@ wire(document.body, refresh, async (b) => {
   const a = b.dataset.act;
   if (a === "more") { showAll = !showAll; refresh(true); return true; }
   if (a === "browse") { root.querySelector("#pick").click(); return true; }
-  if (a === "go") { b.disabled = true; await api.start([...chosen], styleAsk(style)); chosen.clear(); refresh(true); return true; }
+  if (a === "go") { b.disabled = true; await api.start([...chosen], styleAsk(style), wish.trim()); chosen.clear(); wish = ""; refresh(true); return true; }
   if (a === "fresh") { chosen.clear(); }
   return false;
 });

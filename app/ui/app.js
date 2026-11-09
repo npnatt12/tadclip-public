@@ -2,7 +2,7 @@
 // (waiting, errors, preview, final). Each model's own HTML decides the flow around them.
 export const T = {
   th: {
-    lang: "EN", langName: "English", listen: "ฟัง", toDark: "โหมดมืด", toLight: "โหมดสว่าง", getClaude: "ดาวน์โหลด Claude", tagline: "ตัดต่อคลิปพูดหน้ากล้องให้อัตโนมัติ",
+    lang: "EN", langName: "English", listen: "ฟัง", toDark: "โหมดมืด", toLight: "โหมดสว่าง", getClaude: "ดาวน์โหลด Claude", signin: "เข้าสู่ระบบ Claude", wish: "อยากได้แบบไหน พิมพ์บอกได้ (ไม่ใส่ก็ได้)", wishEg: "เช่น ซับตัวใหญ่ ไม่ใส่เพลง", tagline: "ตัดต่อคลิปพูดหน้ากล้องให้อัตโนมัติ",
     start: "ตัดต่อให้หน่อย", drop: "ลากคลิปมาวางตรงนี้", browse: "เลือกคลิปจากเครื่อง", openFolder: "เปิดโฟลเดอร์ TadClip",
     step1: "เลือกคลิป", step2: "เลือกสไตล์", step3: "กดตัดต่อ", inFolder: "คลิปในโฟลเดอร์ TadClip", noFiles: "ยังไม่มีคลิป",
     picked: "เลือกแล้ว", audio: "เสียง/เพลง", recommended: "แนะนำ", moreStyles: "ดูสไตล์อื่น", lessStyles: "ซ่อนสไตล์อื่น",
@@ -19,7 +19,7 @@ export const T = {
     changeStyle: "เปลี่ยนสไตล์", chosen: (s) => `เลือก ${s}`, previewMsg: "คลิปตัวอย่างมาแล้ว ดูก่อนได้เลย",
     err: {
       no_claude: ["ยังไม่มี Claude ในเครื่องนี้", "ติดตั้งแอป Claude แล้วเปิดหน้านี้ใหม่"],
-      signed_out: ["Claude ยังไม่ได้เข้าสู่ระบบ", "เปิดแอป Claude ล็อกอิน แล้วกดลองอีกครั้ง"],
+      signed_out: ["Claude ยังไม่ได้เข้าสู่ระบบ", "กดปุ่มด้านล่าง หน้าต่างเข้าสู่ระบบจะเปิดขึ้น ล็อกอินครั้งเดียว แล้ว TadClip จะเริ่มตัดต่อเอง"],
       no_net: ["ไม่มีอินเทอร์เน็ต", "ต่อ Wi-Fi แล้วกดลองอีกครั้ง"],
       bad_file: ["เปิดไฟล์นี้ไม่ได้", "ใช้คลิปวิดีโอจากมือถือ (.mov หรือ .mp4)"],
       crashed: ["งานหยุดกลางทาง", "กดทำต่อ งานที่ทำไปแล้วไม่หาย"],
@@ -29,7 +29,7 @@ export const T = {
     },
   },
   en: {
-    lang: "ไทย", langName: "ภาษาไทย", listen: "Listen", toDark: "Dark mode", toLight: "Light mode", getClaude: "Get Claude", tagline: "Talking-head clips, edited for you",
+    lang: "ไทย", langName: "ภาษาไทย", listen: "Listen", toDark: "Dark mode", toLight: "Light mode", getClaude: "Get Claude", signin: "Sign in to Claude", wish: "Anything you want? Type it here (optional)", wishEg: "e.g. big captions, no music", tagline: "Talking-head clips, edited for you",
     start: "Cut it for me", drop: "Drop your clip here", browse: "Choose from this Mac", openFolder: "Open the TadClip folder",
     step1: "Choose a clip", step2: "Choose a style", step3: "Start", inFolder: "Clips in the TadClip folder", noFiles: "No clips yet",
     picked: "Chosen", audio: "Audio", recommended: "Recommended", moreStyles: "More styles", lessStyles: "Fewer styles",
@@ -46,7 +46,7 @@ export const T = {
     changeStyle: "Change style", chosen: (s) => `${s}, please`, previewMsg: "Here's your preview",
     err: {
       no_claude: ["Claude isn't on this Mac", "Install the Claude app, then open this page again"],
-      signed_out: ["Claude isn't signed in", "Open the Claude app, sign in, then press Try again"],
+      signed_out: ["Claude isn't signed in", "Press the button below. A sign-in window opens: sign in once, and TadClip starts by itself"],
       no_net: ["No internet", "Connect to Wi-Fi, then press Try again"],
       bad_file: ["This file can't be opened", "Use a video from your phone (.mov or .mp4)"],
       crashed: ["The edit stopped halfway", "Press Carry on. Nothing done so far is lost"],
@@ -63,6 +63,8 @@ const CHIP_TH = T.th.chips;
 // test-videos/effects-grid-th/make.py), each a 4 s loop in ui/styles/<id>.mp4. Picking one asks for ClubGig + that effect.
 export const STYLES = [
   { id: "clubgig", name: "ClubGig", th: "ข้อความขึ้นที่ช่วงอก ภาพสต็อกปัดเข้า ปุ่ม LINE ตอนท้าย", en: "Text on the torso, swiped stock, a LINE button at the end" },
+  // "start from scratch" (the owner 11-09): the plain cut, then their own words or the changes after the preview add the rest
+  { id: "scratch", name: "From scratch", th: "เริ่มจากศูนย์", en: "From scratch", dth: "ตัดช่วงพูดที่ดีที่สุด ตัดช่วงเงียบ ใส่ซับ ไม่มีอย่างอื่น", den: "Best takes, pauses out, captions, nothing else" },
   { id: "route", name: "Route maps", th: "แผนที่เส้นทาง", en: "Route maps" },
   { id: "counter", name: "Live counters", th: "ตัวเลขนับขึ้น", en: "Live counters" },
   { id: "bigword", name: "Big word captions", th: "คำใหญ่เต็มจอ", en: "Big word captions" },
@@ -83,10 +85,11 @@ export const STYLES = [
   { id: "broll", name: "B-roll + captions", th: "ภาพประกอบ + คำบรรยาย", en: "B-roll + captions" },
 ];
 export const styleName = (x) => (x.id === "clubgig" ? "ClubGig" : lang === "th" ? x.th : x.en);
-export const styleAsk = (id) => { const x = STYLES.find((y) => y.id === id); return !x || id === "clubgig" ? "clubgig" : `ClubGig + ${x.th} (${x.en})`; };
+export const styleAsk = (id) => { const x = STYLES.find((y) => y.id === id); return !x || id === "clubgig" ? "clubgig" : id === "scratch" ? "scratch" : `ClubGig + ${x.th} (${x.en})`; };
 // a tile: ClubGig is a still from a real reel; the effects loop (only while on screen; a still if motion is turned down)
 export function tile(x) {
   if (x.id === "clubgig") return `<img src="styles/clubgig.jpg" alt="">`;
+  if (x.id === "scratch") return `<span class="ph scratch" aria-hidden="true">${icon("scissors")}</span>`;
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   return `<video src="styles/${x.id}.mp4" poster="styles/${x.id}.jpg" muted loop playsinline preload="none" ${still ? "" : "autoplay"} aria-hidden="true"></video>`;
 }
@@ -109,9 +112,10 @@ export function setLang(l) {
 const H = { "content-type": "application/json" };
 export const api = {
   state: () => fetch("/api/state").then((r) => r.json()),
-  start: (files, style) => fetch("/api/start", { method: "POST", headers: H, body: JSON.stringify({ files, style }) }).then((r) => r.json()),
+  start: (files, style, wish) => fetch("/api/start", { method: "POST", headers: H, body: JSON.stringify({ files, style, wish }) }).then((r) => r.json()),
   reply: (text) => fetch("/api/reply", { method: "POST", headers: H, body: JSON.stringify({ text }) }),
   retry: () => fetch("/api/retry", { method: "POST", headers: H }),
+  signin: () => fetch("/api/signin", { method: "POST", headers: H }),
   stop: () => fetch("/api/stop", { method: "POST", headers: H }),
   fresh: () => fetch("/api/new", { method: "POST", headers: H }),
   open: (what) => fetch("/api/open" + (what ? `?what=${what}` : ""), { method: "POST", headers: H }),
@@ -175,6 +179,7 @@ export function waiting(j, { compact } = {}) {
 export function errorScreen(s) {
   const w = t(), code = errCode(s), [what, todo] = w.err[code] || w.err.crashed;
   const act = code === "no_claude" ? `<a class="btn primary" href="https://claude.ai/download" target="_blank" rel="noopener">${icon("upload")}<span>${w.getClaude}</span></a>`
+    : code === "signed_out" ? `<button class="btn primary" data-act="signin">${icon("check")}<span>${w.signin}</span></button>`
     : code === "crashed" || code === "stopped" || code === "limit" ? `<button class="btn primary" data-act="retry">${icon("retry")}<span>${w.resume}</span></button>`
     : code === "bad_file" ? `<button class="btn primary" data-act="fresh">${icon("film")}<span>${w.browse}</span></button>`
     : `<button class="btn primary" data-act="retry">${icon("retry")}<span>${w.retry}</span></button>`;
@@ -239,6 +244,7 @@ export function wire(root, refresh, own = () => false) {
     if (a === "theme") { localStorage.theme = darkNow() ? "light" : "dark"; return applyTheme(); }
     if (a === "stop") await api.stop();
     if (a === "retry") await api.retry();
+    if (a === "signin") await api.signin();
     if (a === "fresh") await api.fresh();
     if (a === "ok") await api.reply("โอเค ทำไฟล์จริงเลย");
     if (a === "yes") await api.reply("ตกลง ทำต่อเลย ตัดสินใจเองได้");

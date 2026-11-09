@@ -11,7 +11,7 @@ import { execFileSync } from "node:child_process";
 
 const BASE = process.env.TADCLIP_URL || "http://127.0.0.1:4848";
 const args = process.argv.slice(2), si = args.indexOf("--shots"), SHOTS = si >= 0 ? args[si + 1] : "";
-const models = args.filter((a, i) => /^[abc]$/.test(a) && i !== si + 1);
+const models = args.filter((a, i) => /^[abc]$/.test(a) && (si < 0 || i !== si + 1));
 const AXE = fs.readFileSync(new URL("./node_modules/axe-core/axe.min.js", import.meta.url), "utf8");
 const H = { "content-type": "application/json", origin: BASE };
 const state = () => fetch(BASE + "/api/state").then((r) => r.json());

@@ -33,6 +33,7 @@ Read it before every reel; if it's missing, use the defaults (Clubgig) and don't
 | "ปรับอะไรได้บ้าง", "what can I change" | the "ปรับได้" part of `docs/WELCOME.th.txt` |
 | a change after the preview ("สว่างขึ้น", "ซูมน้อยลง", "เพลงเบาลง", "สั้นลง") | `templates/briefs/change-one-reel.txt`; brightness/colour on the face = `look.grade` + `look.asked` with their words |
 | "ตัดต่อคลิปนี้", "edit this", no style named | **ClubGig**, the default. Don't ask which style. `recipes/clubgig/README.md` |
+| "แบบเริ่มจากศูนย์", "from scratch", "แค่ตัดกับใส่ซับ" | the clean raw cut (best take per line, pauses out) + word-timed Thai captions under the face (`build.mjs`, preset `clean`, Kanit), and nothing else: no cards, B-roll, sound effects, music or logo unless they ask. Their own words after "ผู้ใช้อยากได้:" win over this |
 | "ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator", "in @creator's style" | Clone route A: study them, overlay on ClubGig, edit. `recipes/clone/README.md` |
 | names a style below (Seoul list, Kinetic doc...) | that style, as written below |
 | a viral link and no raw clip, "clone this video" | Clone route B: shooting script, they film it, then edit. `recipes/clone/README.md` |

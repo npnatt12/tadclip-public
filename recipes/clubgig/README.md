@@ -80,7 +80,9 @@ python3 $S/recipes/clubgig/islands.py $P/assets/talk.mp4 $P/build/vad.json
    (`720x864` for a polaroid clip, the hook's included).
 5. **reel.json:** start from `examples/gallery/clubgig.reel.json`; replace takes, beats (source seconds, on the spoken
    words), chrome, linecta, endcard logo; keep `style: "clubgig"` and `"broll": {"fullScreenStock": true}`; no `zoom` in reel.json (the preset aims it from
-   face.json and gives a close-up recording less zoom). The example opens on a split: that is the old hook, replace it
+   face.json and gives a close-up recording less zoom). When the speaker is filmed so close that the popups lose rows or the punch-ins go (build.mjs warns "no room under
+   the chin"), the summary's check-before-posting line also says, in plain Thai: "ครั้งหน้าถ่ายห่างกล้องอีกนิดให้เห็นถึงอก
+   ข้อความและลูกเล่นของ ClubGig จะใส่ได้ครบ" (11-09 test: a close shot got 1 punch-in of 4 and single-row popups). The example opens on a split: that is the old hook, replace it
    with the torso qcard + a polaroid clip.
 6. **Build + look:** `node $S/scripts/build.mjs $P` (0 warnings), `python3 $S/scripts/approval_sheet.py $P` and LOOK at
    every frame (plate visible, every text on the torso, nothing above the head or on the face).
