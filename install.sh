@@ -37,7 +37,7 @@ main() {
     fi
   fi
 
-  echo "Installing. About 30-40 minutes · กำลังติดตั้ง ประมาณ 30-40 นาที"
+  echo "Installing. About 10 minutes, up to 30 on a slow connection · กำลังติดตั้ง ประมาณ 10 นาที เน็ตช้าอาจถึง 30 นาที"
   bash "$D/scripts/setup.sh" </dev/null; rc=$?
   echo "took $(( ($(date +%s) - t0) / 60 )) min"
   if [ $rc = 0 ]; then

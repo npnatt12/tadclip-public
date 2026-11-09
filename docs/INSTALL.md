@@ -1,8 +1,8 @@
 # Installing TadClip · วิธีติดตั้ง TadClip
 
-About 30-40 minutes (a few GB to download). If the internet drops, run it again: it picks up where it stopped. Works in Claude Code and Codex.
+About 10 minutes, up to 30 on a slow connection (a few GB to download). If the internet drops, run it again: it picks up where it stopped. Works in Claude Code and Codex.
 
-ใช้เวลาประมาณ 30-40 นาที ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง ใช้ได้ทั้ง Claude Code และ Codex
+ใช้เวลาประมาณ 10 นาที เน็ตช้าอาจถึง 30 นาที ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง ใช้ได้ทั้ง Claude Code และ Codex
 
 ## Before you start · ก่อนเริ่ม
 
@@ -132,7 +132,7 @@ For a brand other than Clubgig, you'll be asked once for its logo and LINE handl
 
 Tell the user in plain words what you're installing and why. Never ask for keys in the chat.
 
-1. **Run the installer yourself** (don't send the user to Terminal): `bash -c "$(curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh)"`. No password, no developer tools. Run it in the background: it takes about 30-40 minutes (the Thai transcription step is the longest). Don't ask for keys: TadClip works without them (step 3 below). Each step prints `== [n/7] ...`: when you check on it, tell the user that line. The last line is `TADCLIP_STATUS=ok`, or `TADCLIP_STATUS=incomplete N missing`: then fix what the MISS lines say (usually the internet dropped) and run it again, it skips what's done. It installs into ~/.claude/skills/tadclip on every agent: some scripts look for files there.
+1. **Run the installer yourself** (don't send the user to Terminal): `bash -c "$(curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh)"`. No password, no developer tools. Run it in the background: it takes about 10 minutes, up to 30 on a slow connection (the Thai transcription download is the longest). Don't ask for keys: TadClip works without them (step 3 below). Each step prints `== [n/7] ...`: when you check on it, tell the user that line. The last line is `TADCLIP_STATUS=ok`, or `TADCLIP_STATUS=incomplete N missing`: then fix what the MISS lines say (usually the internet dropped) and run it again, it skips what's done. It installs into ~/.claude/skills/tadclip on every agent: some scripts look for files there.
 2. **What it did:** It installs the tools (ffmpeg, Node 22, uv, Python packages, whisper, the Thai transcription venv), downloads the sounds, music and emoji, installs the `reel-helper` agent, links the skill into `~/.codex/skills` when Codex is there, and creates `.env` from `.env.example`. Everything goes in `~/.local` without Homebrew, so it never asks for the Mac password or Apple's developer tools.
 3. **Keys are optional: don't ask for them during the install.**
 4. **Finish when setup prints `TADCLIP_STATUS=ok`** (or `doctor.sh` ends with `0 missing`). On `incomplete`, fix what the MISS lines say and run setup again: it skips what's done. A `note ~/.local/bin` line is not a fault: the app needs one restart.

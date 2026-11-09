@@ -15,9 +15,9 @@
 
 ## Quick start · เริ่มใช้งาน
 
-For an Apple silicon Mac, signed in to [Claude Code](https://claude.com/claude-code) (the Claude app) or [Codex](https://github.com/openai/codex). No GitHub account needed. It takes about 30-40 minutes (a few GB to download). If the internet drops, paste the same line again: it picks up where it stopped.
+For an Apple silicon Mac, signed in to [Claude Code](https://claude.com/claude-code) (the Claude app) or [Codex](https://github.com/openai/codex). No GitHub account needed. It takes about 10 minutes, up to 30 on a slow connection (a few GB to download). If the internet drops, paste the same line again: it picks up where it stopped.
 
-ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 30-40 นาที ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง
+ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 10 นาที เน็ตช้าอาจถึง 30 นาที ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง
 
 **1. Install: one line · ติดตั้ง: บรรทัดเดียว**
 
