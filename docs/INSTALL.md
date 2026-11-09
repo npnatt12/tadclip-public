@@ -13,24 +13,22 @@ About 30-40 minutes (a few GB to download). If the internet drops, run it again:
 
 ## Step 1: Install · ขั้นที่ 1: ติดตั้ง
 
-Paste this into Claude Code or Codex:
+One line. Paste it into Terminal (⌘Space, type Terminal, Enter), or into Claude Code or Codex, which run it for you:
 
-วางข้อความนี้ใน Claude Code หรือ Codex:
-
-```text
-Install TadClip: https://raw.githubusercontent.com/npnatt12/tadclip-public/main/docs/INSTALL.md
-```
-
-It installs everything into your home folder. It does not ask for your Mac password, and you don't need Terminal, Homebrew or Apple's developer tools. Click Yes when it asks to run a command.
-
-agent จะลงทุกอย่างไว้ในโฟลเดอร์ของคุณเอง ไม่ถามรหัสผ่านเครื่อง Mac ไม่ต้องเปิด Terminal และไม่ต้องลง Homebrew หรือ developer tools ของ Apple ถ้าขึ้นถามว่าจะให้รันคำสั่งไหม ให้กด Yes
-
-No Claude Code or Codex? Open Terminal (⌘Space, type Terminal, Enter) and paste this line instead:
-
-ถ้าไม่มี Claude Code หรือ Codex ให้เปิด Terminal (กด ⌘Space พิมพ์ Terminal แล้วกด Enter) แล้ววางบรรทัดนี้แทน:
+บรรทัดเดียว วางใน Terminal (กด ⌘Space พิมพ์ Terminal แล้วกด Enter) หรือวางใน Claude Code / Codex ให้มันรันให้:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
+```
+
+It installs everything into your home folder. It does not ask for your Mac password, and you don't need Homebrew or Apple's developer tools. In Claude Code, click Yes when it asks to run a command. When it's done, the TadClip page opens in your browser. A timed log of the install is kept in `~/Library/Logs/TadClip/`.
+
+ลงทุกอย่างไว้ในโฟลเดอร์ของคุณเอง ไม่ถามรหัสผ่านเครื่อง ไม่ต้องลง Homebrew หรือ developer tools ของ Apple ถ้าวางใน Claude Code แล้วขึ้นถามว่าจะให้รันคำสั่งไหม ให้กด Yes เสร็จแล้วหน้า TadClip จะเปิดขึ้นในเบราว์เซอร์ บันทึกการติดตั้งพร้อมเวลาอยู่ที่ `~/Library/Logs/TadClip/`
+
+Or let your agent read the guide and do it · หรือให้ agent อ่านคู่มือแล้วติดตั้งเอง:
+
+```text
+Install TadClip: https://raw.githubusercontent.com/npnatt12/tadclip-public/main/docs/INSTALL.md
 ```
 
 ## Step 2 (optional): Open the key file · ขั้นที่ 2 (ไม่บังคับ): เปิดไฟล์คีย์
@@ -86,7 +84,11 @@ You're ready when it ends with `0 missing`. Lines marked `opt` are optional.
 
 ## Step 5: Edit your first reel · ขั้นที่ 5: ตัดคลิปแรก
 
-Quit and reopen the Claude app once (so it sees the new tools), start a new chat, then say:
+The easiest way: the TadClip page (it opened after the install; later, double-click TadClip on the Desktop, then TadClip.app). Choose your clip, press **ตัดต่อให้หน่อย**.
+
+ง่ายที่สุด: หน้า TadClip (เปิดขึ้นเองหลังติดตั้ง ครั้งต่อไปดับเบิลคลิก TadClip บนเดสก์ท็อป แล้วเปิด TadClip.app) เลือกคลิป แล้วกด **ตัดต่อให้หน่อย**
+
+In the chat instead: quit and reopen the Claude app once (so it sees the new tools), start a new chat, then say:
 
 ปิดแอป Claude แล้วเปิดใหม่หนึ่งครั้ง (ให้เห็นเครื่องมือที่เพิ่งลง) เปิดแชตใหม่ แล้วสั่งแบบนี้:
 
@@ -117,6 +119,8 @@ For a brand other than Clubgig, you'll be asked once for its logo and LINE handl
 | Any other `MISS` line<br>บรรทัด `MISS` อื่นๆ | It prints its own fix. Run it, or paste the install line again: it's safe to repeat.<br>บรรทัดนั้นจะบอกวิธีแก้ไว้ ทำตามนั้น หรือวางบรรทัดติดตั้งอีกครั้งก็ได้ ทำซ้ำได้ไม่มีผลเสีย |
 
 **Update to the latest version · อัปเดตเวอร์ชันล่าสุด:** paste the install line again · วางบรรทัดติดตั้งเดิมอีกครั้ง
+
+**Send us the logs · ส่งบันทึกให้ทีม:** `bash ~/.claude/skills/tadclip/scripts/logs.sh` (or tell Claude "เก็บบันทึก TadClip"). It gathers the install log, the app's events and recent TadClip chats into one folder in `/Users/Shared/TadClip-logs/`, with keys removed · รวมบันทึกการติดตั้ง เหตุการณ์ในแอป และแชต TadClip ล่าสุดไว้ในโฟลเดอร์เดียว ไม่มีคีย์ติดไป
 
 **Privacy · ความเป็นส่วนตัว:** the speaker's audio and frames go to Google for the transcript and checks. On the free tier, Google may use them to improve its products ([terms](https://ai.google.dev/gemini-api/terms)). Get the speaker's OK before you edit someone else's recording.
 

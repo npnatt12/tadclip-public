@@ -18,10 +18,18 @@ xcode-select -p >/dev/null 2>&1 || for f in .zshenv .zprofile; do grep -qs UV_PY
 # the key file for the optional keys (Gemini, Pexels): TadClip works without them
 [ -e "$S/.env" ] || cp "$S/.env.example" "$S/.env"; chmod 600 "$S/.env"
 # fetch URL SHA256 FILE: download, refuse it if the checksum differs
-fetch() { curl -fsSL "$1" -o "$3" && echo "$2  $3" | shasum -a 256 -c -s || { echo "download failed or changed: $1"; rm -f "$3"; return 1; }; }
+# every download gives up on a stalled connection (under 1 KB/s for a minute) and tries again: a dead link once hung an
+# install for 20 min with no message (11-09 rehearsal)
+C="--retry 5 --retry-all-errors --connect-timeout 20 --speed-limit 1024 --speed-time 60"
+fetch() { curl -fsSL $C "$1" -o "$3" && echo "$2  $3" | shasum -a 256 -c -s || { echo "download failed or changed: $1"; rm -f "$3"; return 1; }; }
 
 say "tools: uv, Node 22, ffmpeg (~150 MB)"
-command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh    # Astral's own installer, into ~/.local/bin
+# uv: Astral's GitHub release, pinned and checked like Node and ffmpeg below (11-09: releases.astral.sh, where their install
+# script points, sent 0 bytes for minutes while GitHub was fine); their script only if GitHub fails
+UVV=0.11.6
+command -v uv >/dev/null || { fetch "https://github.com/astral-sh/uv/releases/download/$UVV/uv-aarch64-apple-darwin.tar.gz" 4b69a4e366ec38cd5f305707de95e12951181c448679a00dce2a78868dfc9f5b "$T/uv.tgz" &&
+  tar -xzf "$T/uv.tgz" -C "$BIN" --strip-components 1 && rm "$T/uv.tgz"; } ||
+  { curl -LsSf $C https://astral.sh/uv/install.sh > "$T/uv-install.sh" && sh "$T/uv-install.sh"; }    # Astral's own installer, into ~/.local/bin
 # ~/.local/bin on PATH for every new Terminal and agent session. .zprofile runs after macOS's path_helper (which
 # moves /usr/bin first), so our python3 wins there too; .zshenv covers non-login shells
 for f in .zshenv .zprofile; do grep -qs 'HOME/.local/bin' "$HOME/$f" || echo 'export PATH="$HOME/.local/bin:$PATH"  # TadClip' >> "$HOME/$f"; done
@@ -69,11 +77,16 @@ if [ -d "$HOME/.codex" ]; then
   [ -e "$HOME/.codex/skills/tadclip" ] || ln -s "$S" "$HOME/.codex/skills/tadclip"
   echo "Codex: linked as ~/.codex/skills/tadclip"
 fi
-bash "$S/app/install.sh"    # ~/TadClip with the TadClip.app inside; the page opens at every login
+TADCLIP_NO_START=1 bash "$S/app/install.sh"    # ~/TadClip with the TadClip.app inside; started below, once the check passes
 
 say "check"
 bash "$S/scripts/doctor.sh" | tee "$T/doctor.log"
 # one machine-readable last line, so an agent can loop "run again until ok" without reading prose
 m=$(sed -n 's/.* \([0-9][0-9]*\) missing$/\1/p' "$T/doctor.log" | tail -1)
+# all there: start the app (it opens its page now and at every login); on an update this restarts it on the new code
+if [ "${m:-1}" = 0 ] && [ -z "${TADCLIP_NO_START:-}" ] && [ -f "$HOME/Library/LaunchAgents/com.tadclip.app.plist" ]; then
+  launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/com.tadclip.app.plist" 2>/dev/null || launchctl kickstart -k "gui/$(id -u)/com.tadclip.app"
+  echo "TadClip app: the page opens in your browser (http://127.0.0.1:4747/)"
+fi
 [ "${m:-1}" = 0 ] && { echo "TADCLIP_STATUS=ok"; exit 0; }
 echo "TADCLIP_STATUS=incomplete ${m:-?} missing (safe to run again: it skips what's done)"; exit 1

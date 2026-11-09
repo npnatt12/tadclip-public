@@ -27,6 +27,7 @@ Read it before every reel; if it's missing, use the defaults (Clubgig) and don't
 | They say | Do |
 |---|---|
 | "ตรวจเครื่อง", "check the machine" | `bash $S/scripts/doctor.sh`, then say in Thai what's ready and what to do about each MISS |
+| "เก็บบันทึก TadClip", "collect the logs", a bug report | `bash $S/scripts/logs.sh`: install logs, the app's events, run records, recent TadClip chats, doctor, versions into /Users/Shared/TadClip-logs/<user>-<time> (keys blanked); tell them the folder, in Thai |
 | "ดูความคืบหน้า", "progress?" | during a reel: `tail -3 <project>/build/progress.log`, in Thai |
 | "มีสไตล์อะไรบ้าง", "what styles" | the styles table in `README.md` ("Styles you can ask for today"), in Thai, one line each |
 | "ปรับอะไรได้บ้าง", "what can I change" | the "ปรับได้" part of `docs/WELCOME.th.txt` |

@@ -15,31 +15,37 @@
 
 ## Quick start · เริ่มใช้งาน
 
-For an Apple silicon Mac with [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex) installed. No GitHub account needed. It takes about 30-40 minutes (a few GB to download). If the internet drops, paste the same line again: it picks up where it stopped.
+For an Apple silicon Mac, signed in to [Claude Code](https://claude.com/claude-code) (the Claude app) or [Codex](https://github.com/openai/codex). No GitHub account needed. It takes about 30-40 minutes (a few GB to download). If the internet drops, paste the same line again: it picks up where it stopped.
 
 ใช้กับ Mac ชิป Apple (M1 ขึ้นไป) ที่ลง [Claude Code](https://claude.com/claude-code) หรือ [Codex](https://github.com/openai/codex) ไว้แล้ว ไม่ต้องมีบัญชี GitHub ใช้เวลาประมาณ 30-40 นาที ส่วนใหญ่คือรอดาวน์โหลด ถ้าเน็ตหลุดกลางทาง สั่งติดตั้งเดิมอีกครั้งได้ ส่วนที่เสร็จแล้วจะข้ามไปเอง
 
-**1. Paste this into Claude Code or Codex · วางข้อความนี้ใน Claude Code หรือ Codex**
+**1. Install: one line · ติดตั้ง: บรรทัดเดียว**
 
-```text
-Install TadClip: https://raw.githubusercontent.com/npnatt12/tadclip-public/main/docs/INSTALL.md
+```bash
+curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash
 ```
 
-It installs everything into your home folder: no Mac password, no Terminal, no Homebrew. Click Yes when it asks to run a command.
+Paste it into Terminal (⌘Space, type Terminal, Enter), or into Claude Code or Codex: they run it for you. It installs everything into your home folder: no Mac password, no Homebrew, no Apple developer tools. Each step prints `== [n/7]`, and a timed log of the whole install is kept in `~/Library/Logs/TadClip/`.
 
-agent จะลงทุกอย่างไว้ในโฟลเดอร์ของคุณเอง ไม่ถามรหัสผ่านเครื่อง ไม่ต้องเปิด Terminal ไม่ต้องลง Homebrew ถ้าขึ้นถามว่าจะให้รันคำสั่งไหม ให้กด Yes
+วางบรรทัดนี้ใน Terminal (กด ⌘Space พิมพ์ Terminal แล้วกด Enter) หรือวางใน Claude Code / Codex ให้มันรันให้ก็ได้ ลงทุกอย่างไว้ในโฟลเดอร์ของคุณเอง ไม่ถามรหัสผ่านเครื่อง ไม่ต้องลง Homebrew หรือ developer tools ของ Apple ทุกขั้นจะขึ้นว่า `== [n/7]` และเก็บบันทึกพร้อมเวลาไว้ที่ `~/Library/Logs/TadClip/`
 
-No Claude Code or Codex? Paste this into Terminal instead · ถ้าไม่มี ให้วางบรรทัดนี้ใน Terminal แทน: `curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | bash`
+**2. Cut a reel · ตัดคลิป**
 
-**2. Quit and reopen the Claude app once, start a new chat and edit · ปิดแล้วเปิดแอป Claude ใหม่หนึ่งครั้ง เปิดแชตใหม่ แล้วสั่งตัดต่อได้เลย**
+When it's done, the TadClip page opens in your browser: choose your clip and press **ตัดต่อให้หน่อย**. Next time, double-click **TadClip** on the Desktop, then **TadClip.app**. It's in Thai, with English, light and dark modes, and a button that reads the screen aloud.
+
+ติดตั้งเสร็จ หน้า TadClip จะเปิดขึ้นในเบราว์เซอร์ เลือกคลิป แล้วกด **ตัดต่อให้หน่อย** ไม่ต้องพิมพ์อะไร ครั้งต่อไป ดับเบิลคลิก **TadClip** บนเดสก์ท็อป แล้วเปิด **TadClip.app**
+
+Prefer the chat? Quit and reopen the Claude app once, start a new chat and say · ชอบสั่งในแชตมากกว่า: ปิดแล้วเปิดแอป Claude ใหม่หนึ่งครั้ง เปิดแชตใหม่ แล้วพิมพ์
 
 > ตัดต่อคลิปนี้ ~/Downloads/my-video.mov
 
 > ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator ให้หน่อย ~/Downloads/my-video.mov
 
+**Something wrong? · มีปัญหา?** Paste the same line again (it skips what's done), or collect the logs for us: `bash ~/.claude/skills/tadclip/scripts/logs.sh` (or tell Claude "เก็บบันทึก TadClip"). Keys are never included.
+
 **Optional: more tailored reels · ไม่บังคับ: อยากให้คลิปตรงใจขึ้น**
 
-TadClip works without any key. To make it more tailored, add two free keys: ask your agent to "open the TadClip key file", paste each key after its `=` and press ⌘S. **Paste keys into this file, never into the chat.**
+TadClip works without any key. To make it more tailored, add two free keys: run `open -e ~/.claude/skills/tadclip/.env` (or ask your agent to "open the TadClip key file"), paste each key after its `=` and press ⌘S. **Paste keys into this file, never into the chat.**
 
 TadClip ใช้ได้เลยโดยไม่ต้องมีคีย์ ถ้าอยากให้คลิปตรงใจขึ้น ใส่คีย์ฟรี 2 ตัว: บอก agent ว่า "เปิดไฟล์คีย์ TadClip" วางคีย์ต่อจากเครื่องหมาย `=` แล้วกด ⌘S **วางคีย์ในไฟล์นี้เท่านั้น ห้ามวางในแชต**
 

@@ -21,6 +21,9 @@ const PATHX = [`${HOME}/.local/bin`, "/opt/homebrew/opt/node@22/bin", "/opt/home
 const VIDEO = /\.(mov|mp4|m4v|avi|mkv|mts|3gp|hevc|webm)$/i, AUDIO = /\.(mp3|m4a|wav|aac|aif|aiff|flac|ogg)$/i;
 const TOOLS = "Bash,Read,Write,Edit,Glob,Grep,Agent,Skill,TodoWrite";
 fs.mkdirSync(STATE, { recursive: true });
+// one timestamped line per event, for test runs and bug reports (scripts/logs.sh collects it)
+const EV = path.join(STATE, "events.log");
+const log = (...a) => fs.appendFileSync(EV, `${new Date().toISOString()} ${a.join(" ")}\n`);
 
 const run = (cmd, args, ms = 15000) => new Promise((ok) =>
   execFile(cmd, args, { timeout: ms, env: { ...process.env, PATH: PATHX } }, (e, out, err) => ok({ code: e ? (e.code ?? 1) : 0, out: String(out), err: String(err) })));
@@ -77,13 +80,15 @@ function newest(glob) {   // glob: [subdir pattern] -> newest file under DIR/*/<
   return best?.f || "";
 }
 
+let lastLine = "";
 function progress() {
   const t0 = (job?.turnStarted || job?.started || 0) - 5000;   // this turn's lines only: an OK must not show the build's "9/9"
-  const log = job && newest(["build", /^progress\.log$/, t0]);
-  if (!log) return { lines: [] };
+  const plog = job && newest(["build", /^progress\.log$/, t0]);
+  if (!plog) return { lines: [] };
   // ponytail: lines carry HH:MM only; across midnight the filter is off (the old lines may show until the first new one)
   const hm = (d) => `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`, since = hm(new Date(t0));
-  const lines = fs.readFileSync(log, "utf8").trim().split("\n").filter((l) => l && (since > hm(new Date()) || l.slice(0, 5) >= since || !/^\d\d:\d\d/.test(l))).slice(-40);
+  const lines = fs.readFileSync(plog, "utf8").trim().split("\n").filter((l) => l && (since > hm(new Date()) || l.slice(0, 5) >= since || !/^\d\d:\d\d/.test(l))).slice(-40);
+  if (lines.length && lines.at(-1) !== lastLine) { lastLine = lines.at(-1); log("step", `job=${job.id}`, JSON.stringify(lastLine)); }
   const m = lines.at(-1)?.match(/\[(\d+)\/(\d+)\]\s*(.*)/);
   const [th, en] = (m?.[3] || "").split(" | ");
   return { lines, step: m ? { n: +m[1], of: +m[2], th: th?.trim(), en: (en || th)?.trim() } : null };
@@ -107,6 +112,7 @@ async function turn(text, resume) {
     if (!(await online())) return fail("no_net");
     if (!(await signedIn(bin))) return fail("signed_out");
   }
+  log("turn", resume ? "resume" : "new", `job=${job.id}`, `bin=${REPLAY ? "replay" : bin}`, JSON.stringify(text.split("\n")[0].slice(0, 120)));
   Object.assign(job, { status: "running", error: null, turnStarted: Date.now(), result: "", said: [...(job.said || []), text] });
   save();
   const out = fs.createWriteStream(path.join(STATE, `${job.id}.stream.jsonl`), { flags: "a" });
@@ -118,14 +124,15 @@ async function turn(text, resume) {
   spawn("caffeinate", ["-i", "-w", String(child.pid)]).on("error", () => {});   // no idle sleep while it works
   let buf = "";
   // Claude that prints nothing in its first 2 min never started (seen 11-09: a user hook stalls it under launchd)
-  const quiet = setTimeout(() => { if (child && job.status === "running") { job.error = "stuck"; child.kill(); } }, +(process.env.TADCLIP_START_MS || 120000));
+  const quiet = setTimeout(() => { if (child && job.status === "running") { job.error = "stuck"; log("watchdog", `job=${job.id}`, "no output in the first minutes"); child.kill(); } }, +(process.env.TADCLIP_START_MS || 120000));
   child.stdout.on("data", (d) => {
     clearTimeout(quiet);
     out.write(d); buf += d;
     for (let i; (i = buf.indexOf("\n")) >= 0; buf = buf.slice(i + 1)) {
       let e; try { e = JSON.parse(buf.slice(0, i)); } catch { continue; }
       if (e.session_id) job.session = e.session_id;
-      if (e.type === "result") Object.assign(job, { result: e.result || "", isError: !!e.is_error });
+      if (e.type === "result") { Object.assign(job, { result: e.result || "", isError: !!e.is_error });
+        log("result", `job=${job.id}`, `error=${!!e.is_error}`, `turns=${e.num_turns}`, `ms=${e.duration_ms}`, `usd=${e.total_cost_usd}`, e.api_error || "", JSON.stringify(String(e.result || "").slice(0, 160))); }
       if (e.type === "result" && e.api_error === "usage_limit_reached") job.limit = true;   // 11-09: the 5-hour limit looked like a crash
     }
   });
@@ -133,6 +140,7 @@ async function turn(text, resume) {
   child.on("error", () => fail("no_claude"));
   child.on("exit", (code) => {
     child = null; out.end();
+    log("exit", `job=${job.id}`, `code=${code}`, `secs=${Math.round((Date.now() - job.turnStarted) / 1000)}`);
     clearTimeout(quiet);
     if (job.status !== "running") return;   // stopped by the user
     if (job.error === "stuck") return fail("stuck");
@@ -147,16 +155,16 @@ async function turn(text, resume) {
     if (final && final !== prev && (!prev || fs.statSync(final).mtimeMs >= fs.statSync(prev).mtimeMs)) Object.assign(job, { status: "final", final });
     else if (prev) Object.assign(job, { status: "preview", preview: prev });
     else job.status = "question";   // it stopped to ask something: the page shows its words
-    save();
+    save(); log("status", `job=${job.id}`, job.status, job.final || job.preview || "");
     if (job.status !== "question") notify(job.status === "final" ? "ไฟล์จริงเสร็จแล้ว" : "คลิปตัวอย่างพร้อมแล้ว กดดูได้เลย");
   });
 }
-function fail(code) { job.status = "error"; job.error = code; save(); }
+function fail(code) { job.status = "error"; job.error = code; save(); log("error", `job=${job?.id}`, code); }
 function notify(text) { spawn("osascript", ["-e", `display notification "${text}" with title "TadClip" sound name "Glass"`]).on("error", () => {}); }
 
 // the Mac slept if a 5 s tick took over a minute: the run carries on after wake, the page says so once
 let tick = Date.now();
-setInterval(() => { if (Date.now() - tick > 60000 && job?.status === "running") { job.slept = Date.now(); save(); } tick = Date.now(); }, 5000);
+setInterval(() => { if (Date.now() - tick > 60000 && job?.status === "running") { job.slept = Date.now(); save(); log("slept", `job=${job.id}`, `gap=${Math.round((Date.now() - tick) / 1000)}s`); } tick = Date.now(); }, 5000);
 
 // folder mode (model A): a new video in the folder starts the cut by itself, once it has stopped growing
 const seen = new Map();
@@ -183,9 +191,10 @@ async function start(files, style) {
   const vids = files.filter((f) => VIDEO.test(f));
   if (!vids.length) { job = { id: Date.now().toString(36), files, status: "error", error: "bad_file", started: Date.now() }; save(); return job; }
   for (const f of vids) if (!REPLAY && !(await probe(path.join(DIR, f)))) {
-    job = { id: Date.now().toString(36), files, status: "error", error: "bad_file", bad: f, started: Date.now() }; save(); return job;
+    job = { id: Date.now().toString(36), files, status: "error", error: "bad_file", bad: f, started: Date.now() }; save(); log("error", "bad_file", JSON.stringify(f)); return job;
   }
   job = { id: Date.now().toString(36), files, style, started: Date.now(), said: [] };
+  log("start", `job=${job.id}`, `files=${JSON.stringify(files)}`, `style=${JSON.stringify(style)}`, `ui=${settings().ui}`);
   turn(message(files, style));
   return job;
 }
@@ -224,26 +233,29 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "POST" && p === "/api/reply") {   // a change after the preview, OK, or an answer to its question
     const b = await body(req);
     if (!job?.session || child) return send(res, 409, { error: "busy" });
+    log("reply", `job=${job.id}`, JSON.stringify(String(b.text || "").slice(0, 120)));
     turn(String(b.text || "").slice(0, 500), true);
     return send(res, 200, job);
   }
-  if (req.method === "POST" && p === "/api/retry") { if (job && !child) { job.session ? turn("ทำต่อจากที่ค้างไว้", true) : start(job.files, job.style); } return send(res, 200, {}); }
+  if (req.method === "POST" && p === "/api/retry") { log("retry", `job=${job?.id}`, job?.error || job?.status); if (job && !child) { job.session ? turn("ทำต่อจากที่ค้างไว้", true) : start(job.files, job.style); } return send(res, 200, {}); }
   if (req.method === "POST" && p === "/api/stop") {   // stopping a change keeps the preview they already had
-    if (child) { job.status = job.preview && fs.existsSync(job.preview) ? "preview" : "stopped"; save(); child.kill(); }
+    if (child) { job.status = job.preview && fs.existsSync(job.preview) ? "preview" : "stopped"; save(); log("stop", `job=${job.id}`, `back to ${job.status}`); child.kill(); }
     return send(res, 200, {});
   }
-  if (req.method === "POST" && p === "/api/new") { if (!child) { job = null; fs.rmSync(JOB, { force: true }); } return send(res, 200, {}); }
-  if (req.method === "POST" && p === "/api/settings") { const b = await body(req); fs.writeFileSync(path.join(STATE, "settings.json"), JSON.stringify({ ...settings(), ...b })); return send(res, 200, settings()); }
+  if (req.method === "POST" && p === "/api/new") { if (!child) { log("new", `was=${job?.id}`, job?.status); job = null; fs.rmSync(JOB, { force: true }); } return send(res, 200, {}); }
+  if (req.method === "POST" && p === "/api/settings") { const b = await body(req); if (b.ui && b.ui !== settings().ui) log("model", b.ui); fs.writeFileSync(path.join(STATE, "settings.json"), JSON.stringify({ ...settings(), ...b })); return send(res, 200, settings()); }
   if (req.method === "POST" && p === "/api/open") { spawn("open", [url.searchParams.get("what") === "final" && job?.final ? "-R" : "", job?.final || DIR].filter(Boolean)); return send(res, 200, {}); }
   if (req.method === "POST" && p === "/api/upload") {   // a file dropped on the page goes into the folder
     const name = path.basename(url.searchParams.get("name") || "");
     if (!name || name.startsWith(".")) return send(res, 400, { error: "name" });
     const out = fs.createWriteStream(path.join(DIR, name));
-    req.pipe(out); out.on("finish", () => send(res, 200, { name }));
+    const t0 = Date.now();
+    req.pipe(out); out.on("finish", () => { log("upload", JSON.stringify(name), `bytes=${out.bytesWritten}`, `ms=${Date.now() - t0}`); send(res, 200, { name }); });
     return;
   }
   if (TEST && req.method === "POST" && p === "/api/test") { const b = await body(req); job = b.job; save(); return send(res, 200, {}); }
   if (p.startsWith("/media/")) { const f = inside(DIR, p.slice(7)); return f ? file(req, res, f) : send(res, 403, {}); }
+  if (p === "/" || p.endsWith(".html")) log("page", p, JSON.stringify((req.headers["user-agent"] || "").replace(/^.*\) /, "").slice(0, 60)));
   const f = inside(path.join(APP, "ui"), p === "/" ? `${settings().ui}.html` : p.slice(1));
   return f ? file(req, res, f) : send(res, 404, {});
 });
@@ -254,5 +266,6 @@ server.on("error", (e) => {   // already running (the icon was clicked twice): j
 });
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`TadClip app: http://127.0.0.1:${PORT}/  folder ${DIR}${REPLAY ? "  (replay)" : ""}`);
+  log("server", `port=${PORT}`, `node=${process.version}`, `claude=${claudeBin() || "none"}`, REPLAY ? "replay" : "", process.argv.includes("--open") ? "opened-page" : "");
   if (process.argv.includes("--open")) spawn("open", [`http://127.0.0.1:${PORT}/`]);
 });
