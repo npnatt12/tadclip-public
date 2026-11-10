@@ -23,6 +23,8 @@ ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libass && pass "ffmp
 command -v node >/dev/null && [ "$(node -p 'process.versions.node.split(".")[0]')" -ge 22 ] && pass "node $(node -v)" || fail "node >= 22 (HyperFrames)" "bash $S/scripts/setup.sh"
 command -v uv >/dev/null && pass "uv (creator_study.py runs the latest yt-dlp through it)" || fail "uv (creator_study.py: an old yt-dlp gets 403 from YouTube)" "bash $S/scripts/setup.sh"
 "$HOME/.venvs/mlxw/bin/python" -c "import mlx_whisper" 2>/dev/null && pass "mlx-whisper (~/.venvs/mlxw, Thai word times)" || fail "mlx-whisper (ClubGig's Thai word times)" "bash $S/scripts/setup.sh"
+"$HOME/.venvs/mlxw/bin/python" -c "from huggingface_hub import snapshot_download as d; d('mlx-community/whisper-large-v3-turbo', local_files_only=True)" >/dev/null 2>&1 &&
+  pass "whisper model downloaded (large-v3-turbo)" || fail "whisper model (the first clip would download 1.5 GB mid-run)" "bash $S/scripts/setup.sh"
 # HyperFrames is pinned in ONE place (scripts/HF_VERSION), read by hf.sh, hf_version.py and build.mjs
 hv=$(cat "$S/scripts/HF_VERSION" 2>/dev/null)
 v=$(bash "$S/scripts/hf.sh" --version 2>/dev/null | tail -1)

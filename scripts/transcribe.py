@@ -27,7 +27,11 @@ import tempfile
 
 RESTART = re.compile(r"(okay,? again|let me (do|say) that again|one more time|take two|from the top|let's try again|wait,? no)", re.I)
 MLXW_PY = os.path.expanduser(os.environ.get("MLXW_PY", "~/.venvs/mlxw/bin/python"))
-MLX_MODEL = "~/.cache/mlxw-turbo"
+# a converted copy in ~/.cache/mlxw-turbo when someone made one, else the Hugging Face repo (setup.sh downloads it at
+# install). 11-09: the old default was that folder alone; no fresh install has it, and the first reel crashed mid-run,
+# then downloaded 1.5 GB while the user waited.
+MLX_REPO = "mlx-community/whisper-large-v3-turbo"
+MLX_MODEL = "~/.cache/mlxw-turbo" if os.path.isdir(os.path.expanduser("~/.cache/mlxw-turbo")) else MLX_REPO
 ANTI_MERGE = dict(condition_on_previous_text=False, temperature=(0.0, 0.2, 0.4), no_speech_threshold=0.6,
                   compression_ratio_threshold=2.2, hallucination_silence_threshold=1.0)
 

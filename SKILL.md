@@ -1,6 +1,6 @@
 ---
 name: tadclip
-description: "TadClip (ตัดต่อคลิป): AI video editor for talking-head reels. Turns a raw phone recording of someone talking to camera (retakes, pauses, false starts) into a finished vertical 1080x1920 reel for Instagram, TikTok or Shorts: the best take of each sentence, pause trimming, word-timed captions that never cover the face, motion scenes on the spoken word, sound effects mixed against the voice and checked B-roll. ClubGig, the Thai house style, is the default when no style is named. Use when the user hands over a talking-head video and says \"ตัดต่อคลิปนี้\", \"ตัดต่อให้หน่อย\", \"edit this\", \"make a reel\", \"add captions/sound effects\", \"pick the best takes\", \"remove the pauses\", asks for a re-cut, or names a style. Also when they ask for a creator's style (\"ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator\", \"make it look like this video\"): it studies that creator with Hypit's method and layers the style over ClubGig. And when they want to clone a viral video: it writes a shooting script for a real person to film, then edits the take. Other named styles (recipes/, docs/PLAYBOOK.md): Clean OS, Seoul list, RESULT, Face RESULT, stan style, vector explainer, POV montage, Whiteboard, Kinetic doc, Step Deck, Product page, Tactile paper, Caption News, News Package, Telestrator, Halftone Dossier, Swiss Grid, Data Story, Hologram HUD, Coach Q&A; plus seven presets (clean, editorial, meme, cinematic, launch, kinetic, pop). Not for landscape screen recordings."
+description: "TadClip (ตัดต่อคลิป): AI video editor for talking-head reels. Turns a raw phone recording of someone talking to camera (retakes, pauses, false starts) into a finished vertical 1080x1920 reel for Instagram, TikTok or Shorts: the best take of each sentence, pause trimming, word-timed captions that never cover the face, motion scenes on the spoken word, sound effects mixed against the voice and checked B-roll. ClubGig, the Thai house style, is the default when no style is named. Use when the user hands over a talking-head video and says \"ตัดต่อคลิปนี้\", \"ตัดต่อให้หน่อย\", \"edit this\", \"make a reel\", \"add captions/sound effects\", \"pick the best takes\", \"remove the pauses\", asks for a re-cut, or names a style. Also when they ask for a creator's style (\"ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator\", \"make it look like this video\"): it measures that creator's reels with TadClip's format engine and layers the style over ClubGig. And when they want to clone a viral video: it writes a shooting script for a real person to film, then edits the take. Also tears down a video (\"วิเคราะห์คลิปนี้\", \"ทำไมคลิปนี้ปัง\", \"reverse-engineer this video\") or compares competitors' reels (\"วิเคราะห์คู่แข่ง\", \"competitor analysis\", several @handles) into a report the user can act on. Other named styles (recipes/, docs/PLAYBOOK.md): Clean OS, Seoul list, RESULT, Face RESULT, stan style, vector explainer, POV montage, Whiteboard, Kinetic doc, Step Deck, Product page, Tactile paper, Caption News, News Package, Telestrator, Halftone Dossier, Swiss Grid, Data Story, Hologram HUD, Coach Q&A; plus seven presets (clean, editorial, meme, cinematic, launch, kinetic, pop). Not for landscape screen recordings."
 ---
 
 # TadClip
@@ -21,6 +21,14 @@ file names stay as they are.
 
 **Their profile (`$S/profile.json`, asked once after the install, never in git):** `speaker` (the speaker's name as they
 spell it: use it to correct the transcript), `brand` (a folder under `recipes/clubgig/brand/`, or the one they gave).
+Their own brand wins over both: files in `~/TadClip/brand/` (`scripts/own_brand.py`, docs/BRAND-KIT.md). `build.mjs`
+applies it on EVERY route by itself (colours, font, logo, end card, the style's transition): never pick brand colours
+or a font by eye from their pictures, never write a brand.txt of your own, never edit `$P/brand/own.json` (the build
+re-makes a hand-edited kit from the folder and warns; 11-10 test). The brand looks wrong or something isn't taken in
+(a file shows "ไม่ได้ใช้" with its reason): say so in the summary and tell them to fix it on the page's brand panel
+("แก้แบรนด์": a slot per file, fields for name, colours, font, LINE), then re-run the build. A brand named in their wish is the reel's brand, not its topic: don't warn that the clip never
+mentions it. "ใส่แบรนด์",
+"ใช้โลโก้ของฉัน", "my brand": tell them to put a logo (a LINE or Facebook profile picture works) in that folder.
 Read it before every reel; if it's missing, use the defaults (Clubgig) and don't stop to ask.
 
 ## What the user asked for
@@ -33,10 +41,12 @@ Read it before every reel; if it's missing, use the defaults (Clubgig) and don't
 | "ปรับอะไรได้บ้าง", "what can I change" | the "ปรับได้" part of `docs/WELCOME.th.txt` |
 | a change after the preview ("สว่างขึ้น", "ซูมน้อยลง", "เพลงเบาลง", "สั้นลง") | `templates/briefs/change-one-reel.txt`; brightness/colour on the face = `look.grade` + `look.asked` with their words |
 | "ตัดต่อคลิปนี้", "edit this", no style named | **ClubGig**, the default. Don't ask which style. `recipes/clubgig/README.md` |
-| "แบบเริ่มจากศูนย์", "from scratch", "แค่ตัดกับใส่ซับ" | the clean raw cut (best take per line, pauses out) + word-timed Thai captions under the face (`build.mjs`, preset `clean`, Kanit), and nothing else: no cards, B-roll, sound effects, music or logo unless they ask. Their own words after "ผู้ใช้อยากได้:" win over this |
+| "แบบเริ่มจากศูนย์", "from scratch", "แค่ตัดกับใส่ซับ" | `recipes/plain/README.md`: the clean raw cut (best take per line, pauses out) + big word-timed Thai captions off the face, and nothing else unless they ask. Their own words after "ผู้ใช้อยากได้:" win over this |
 | "ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator", "in @creator's style" | Clone route A: study them, overlay on ClubGig, edit. `recipes/clone/README.md` |
 | names a style below (Seoul list, Kinetic doc...) | that style, as written below |
 | a viral link and no raw clip, "clone this video" | Clone route B: shooting script, they film it, then edit. `recipes/clone/README.md` |
+| "วิเคราะห์คลิปนี้", "ทำไมคลิปนี้ปัง", "reverse-engineer this video", a link + "why does it work" | Video teardown: a report, no edit. `recipes/rea/README.md` |
+| "วิเคราะห์คู่แข่ง", "competitor analysis", "compare @a @b @c" | Competitor analysis: their formats side by side, gaps, what to do on your own reels. `recipes/rea/README.md` |
 
 ## Cost: one fresh helper per reel, the right model per step
 Measured on a batch of 21 reels: looking at frames was ~5 % of the Claude usage. The cost is context re-read on every
@@ -70,7 +80,11 @@ per reel (two helpers per style each wrote their own lib). Numbers: docs/PLAYBOO
 
 ```
 prep.sh        -> $P/assets/talk.mp4        1080x1920 30 fps, voice at -16 LUFS
-transcribe.py  -> $P/build/words.whisper.json + take table (all takes)
+transcribe.py  -> $P/build/words.whisper.json + take table (all takes; English, short clips)
+  Thai, or any talk over ~1 min: recipes/clubgig/islands.py (VAD) -> islands_tx.py (one decode per speech island) instead,
+  on the ORIGINAL recording's sound (same timeline as talk.mp4; the normalised voice nearly doubles the time).
+  Never a whole-file pass for the cut, and never leave a transcription running in the background while starting
+  another (11-09: a whole-file pass looped "ที่สุด" x50, then ran beside the island pass: 25 min instead of ~4)
 face_track.py  -> $P/build/face.json          (captions and cards never cover the face)
 choose takes   -> $P/reel.json takes        (references/take-selection.md)
   a scripted recording with many takes: rawcut_prep.sh -> vad_pauses.py -> islands_tx.py -> facescan.py --pts -> takes.py -> plan_cut.py -> subcheck.py
@@ -502,7 +516,10 @@ Only the user's own feedback is `from: user` (quoted "you said"); a rule you lea
 - `scripts/doctor.sh` checks tools, key and library, with fixes
 - `scripts/reference_study.py` reverse-engineer a reference edit (sheet, frames, Gemini edit log)
 - `scripts/creator_study.py` fetch a creator's reels or one viral video and run the study on each; `recipes/clone/README.md`
-- `vendor/hypit/` Hypit's guides, unmodified (its own licence: see SOURCE.md)
+- `scripts/format_spec.py` measure a reel's format (cuts of the speaker vs inserts, text events, face, pauses, sheet); `--check`
+- `scripts/format_score.py` score a reel's measurements against a saved creator format
+- `scripts/video_rea.py` measure videos and build a teardown or competitor report (`recipes/rea/README.md`)
+- `docs/format-engine/` the format engine: method, schema, agent briefs (clean-room, PROVENANCE.md), evaluation
 - `references/reference-study-prompt.md` the edit-log prompt (improve it here)
 - `examples/` real reel.json files from shipped reels (English): one per preset in `examples/gallery/`, two motion edits
 - `README.md` install, agent setup (Claude Code / Codex / any agent), quick start

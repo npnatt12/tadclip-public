@@ -21,6 +21,45 @@ const PATHX = [`${HOME}/.local/bin`, "/opt/homebrew/opt/node@22/bin", "/opt/home
 const VIDEO = /\.(mov|mp4|m4v|avi|mkv|mts|3gp|hevc|webm)$/i, AUDIO = /\.(mp3|m4a|wav|aac|aif|aiff|flac|ogg)$/i;
 const TOOLS = "Bash,Read,Write,Edit,Glob,Grep,Agent,Skill,TodoWrite";
 fs.mkdirSync(STATE, { recursive: true });
+// their own brand: whatever they put in ~/TadClip/brand/ (scripts/own_brand.py, docs/BRAND-KIT.md). The page shows what
+// was picked up; the summary is re-read only when the folder changes.
+const BRAND = path.join(DIR, "brand");
+fs.mkdirSync(BRAND, { recursive: true });
+if (!fs.readdirSync(BRAND).length) fs.writeFileSync(path.join(BRAND, "วางโลโก้ที่นี่.txt"),
+  "วางไฟล์ของแบรนด์ไว้ในโฟลเดอร์นี้ คลิปต่อไปจะใช้แบรนด์ของคุณ (ไม่ใส่อะไรเลย = ใช้แบรนด์ ClubGig)\n\n" +
+  "ง่ายที่สุด: เปิดหน้า TadClip กด \"แก้แบรนด์\" แล้ววางไฟล์ในช่องของมัน\n\n" +
+  "- โลโก้: ภาพไหนก็ได้ (PNG JPG HEIC SVG PDF) รูปโปรไฟล์ LINE หรือ Facebook ก็ใช้ได้\n- ชีตสีแบรนด์ / คู่มือแบรนด์ (ภาพหรือ PDF ที่มีรหัสสี #) TadClip อ่านทุกสี\n- หรือภาพหน้าจอเพจของคุณ 1 ภาพ (TadClip หาสีแบรนด์จากภาพนี้)\n" +
+  "- ไม่ใส่ก็ได้: ไฟล์ชื่อ brand.txt เขียนแบบนี้\n    ชื่อ: ร้านของฉัน\n    สีหลัก: #1F6FEB\n    สีรอง: #F5B700\n    ฟอนต์: Prompt\n" +
+  "    สโลแกน: อร่อย / ทุกวัน\n    LINE: @myshop\n    ปุ่ม LINE: สั่งเลย / สอบถาม\n    ห้ามใช้: ภาพเด็ก\n- ฟอนต์ของแบรนด์: วางไฟล์ .ttf หรือ .otf ที่มีภาษาไทย\n\n" +
+  "Put your brand here: a logo (a LINE or Facebook profile picture works), or one screenshot of your page, and if you like a brand.txt\n" +
+  "and a .ttf font. The next clip uses it.\n");
+let brandCache = { key: null, kit: null };
+async function brand() {
+  fs.mkdirSync(BRAND, { recursive: true });   // they may have deleted it
+  let key = ""; try { key = fs.readdirSync(BRAND).filter((f) => !f.startsWith(".")).map((f) => f + fs.statSync(path.join(BRAND, f)).mtimeMs).join("|"); } catch {}
+  if (key === brandCache.key) return brandCache;
+  const r = await run("python3", [path.join(APP, "..", "scripts", "own_brand.py"), "--show", "--from", BRAND], 90000);   // OCR + conversions: a few s
+  let kit = null; try { kit = JSON.parse(r.out); } catch {}
+  // never silent (11-10 test: a font file crashed the loader and the page quietly showed ClubGig): the reason, on the page and in the log
+  if (r.code || (!kit && key && r.out.trim() !== "null")) kit = { error: (r.err.trim().split("\n").pop() || `exit ${r.code}`).slice(0, 200) };
+  brandCache = { key, kit, id: String(key.length) + key.slice(-24) + (kit?.error ? "e" : "") };
+  log("brand", kit?.error ? `error ${JSON.stringify(kit.error)}` : kit ? `${(kit.colors?.list || []).map((c) => c.hex).join(" ") || "-"} font=${kit.font_name || "-"} files=${JSON.stringify(kit.files)} ${JSON.stringify(kit.notes)}` : "none (ClubGig)");
+  return brandCache;
+}
+// the brand library: ~/TadClip/brands/<name>/, each a copy of a brand folder (a team shares one by copying its folder)
+const BRANDS = path.join(DIR, "brands");
+const brandNames = () => { try { return fs.readdirSync(BRANDS).filter((f) => !f.startsWith(".") && fs.statSync(path.join(BRANDS, f)).isDirectory()).sort(); } catch { return []; } };
+const safeName = (n) => String(n || "").replace(/[\/:\\]/g, " ").replace(/^\.+/, "").trim().slice(0, 60);
+const own = (d) => fs.existsSync(d) ? fs.readdirSync(d).filter((f) => !f.startsWith(".") && !/^วางโลโก้ที่นี่\.txt$/.test(f)) : [];
+function saveBrand(name) {   // brand/ -> brands/<name>/ (replaced)
+  const to = path.join(BRANDS, safeName(name)); if (!safeName(name) || !own(BRAND).length) return false;
+  fs.rmSync(to, { recursive: true, force: true }); fs.mkdirSync(to, { recursive: true });
+  for (const f of own(BRAND)) fs.copyFileSync(path.join(BRAND, f), path.join(to, f));
+  return true;
+}
+// brand.txt from the page's fields (11-10 tester: "typing the brand needs a hand-written brand.txt in Finder")
+const TXT = [["name", "ชื่อ"], ["primary", "สีหลัก"], ["secondary", "สีรอง"], ["light", "สีอ่อน"], ["dark", "สีเข้ม"], ["font", "ฟอนต์"],
+  ["tagline", "สโลแกน"], ["line", "LINE"], ["linebutton", "ปุ่ม LINE"], ["avoid", "ห้ามใช้"]];
 // one timestamped line per event, for test runs and bug reports (scripts/logs.sh collects it)
 const EV = path.join(STATE, "events.log");
 const log = (...a) => fs.appendFileSync(EV, `${new Date().toISOString()} ${a.join(" ")}\n`);
@@ -47,9 +86,17 @@ async function online() {
   try { await fetch("https://api.anthropic.com", { method: "HEAD", signal: AbortSignal.timeout(5000) }); ok = true; } catch {}
   return (netCache = { t: Date.now(), ok }).ok;
 }
-async function signedIn(bin) {
-  const r = await run(bin, ["auth", "status"]);
-  try { return JSON.parse(r.out).loggedIn === true; } catch { return r.code === 0; }
+// sign-in: checked before the start button too (11-09 evening: the start failed first, then sign-in). Each change is
+// logged with its method and expiry (never the e-mail): that account lost a sign-in made the same morning, cause unknown.
+let auth = { t: 0, ok: null, key: "" };
+async function signedIn(bin, fresh = true) {
+  if (!fresh && Date.now() - auth.t < 60000) return auth.ok;
+  const r = await run(bin, ["auth", "status"]); let ok, j = {};
+  try { j = JSON.parse(r.out); ok = j.loggedIn === true; } catch { ok = r.code === 0; }
+  const key = `${ok} ${j.authMethod || "-"} expires=${j.loginExpiresAt || "-"}`;
+  if (key !== auth.key) log("auth", key);
+  auth = { t: Date.now(), ok, key };
+  return ok;
 }
 async function probe(file) {   // a video the editor can read: has a picture and is longer than 3 s
   const r = await run("ffprobe", ["-v", "error", "-show_entries", "format=duration:stream=codec_type", "-of", "json", file]);
@@ -101,7 +148,8 @@ function message(files, style, wish) {
   if (style === "scratch") m += " แบบเริ่มจากศูนย์: เลือกเทคที่ดีที่สุดของแต่ละประโยค ตัดช่วงเงียบ ใส่ซับไทยตามเสียงพูดใต้หน้า ไม่ใส่การ์ด ภาพประกอบ เสียงเอฟเฟกต์ เพลง หรือโลโก้ นอกจากที่ผู้ใช้ขอ";
   else if (style && style !== "clubgig") m += ` ให้เป็นสไตล์ ${String(style).replace(/\s+/g, " ").slice(0, 120)}`;   // e.g. "ClubGig + แผนที่เส้นทาง (Route maps)"
   if (auds.length) m += `\nใช้ไฟล์เสียงนี้ด้วย: ${auds.join(" ")}`;
-  if (wish) m += `\nผู้ใช้อยากได้: "${String(wish).replace(/\s+/g, " ").slice(0, 300)}"`;
+  // 11-09: "Font ของ <a clinic>" made the editor warn that the clip never mentions that clinic: a brand here is theirs
+  if (wish) m += `\nผู้ใช้อยากได้: "${String(wish).replace(/\s+/g, " ").slice(0, 300)}" (ชื่อแบรนด์ในนี้คือแบรนด์ของคลิป ไม่ใช่เนื้อหา ไม่ต้องเตือนว่าคลิปไม่พูดถึง)`;
   return m + `\n\n(ส่งมาจากแอป TadClip: ผู้ใช้ตอบระหว่างทางไม่ได้ ตัดสินใจเองจนได้คลิปตัวอย่าง เก็บงานไว้ในโฟลเดอร์ ${DIR}/<ชื่อคลิป> ` +
     `จบทุกครั้งด้วยสรุปภาษาไทยง่ายๆ 2-3 บรรทัด ไม่มีศัพท์เทคนิค ` +
     `บอกสิ่งที่ผู้ใช้ต้องดูเองก่อนโพสต์ไว้บรรทัดสุดท้าย)`;
@@ -229,7 +277,13 @@ const server = http.createServer(async (req, res) => {
   if (p === "/api/state") {
     const s = settings();
     const net = REPLAY ? true : await online();
-    return send(res, 200, { folder: DIR, ui: s.ui, lang: s.lang, files: listFiles(), net, claude: !!claudeBin() || !!REPLAY,
+    const b = await brand(), k = b.kit, bin = claudeBin();
+    const signed = REPLAY ? true : bin ? await signedIn(bin, false) : null;
+    return send(res, 200, { folder: DIR, ui: s.ui, lang: s.lang, files: listFiles(), net, claude: !!bin || !!REPLAY, signedIn: signed, brandId: b.id,
+      brand: k && { error: k.error, name: k.name, logo: k.logo && "/media/brand/" + k.logo.file.split("/").map(encodeURIComponent).join("/"), impact: k.impact, font: k.font, fontName: k.font_name,
+        colors: k.colors, notes: k.notes, notes_en: k.notes_en, have: k.have, files: k.files, why: k.why, typed: k.typed, avoid: k.avoid,
+        proof: k.proof && { video: "/media/brand/" + k.proof.video + "?" + b.id, card: "/media/brand/" + k.proof.card + "?" + b.id } },
+      brands: brandNames(),
       job: job && { ...job, ...(job.status === "running" ? progress() : { lines: progress().lines }),
         preview: job.preview && "/media/" + path.relative(DIR, job.preview), final: job.final && "/media/" + path.relative(DIR, job.final) } });
   }
@@ -259,18 +313,58 @@ const server = http.createServer(async (req, res) => {
     const t0 = Date.now(), wait = setInterval(async () => {
       if (Date.now() - t0 > 15 * 60000) return clearInterval(wait);
       if (!(await signedIn(bin))) return;
-      clearInterval(wait); log("signin", "signed in");
+      clearInterval(wait); log("signin", "signed in");   // the page's start button comes back on its next look (auth cache is fresh)
       if (job?.status === "error" && job.error === "signed_out" && !child) { job.session ? turn("ทำต่อจากที่ค้างไว้", true) : start(job.files, job.style, job.wish); }
     }, 3000);
     return send(res, 200, {});
   }
+  if (p === "/brandfont") {   // the sample on the page in their font: a file they dropped, else the bundled Thai font they named
+    const k = brandCache.kit, own = k?.font === "Brandfont" && Object.keys(k.files || {}).find((f) => k.files[f] === "font");
+    const lib = k?.font && path.join(APP, "..", "library", "fonts", "thai", `${k.font.toLowerCase().replace(/ /g, "-")}-thai.woff2`);
+    return own ? file(req, res, path.join(BRAND, own)) : lib && fs.existsSync(lib) ? file(req, res, lib) : send(res, 404, {});
+  }
+  if (req.method === "POST" && p === "/api/open" && url.searchParams.get("what") === "brand") { spawn("open", [BRAND]); log("open", "brand folder"); return send(res, 200, {}); }
   if (req.method === "POST" && p === "/api/open") { spawn("open", [url.searchParams.get("what") === "final" && job?.final ? "-R" : "", job?.final || DIR].filter(Boolean)); return send(res, 200, {}); }
-  if (req.method === "POST" && p === "/api/upload") {   // a file dropped on the page goes into the folder
-    const name = path.basename(url.searchParams.get("name") || "");
+  if (req.method === "POST" && p === "/api/brandtxt") {   // the page's brand fields -> brand/brand.txt (the loader reads it as before)
+    const b = await body(req), lines = TXT.map(([k, th]) => [th, String(b[k] ?? "").replace(/[\r\n]+/g, " ").trim().slice(0, 120)]).filter(([, v]) => v);
+    fs.mkdirSync(BRAND, { recursive: true });
+    for (const f of own(BRAND)) if (/^(brand|แบรนด์)\.txt$/i.test(f)) fs.rmSync(path.join(BRAND, f));
+    if (lines.length) fs.writeFileSync(path.join(BRAND, "brand.txt"), lines.map(([th, v]) => `${th}: ${v}`).join("\n") + "\n");
+    log("brand", "fields", JSON.stringify(Object.fromEntries(lines.map(([th, v]) => [th, v.slice(0, 30)]))));
+    return send(res, 200, {});
+  }
+  if (req.method === "POST" && p === "/api/brands") {   // the library: save the brand as <name>, or use a saved one ("" = ClubGig)
+    const b = await body(req), name = safeName(b.name);
+    if (b.act === "save") { const ok = saveBrand(name); log("brands", "save", JSON.stringify(name), ok); return send(res, ok ? 200 : 400, { ok }); }
+    if (b.act === "use") {
+      if (name && !brandNames().includes(name)) return send(res, 404, {});
+      const cur = brandCache.kit?.name || "แบรนด์ก่อนหน้า";   // never lose the brand in use: it goes to the library first
+      if (own(BRAND).length && !brandNames().includes(safeName(cur))) saveBrand(cur);
+      for (const f of own(BRAND)) fs.rmSync(path.join(BRAND, f), { recursive: true, force: true });
+      fs.rmSync(path.join(BRAND, ".converted"), { recursive: true, force: true });
+      if (name) for (const f of own(path.join(BRANDS, name))) fs.copyFileSync(path.join(BRANDS, name, f), path.join(BRAND, f));
+      log("brands", "use", JSON.stringify(name || "ClubGig")); return send(res, 200, {});
+    }
+    return send(res, 400, {});
+  }
+  if (req.method === "POST" && p === "/api/upload") {   // a clip dropped on the page goes into the folder; a picture, a font or brand.txt into brand/
+    let name = path.basename(url.searchParams.get("name") || "");
     if (!name || name.startsWith(".")) return send(res, 400, { error: "name" });
-    const out = fs.createWriteStream(path.join(DIR, name));
+    // 11-09: a dropped page screenshot landed among the clips and counted for nothing until moved by hand. 11-10: every
+    // picture, PDF and font a shop has goes to brand/; a slot on the page names its file by role, replacing the last one
+    const role = url.searchParams.get("role"), ROLE = { logo: "logo", "logo-light": "logo-white", "logo-dark": "logo-dark", sheet: "brand-sheet", font: "" };
+    const to = role in ROLE || /\.(png|jpe?g|webp|heic|heif|svg|pdf|gif|tiff?|bmp|ttf|otf)$/i.test(name) || /^(brand|แบรนด์)\.txt$/i.test(name) ? "brand" : "clips";
+    if (to === "brand") {
+      fs.mkdirSync(BRAND, { recursive: true });
+      if (role in ROLE) {
+        const ext = path.extname(name).toLowerCase(), held = Object.entries(brandCache.kit?.files || {}).filter(([, r]) => r === role).map(([f]) => f);
+        for (const f of own(BRAND)) if (held.includes(f) || (ROLE[role] && path.parse(f).name === ROLE[role]) || (role === "font" && /\.(ttf|otf)$/i.test(f))) fs.rmSync(path.join(BRAND, f));
+        if (ROLE[role]) name = ROLE[role] + ext;
+      }
+    }
+    const out = fs.createWriteStream(path.join(to === "brand" ? BRAND : DIR, name));
     const t0 = Date.now();
-    req.pipe(out); out.on("finish", () => { log("upload", JSON.stringify(name), `bytes=${out.bytesWritten}`, `ms=${Date.now() - t0}`); send(res, 200, { name }); });
+    req.pipe(out); out.on("finish", () => { log("upload", JSON.stringify(name), `to=${to}`, role ? `role=${role}` : "", `bytes=${out.bytesWritten}`, `ms=${Date.now() - t0}`); send(res, 200, { name, to }); });
     return;
   }
   if (TEST && req.method === "POST" && p === "/api/test") { const b = await body(req); job = b.job; save(); return send(res, 200, {}); }

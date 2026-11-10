@@ -43,6 +43,8 @@ curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/instal
 | `ตัดต่อคลิปนี้` | ตัดเป็นสไตล์ **ClubGig** ข้อความเด้งที่ช่วงอก ภาพสต็อกปัดเข้า ปุ่ม LINE ตอนท้าย |
 | `ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator` | ดูรีลของครีเอเตอร์คนนั้น เอารูปแบบมาซ้อนบน ClubGig แล้วตัด |
 | ส่งลิงก์คลิปไวรัล ยังไม่มีคลิป | เขียนสคริปต์ภาษาไทยให้คนจริงไปถ่าย แล้วตัดคลิปที่ถ่ายมา |
+| `วิเคราะห์คลิปนี้` + ลิงก์ หรือ `ทำไมคลิปนี้ปัง` | แยกคลิปทีละวินาที: ฮุก จังหวะตัด ข้อความบนจอ ทำไมคนดูอยู่ต่อ แล้วเขียนแผนคลิปของคุณเอง |
+| `วิเคราะห์คู่แข่ง @a @b` | เทียบรีลหลายบัญชีกับของคุณในตารางเดียว: ทุกคนทำอะไร ใครทำอะไรต่าง อะไรยังไม่มีใครทำ และควรปรับคลิปคุณยังไง |
 | ชื่อสไตล์ เช่น `Seoul list` | ใช้สไตล์นั้น |
 
 ## ใส่คีย์ (ไม่บังคับ)
@@ -68,8 +70,8 @@ curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/instal
 Whiteboard, Step Deck, Product page, Tactile paper, Caption News, News Package, Telestrator, Halftone Dossier, Swiss Grid, Data Story,
 Hologram HUD และพรีเซ็ตคำเดียว 7 แบบ (`clean` `editorial` `meme` `cinematic` `launch` `kinetic` `pop`)
 
-**ก๊อปสไตล์ครีเอเตอร์:** ใช้วิธีของ [Hypit](https://github.com/hypit-ai/hypit) อ่านว่าคลิปเขาดึงคนดูไว้ด้วยอะไร แล้วเอามาแค่จังหวะ ตำแหน่ง ตัวอักษร
-และระดับเสียง **ไม่เอา**หน้า คำพูด โลโก้ เพลง หรือฟุตเทจของเขา
+**ก๊อปสไตล์ครีเอเตอร์:** วัดคลิปของเขาก่อนทุกครั้ง (จังหวะตัด ตำแหน่งและขนาดตัวอักษร ใบหน้า ช่วงเงียบ) แล้วอ่านว่าคลิปดึงคนดูไว้ด้วยอะไร เอามาแค่จังหวะ ตำแหน่ง ตัวอักษร
+และโครงเรื่อง **ไม่เอา**หน้า คำพูด โลโก้ เพลง หรือฟุตเทจของเขา
 
 <details>
 <summary><b>คำถาม</b></summary>
@@ -83,5 +85,5 @@ Hologram HUD และพรีเซ็ตคำเดียว 7 แบบ (`c
 
 ---
 
-<p align="center">ต่อยอดจาก <a href="https://github.com/kurbaitaev/ghost-editor">ghost-editor</a> ของ <a href="https://github.com/kurbaitaev">@kurbaitaev</a> (MIT) คู่มือของ Hypit อยู่ภายใต้ <a href="vendor/hypit/LICENSE">Hypit Open Source License</a><br>
+<p align="center">ต่อยอดจาก <a href="https://github.com/kurbaitaev/ghost-editor">ghost-editor</a> ของ <a href="https://github.com/kurbaitaev">@kurbaitaev</a> (MIT)<br>
 ClubGig เป็นแบรนด์นำร่อง คลิปตัวอย่างและโลโก้เป็นของ Clubgig ใช้โดยได้รับอนุญาต และไม่อยู่ในสัญญาอนุญาตของ repo นี้</p>

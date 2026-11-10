@@ -2,7 +2,7 @@
 // (waiting, errors, preview, final). Each model's own HTML decides the flow around them.
 export const T = {
   th: {
-    lang: "EN", langName: "English", listen: "ฟัง", toDark: "โหมดมืด", toLight: "โหมดสว่าง", getClaude: "ดาวน์โหลด Claude", signin: "เข้าสู่ระบบ Claude", wish: "อยากได้แบบไหน พิมพ์บอกได้ (ไม่ใส่ก็ได้)", wishEg: "เช่น ซับตัวใหญ่ ไม่ใส่เพลง", tagline: "ตัดต่อคลิปพูดหน้ากล้องให้อัตโนมัติ",
+    lang: "EN", langName: "English", listen: "ฟัง", toDark: "โหมดมืด", toLight: "โหมดสว่าง", getClaude: "ดาวน์โหลด Claude", signin: "เข้าสู่ระบบ Claude", brandNone: "แบรนด์: ClubGig", brandAdd: "ใส่แบรนด์ของคุณ", brandChange: "เปลี่ยนแบรนด์", brandSample: "ข้อความ", brandWord: "ของคุณ", brandNotes: "TadClip ปรับให้", have: { logo: "โลโก้", colours: "สี", name: "ชื่อ", font: "ฟอนต์" }, fromPage: "จากภาพหน้าเพจ", wantLogo: "ใส่ไฟล์โลโก้ (PNG พื้นใส) จะคมที่สุด", roles: { logo: "โลโก้", screenshot: "ภาพหน้าเพจ", font: "ฟอนต์", "brand.txt": "ข้อมูลแบรนด์", "not used": "ไม่ได้ใช้" }, signFirst: "เข้าสู่ระบบ Claude ก่อนเริ่ม", wish: "อยากได้แบบไหน พิมพ์บอกได้ (ไม่ใส่ก็ได้)", wishEg: "เช่น ซับตัวใหญ่ ไม่ใส่เพลง", tagline: "ตัดต่อคลิปพูดหน้ากล้องให้อัตโนมัติ",
     start: "ตัดต่อให้หน่อย", drop: "ลากคลิปมาวางตรงนี้", browse: "เลือกคลิปจากเครื่อง", openFolder: "เปิดโฟลเดอร์ TadClip",
     step1: "เลือกคลิป", step2: "เลือกสไตล์", step3: "กดตัดต่อ", inFolder: "คลิปในโฟลเดอร์ TadClip", noFiles: "ยังไม่มีคลิป",
     picked: "เลือกแล้ว", audio: "เสียง/เพลง", recommended: "แนะนำ", moreStyles: "ดูสไตล์อื่น", lessStyles: "ซ่อนสไตล์อื่น",
@@ -29,7 +29,7 @@ export const T = {
     },
   },
   en: {
-    lang: "ไทย", langName: "ภาษาไทย", listen: "Listen", toDark: "Dark mode", toLight: "Light mode", getClaude: "Get Claude", signin: "Sign in to Claude", wish: "Anything you want? Type it here (optional)", wishEg: "e.g. big captions, no music", tagline: "Talking-head clips, edited for you",
+    lang: "ไทย", langName: "ภาษาไทย", listen: "Listen", toDark: "Dark mode", toLight: "Light mode", getClaude: "Get Claude", signin: "Sign in to Claude", brandNone: "Brand: ClubGig", brandAdd: "Add your brand", brandChange: "Change brand", brandSample: "Your", brandWord: "text", brandNotes: "What TadClip adjusted", have: { logo: "Logo", colours: "Colours", name: "Name", font: "Font" }, fromPage: "from the page", wantLogo: "A logo file (transparent PNG) looks sharpest", roles: { logo: "logo", screenshot: "page screenshot", font: "font", "brand.txt": "brand details", "not used": "not used" }, signFirst: "Sign in to Claude first", wish: "Anything you want? Type it here (optional)", wishEg: "e.g. big captions, no music", tagline: "Talking-head clips, edited for you",
     start: "Cut it for me", drop: "Drop your clip here", browse: "Choose from this Mac", openFolder: "Open the TadClip folder",
     step1: "Choose a clip", step2: "Choose a style", step3: "Start", inFolder: "Clips in the TadClip folder", noFiles: "No clips yet",
     picked: "Chosen", audio: "Audio", recommended: "Recommended", moreStyles: "More styles", lessStyles: "Fewer styles",
@@ -116,15 +116,18 @@ export const api = {
   reply: (text) => fetch("/api/reply", { method: "POST", headers: H, body: JSON.stringify({ text }) }),
   retry: () => fetch("/api/retry", { method: "POST", headers: H }),
   signin: () => fetch("/api/signin", { method: "POST", headers: H }),
+  openBrand: () => fetch("/api/open?what=brand", { method: "POST", headers: H }),
   stop: () => fetch("/api/stop", { method: "POST", headers: H }),
   fresh: () => fetch("/api/new", { method: "POST", headers: H }),
   open: (what) => fetch("/api/open" + (what ? `?what=${what}` : ""), { method: "POST", headers: H }),
   settings: (s) => fetch("/api/settings", { method: "POST", headers: H, body: JSON.stringify(s) }),
-  async upload(files, onProgress) {   // dropped or chosen files are copied into the TadClip folder
+  async upload(files, onProgress, role) {   // dropped or chosen files are copied into the TadClip folder (brand files into brand/)
     const names = [];
-    for (const f of files) { onProgress?.(f.name); const r = await fetch(`/api/upload?name=${encodeURIComponent(f.name)}`, { method: "POST", body: f }); if (r.ok) names.push(f.name); }
+    for (const f of files) { onProgress?.(f.name); const r = await fetch(`/api/upload?name=${encodeURIComponent(f.name)}${role ? `&role=${role}` : ""}`, { method: "POST", body: f }); if (r.ok && (await r.json()).to !== "brand") names.push(f.name); }
     return names;
   },
+  brandTxt: (fields) => fetch("/api/brandtxt", { method: "POST", headers: H, body: JSON.stringify(fields) }),
+  brands: (act, name) => fetch("/api/brands", { method: "POST", headers: H, body: JSON.stringify({ act, name }) }),
 };
 
 // one screen per job state; every model shows these the same way
@@ -175,6 +178,65 @@ export function waiting(j, { compact } = {}) {
     ${compact ? "" : `<ul class="tips">${w.tips.map((x) => `<li>${x}</li>`).join("")}</ul>`}
     <button class="btn ghost small" data-act="stop">${icon("stop")}<span>${w.stop}</span></button>
   </section>`;
+}
+// their brand (~/TadClip/brand/), 11-10 test: one row that says what was taken in (name, every colour, font, logos) and
+// a panel with a drop slot per asset, the brand.txt fields, a proof in the reel's own template, and saved brands
+const BK = {
+  th: { edit: "แก้แบรนด์", close: "ปิด", proof: "ในคลิปจะเป็นแบบนี้", popup: "ข้อความ", popup2: "ของแบรนด์", word: "คำเน้น", end: "หน้าจบ",
+    fix: "แก้", slots: "ใส่ไฟล์ (ลากมาวาง หรือกดเลือก)", fields: "หรือพิมพ์เอง", save: "บันทึก", saved: "แบรนด์ที่เก็บไว้", use: "ใช้", store: "เก็บแบรนด์นี้ไว้",
+    clubgig: "ไม่ใช้แบรนด์ (ClubGig)", folder: "เปิดโฟลเดอร์", err: "อ่านไฟล์แบรนด์ไม่ได้ ใช้แบรนด์ ClubGig ไปก่อน", errTodo: "เอาไฟล์ที่เพิ่งใส่ออก แล้วลองใหม่",
+    role: { sheet: "ชีตสีแบรนด์", "logo-light": "โลโก้สีขาว", "logo-dark": "โลโก้สีเข้ม" }, checked: "ตรงกับสีในชีต", files: "ไฟล์ในโฟลเดอร์", unused: "ไม่ได้ใช้", from: { sheet: "จากชีตสี", screenshot: "จากภาพหน้าเพจ", logo: "จากโลโก้", "brand.txt": "พิมพ์เอง", file: "จากไฟล์" },
+    slot: { logo: ["โลโก้", "ภาพไหนก็ได้ PNG พื้นใสคมสุด"], "logo-light": ["โลโก้สีขาว", "ใช้บนวิดีโอ (ไม่มีก็ได้)"], "logo-dark": ["โลโก้สีเข้ม", "ใช้หน้าจบพื้นขาว (ไม่มีก็ได้)"],
+      sheet: ["ชีตสีแบรนด์ / คู่มือแบรนด์", "ภาพหรือ PDF ที่มีรหัสสี #"], font: ["ฟอนต์", ".ttf .otf ที่มีภาษาไทย"] },
+    f: { name: "ชื่อแบรนด์", primary: "สีหลัก", secondary: "สีรอง", light: "สีอ่อน", dark: "สีเข้ม", font: "ชื่อฟอนต์", tagline: "สโลแกน", line: "LINE ID", linebutton: "ปุ่ม LINE", avoid: "ห้ามใช้" } },
+  en: { edit: "Edit brand", close: "Close", proof: "In the clip it looks like this", popup: "Your", popup2: "brand text", word: "Highlight", end: "End card",
+    fix: "fix", slots: "Add files (drop here or click)", fields: "Or type it", save: "Save", saved: "Saved brands", use: "Use", store: "Save this brand",
+    clubgig: "No brand (ClubGig)", folder: "Open folder", err: "Couldn't read the brand files: ClubGig's brand for now", errTodo: "Take out the file you just added and try again",
+    role: { sheet: "colour sheet", "logo-light": "white logo", "logo-dark": "dark logo" }, checked: "matches the colour sheet", files: "Files in the folder", unused: "not used", from: { sheet: "from the colour sheet", screenshot: "from the page", logo: "from the logo", "brand.txt": "typed", file: "from the file" },
+    slot: { logo: ["Logo", "any picture; a transparent PNG is sharpest"], "logo-light": ["White logo", "over the video (optional)"], "logo-dark": ["Dark logo", "on the white end card (optional)"],
+      sheet: ["Colour sheet / brand guide", "a picture or PDF with # colour codes"], font: ["Font", ".ttf .otf with Thai"] },
+    f: { name: "Brand name", primary: "Main colour", secondary: "Second colour", light: "Light colour", dark: "Dark colour", font: "Font name", tagline: "Tagline", line: "LINE ID", linebutton: "LINE button", avoid: "Avoid" } },
+};
+let bkOpen = false;
+const ACCEPT = { font: ".ttf,.otf", sheet: "image/*,.pdf,.heic", logo: "image/*,.heic,.svg,.pdf", "logo-light": "image/*,.heic,.svg", "logo-dark": "image/*,.heic,.svg" };
+export function brandRow(k, saved = []) {
+  const w = t(), b = BK[lang] || BK.th, i = k?.impact || { plate: "#6A2C3B", plate2: "#87203F", color: "#FFE11A", ink: "#fff", ink2: "#fff" };
+  const font = k?.font ? `<style>@font-face { font-family: BrandSample; src: url(/brandfont?f=${encodeURIComponent(k.font)}); }</style>` : "", ff = k?.font ? "font-family:BrandSample, Kanit;" : "";
+  const dots = (k?.colors?.list || []).map((c) => `<i class="dot" style="background:${esc(c.hex)}" title="${esc(c.hex)} ${esc(c.name || "")}"></i>`).join("");
+  const row = !k || k.error
+    ? `<span class="muted">${w.brandNone}</span>${k?.error ? `<p class="bkerr" role="alert">${b.err}: ${esc(k.error)}. ${b.errTodo}</p>` : ""}`
+    : `${k.logo ? `<img src="${esc(k.logo)}" alt="">` : ""}<b class="bkname">${esc(k.name || "")}</b><span class="dots">${dots}</span>${k.fontName ? `<span class="muted">${esc(k.fontName)}</span>` : ""}
+       <ul class="have">${Object.entries(w.have).map(([key, label]) => { const v = k.have?.[key]; return `<li class="${v ? "yes" : "no"}">${v ? "✓" : "✗"} ${label}${v && b.from[v] && v !== "file" ? ` <small>(${b.from[v]})</small>` : ""}</li>`; }).join("")}</ul>
+       ${!k.have?.logo || k.have.logo === "screenshot" ? `<p class="want">${w.wantLogo}</p>` : ""}`;
+  const head = `<div class="brandrow">${font}${row}<button class="btn ghost small" data-act="bk" aria-expanded="${bkOpen}">${icon("folder")}<span>${bkOpen ? b.close : k ? b.edit : w.brandAdd}</span></button></div>`;
+  if (!bkOpen) return head;
+  const held = (role) => Object.entries(k?.files || {}).filter(([, r]) => r === role).map(([f]) => f);
+  const slots = Object.entries(b.slot).map(([role, [label, hint]]) => { const h = held(role);
+    return `<label class="slot${h.length ? " has" : ""}" id="slot-${role}" data-role="${role}"><input type="file" data-role="${role}" accept="${ACCEPT[role]}" hidden>
+      <b>${h.length ? "✓" : "+"} ${label}</b><small>${h.length ? esc(h.join(", ")) : hint}</small></label>`; }).join("");
+  const ty = k?.typed || {}, cl = k?.colors || {};
+  const field = (key) => { const v = ty[key] ?? "", ph = cl[key] || (key === "name" ? k?.name : key === "font" ? k?.fontName : "") || "";
+    const colour = ["primary", "secondary", "light", "dark"].includes(key);
+    return `<label class="fld" for="f-${key}"><span>${colour ? `<i class="dot" style="background:${esc(v || ph || "transparent")}"></i>` : ""}${b.f[key]}</span><input id="f-${key}" name="${key}" value="${esc(v)}" placeholder="${esc(ph)}" ${colour ? 'pattern="#?[0-9A-Fa-f]{6}" maxlength="7"' : 'maxlength="120"'} autocomplete="off"></label>`; };
+  const proof = k && !k.error ? `<div class="proof"><div class="frame" style="${ff}">${k.proof ? `<img class="lv" src="${esc(k.proof.video)}" alt="">` : ""}
+      <span class="hook" style="color:${esc(i.color)}">${b.word}</span>
+      <span class="pl" style="background:${esc(i.plate)};color:${esc(i.ink || "#fff")}">${b.popup}</span><span class="pl two" style="background:${esc(i.plate2 || i.plate)};color:${esc(i.ink2 || i.ink || "#fff")}">${b.popup2}</span></div>
+    <div class="frame end">${k.proof ? `<img src="${esc(k.proof.card)}" alt="">` : `<b>${esc(k.name || "")}</b>`}<small>${b.end}</small></div>
+    <ul class="pal">${(cl.list || []).map((c) => `<li><i class="dot" style="background:${esc(c.hex)}"></i> ${esc(c.hex)} ${esc(c.name || "")}${c.checked ? ` <small>✓ ${b.checked}</small>` : ""}</li>`).join("")}
+      ${k.fontName ? `<li>${w.have.font}: <span style="${ff}">${esc(k.fontName)} กขค</span></li>` : ""}${k.avoid ? `<li>${b.f.avoid}: ${esc(k.avoid)}</li>` : ""}
+      <li class="fixes"><a href="#f-primary">${b.fix} ${w.have.colours}</a> · <a href="#slot-logo">${b.fix} ${w.have.logo}</a> · <a href="#slot-font">${b.fix} ${w.have.font}</a></li></ul></div>` : "";
+  const files = Object.entries(k?.files || {}).map(([f, r]) => `${esc(f)} → ${r === "not used" ? `${b.unused}: ${esc(k.why?.[f] || "")}` : w.roles[r] || b.role[r] || esc(r)}`).join("<br>");
+  const notes = k && !k.error ? ((lang === "en" && k.notes_en) || k.notes || []).map(esc).join("<br>") : "";
+  return head + `<div class="bkpanel">
+    ${proof}
+    <h3>${b.slots}</h3><div class="slots">${slots}</div>
+    <h3>${b.fields}</h3><form class="bkform">${["name", "primary", "secondary", "light", "dark", "font", "tagline", "line", "linebutton", "avoid"].map(field).join("")}
+      <button class="btn small primary" type="submit">${b.save}</button></form>
+    ${files || notes ? `<details class="said brandnotes" open><summary>${w.brandNotes}</summary><p>${files}${files && notes ? "<br><br>" : ""}${notes}</p></details>` : ""}
+    <h3>${b.saved}</h3><div class="lib"><select id="bklib" aria-label="${b.saved}"><option value="">${b.clubgig}</option>${saved.map((n) => `<option${n === k?.name ? " selected" : ""}>${esc(n)}</option>`).join("")}</select>
+      <button class="btn ghost small" data-act="bkuse">${b.use}</button>
+      ${k && !k.error ? `<input id="bkname" value="${esc(k.name || "")}" maxlength="60" aria-label="${b.store}"><button class="btn ghost small" data-act="bkstore">${b.store}</button>` : ""}
+      <button class="btn ghost small" data-act="brand">${b.folder}</button></div></div>`;
 }
 export function errorScreen(s) {
   const w = t(), code = errCode(s), [what, todo] = w.err[code] || w.err.crashed;
@@ -245,6 +307,10 @@ export function wire(root, refresh, own = () => false) {
     if (a === "stop") await api.stop();
     if (a === "retry") await api.retry();
     if (a === "signin") await api.signin();
+    if (a === "brand") await api.openBrand();
+    if (a === "bk") bkOpen = !bkOpen;
+    if (a === "bkuse") await api.brands("use", root.querySelector("#bklib").value);
+    if (a === "bkstore") await api.brands("save", root.querySelector("#bkname").value);
     if (a === "fresh") await api.fresh();
     if (a === "ok") await api.reply("โอเค ทำไฟล์จริงเลย");
     if (a === "yes") await api.reply("ตกลง ทำต่อเลย ตัดสินใจเองได้");
@@ -253,7 +319,12 @@ export function wire(root, refresh, own = () => false) {
     if (a === "other") { const f = root.querySelector("form.other"); f.hidden = false; f.querySelector("input").focus(); return; }
     refresh(true);
   });
+  root.addEventListener("change", async (e) => {   // a brand slot's file picker: the file goes to brand/ named by its role
+    const r = e.target.dataset?.role; if (!r || !e.target.files?.length) return;
+    await api.upload([...e.target.files], null, r); refresh(true);
+  });
   root.addEventListener("submit", async (e) => {
+    if (e.target.matches("form.bkform")) { e.preventDefault(); await api.brandTxt(Object.fromEntries(new FormData(e.target))); return refresh(true); }
     if (!e.target.matches("form.other")) return;
     e.preventDefault();
     const v = e.target.t.value.trim();
@@ -268,7 +339,7 @@ export function poll(render) {
     if (busy) return; busy = true;
     try {
       const s = await api.state();
-      const key = JSON.stringify([lang, screen(s), s.job?.status, s.job?.step, s.job?.error, s.job?.slept, s.files.map((f) => f.name + f.size), s.net]);
+      const key = JSON.stringify([lang, screen(s), s.job?.status, s.job?.step, s.job?.error, s.job?.slept, s.files.map((f) => f.name + f.size), s.net, s.brandId, s.signedIn]);
       if (force || key !== last) {
         const moved = last && JSON.parse(last)[1] !== screen(s);
         last = key;
@@ -287,7 +358,7 @@ export function poll(render) {
 export function dropzone(target, onFiles) {   // the whole page accepts a dropped clip
   addEventListener("dragover", (e) => { e.preventDefault(); target.classList.add("over"); });
   addEventListener("dragleave", (e) => { if (!e.relatedTarget) target.classList.remove("over"); });
-  addEventListener("drop", (e) => { e.preventDefault(); target.classList.remove("over"); if (e.dataTransfer.files.length) onFiles([...e.dataTransfer.files]); });
+  addEventListener("drop", (e) => { e.preventDefault(); target.classList.remove("over"); if (e.dataTransfer.files.length) onFiles([...e.dataTransfer.files], e.target.closest?.("[data-role]")?.dataset.role); });   // on a brand slot: that role
 }
 export const fileInput = (id = "pick") => `<input type="file" id="${id}" accept="video/*,audio/*,.mov,.mp4,.m4a,.mp3,.wav" multiple hidden>`;
 

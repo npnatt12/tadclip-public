@@ -7,7 +7,7 @@ S="$(cd "$(dirname "$0")/.." && pwd)"
 # before each step: wait out a dropped connection instead of failing every download in it (up to 15 min)
 waitnet() { local i=0; until curl -fsI -m 10 https://pypi.org >/dev/null 2>&1; do
   [ $i = 0 ] && echo "No internet right now. Waiting for it to come back... (ไม่มีอินเทอร์เน็ต กำลังรอ)"; i=$((i+1)); [ $i -ge 90 ] && return 1; sleep 10; done; }
-N=0; say() { N=$((N+1)); echo; echo "== [$N/7] $1"; waitnet; }    # progress the user (or the agent relaying it) can see
+N=0; say() { N=$((N+1)); echo; echo "== [$N/8] $1"; waitnet; }    # progress the user (or the agent relaying it) can see
 [ "$S" -ef "$HOME/.claude/skills/tadclip" ] || echo "WARNING: TadClip belongs in ~/.claude/skills/tadclip (some scripts look for their face models there). This copy is in $S."
 BIN="$HOME/.local/bin"; T="$HOME/.local/share/tadclip-tools"; mkdir -p "$BIN" "$T"
 export PATH="$BIN:$PATH"
@@ -65,6 +65,10 @@ command -v whisper >/dev/null || uv tool install -p 3.11 openai-whisper
 say "Thai transcription in ~/.venvs/mlxw (~300 MB, the longest step: up to 20 min)"
 V="$HOME/.venvs/mlxw"
 "$V/bin/python" -c "import mlx_whisper, pythainlp" 2>/dev/null || venv "$V" "$S/scripts/venvs/mlxw.txt"
+# the Whisper model too (1.5 GB), now and not during the first reel (11-09: +20 min mid-run on a fresh account)
+say "Thai transcription model (~1.5 GB)"
+"$V/bin/python" -c "from huggingface_hub import snapshot_download as d; d('mlx-community/whisper-large-v3-turbo')" >/dev/null 2>&1 ||
+  echo "MISS whisper model: the first clip would download it (paste the install line again to retry)"
 
 say "sound effects, music, emoji (~200 MB)"
 python3 "$S/scripts/library_restore.py" --licensed-only

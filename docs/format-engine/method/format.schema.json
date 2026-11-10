@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tadclip.local/format-engine/format.schema.json",
+  "title": "TadClip saved creator format (method v2)",
+  "description": "One editing format read from a cluster of a creator's reels (METHOD.md part 2). Every numeric field is a range with its spec source and the reel.json lever it sets. Positions are % of the frame (y from the top), times in seconds. Rhythm uses measurer v2's shot_cuts / insert_changes split.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format_id", "creator", "version", "measurer_version", "language", "summary", "reels", "length", "rhythm", "text", "layout", "audio", "devices", "structure", "unknown"],
+  "properties": {
+    "format_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "creator": { "type": "string", "minLength": 1 },
+    "version": { "type": "integer", "minimum": 1 },
+    "measurer_version": { "type": "integer", "minimum": 2, "description": "format_spec.py version the ranges were read from." },
+    "language": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["th", "en"] } },
+    "summary": { "type": "string", "description": "The one-paragraph reading of the format." },
+    "reels": {
+      "description": "Every reel considered, members and excluded ones (METHOD R1).",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "member", "reason"],
+        "properties": {
+          "id": { "type": "string" },
+          "account": { "type": "string", "description": "Uploader handle from the study file." },
+          "seconds": { "type": "number", "minimum": 0 },
+          "w": { "type": "integer" },
+          "h": { "type": "integer" },
+          "member": { "type": "boolean" },
+          "reason": { "type": "string" },
+          "sheet_covers_to": { "type": "number", "description": "Last frame time on the contact sheet, when it stops before the end." }
+        }
+      }
+    },
+    "length": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["seconds"],
+      "properties": { "seconds": { "$ref": "#/$defs/range" } }
+    },
+    "rhythm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["per_min", "shot_per_min", "insert_per_min", "shot_median", "shot_p90", "first", "cut_shares"],
+      "properties": {
+        "per_min": { "$ref": "#/$defs/range", "description": "cuts.per_min (all detections)." },
+        "shot_per_min": { "$ref": "#/$defs/range", "description": "cuts.shot_cuts_per_min." },
+        "insert_per_min": { "$ref": "#/$defs/range", "description": "len(cuts.insert_changes) / seconds x 60 (derived)." },
+        "shot_median": { "$ref": "#/$defs/range", "description": "cuts.shot_median (between shot cuts)." },
+        "shot_p90": { "$ref": "#/$defs/range" },
+        "first": { "$ref": "#/$defs/range" },
+        "hook_end": { "$ref": "#/$defs/range", "description": "Time of the shot cut that ends the hook (METHOD R2.2)." },
+        "body_shot_per_min": { "$ref": "#/$defs/range", "description": "Shot cuts after the hook end per minute of body (derived)." },
+        "body_shot_median": { "$ref": "#/$defs/range" },
+        "cut_shares": {
+          "description": "Shares of all detections, measured since v2 (METHOD R2.1). Sum to 1.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["shot", "insert"],
+          "properties": {
+            "shot": { "$ref": "#/$defs/range" },
+            "insert": { "$ref": "#/$defs/range" },
+            "body_shot": { "$ref": "#/$defs/range" },
+            "body_insert": { "$ref": "#/$defs/range" }
+          }
+        },
+        "shot_kinds": {
+          "description": "Why the speaker's shot changed, shares of shot cuts read on the sheet (METHOD R2.4). basis = looked.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "speaker": { "$ref": "#/$defs/range" },
+            "layout": { "$ref": "#/$defs/range" },
+            "cutaway": { "$ref": "#/$defs/range" }
+          }
+        },
+        "coincident": {
+          "description": "Shot cuts and panel/B-roll content changes land on the same frame (METHOD R2.5).",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "basis", "lever"],
+          "properties": {
+            "value": { "type": "boolean" },
+            "basis": { "$ref": "#/$defs/basis" },
+            "lever": { "type": "string" },
+            "note": { "type": "string" }
+          }
+        },
+        "corrections": {
+          "description": "Measurer failure modes found on the sheet and how counts were corrected (METHOD R2.3).",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["first_seen", "seconds_median", "gap_median", "line_h_median", "own_share_of_time", "roles"],
+      "properties": {
+        "first_seen": { "$ref": "#/$defs/range" },
+        "seconds_median": { "$ref": "#/$defs/range" },
+        "gap_median": { "$ref": "#/$defs/range" },
+        "rows_median": { "$ref": "#/$defs/range" },
+        "line_h_median": { "$ref": "#/$defs/range" },
+        "own_share_of_time": { "$ref": "#/$defs/range" },
+        "own_events_per_min": { "$ref": "#/$defs/range" },
+        "roles": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/role" } }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["face_share", "face_top", "face_bottom", "face_height", "face_cx", "shares"],
+      "properties": {
+        "face_share": { "$ref": "#/$defs/range" },
+        "face_top": { "$ref": "#/$defs/range" },
+        "face_bottom": { "$ref": "#/$defs/range" },
+        "face_height": { "$ref": "#/$defs/range" },
+        "face_cx": { "$ref": "#/$defs/range" },
+        "shares": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "full_speaker": { "$ref": "#/$defs/range" },
+            "split": { "$ref": "#/$defs/range" },
+            "panel": { "$ref": "#/$defs/range" },
+            "inset": { "$ref": "#/$defs/range" },
+            "full_cutaway": { "$ref": "#/$defs/range" }
+          }
+        },
+        "block_seconds": { "$ref": "#/$defs/range" }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pauses_per_min", "longest_pause"],
+      "properties": {
+        "pauses_per_min": { "$ref": "#/$defs/range" },
+        "longest_pause": { "$ref": "#/$defs/range" },
+        "lufs_note": { "type": "string" }
+      }
+    },
+    "devices": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/device" } },
+    "structure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hook", "body", "end"],
+      "properties": {
+        "hook": { "$ref": "#/$defs/phase" },
+        "body": { "$ref": "#/$defs/phase" },
+        "end": { "$ref": "#/$defs/phase" }
+      }
+    },
+    "unknown": { "type": "array", "items": { "type": "string" } },
+    "fit_notes": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "pair": {
+      "type": "array",
+      "prefixItems": [{ "type": "number" }, { "type": "number" }],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "basis": { "enum": ["measured", "looked", "derived"] },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed", "accept", "n", "basis", "source"],
+      "properties": {
+        "observed": { "$ref": "#/$defs/pair" },
+        "accept": { "$ref": "#/$defs/pair" },
+        "unit": { "type": "string" },
+        "n": { "type": "integer", "minimum": 1 },
+        "basis": { "$ref": "#/$defs/basis" },
+        "source": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "range": {
+      "description": "observed = [min, max] over member reels; accept = observed widened by max(15 %, floor) (METHOD S1).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed", "accept", "n", "basis", "source", "lever"],
+      "properties": {
+        "observed": { "$ref": "#/$defs/pair" },
+        "accept": { "$ref": "#/$defs/pair" },
+        "unit": { "type": "string" },
+        "n": { "type": "integer", "minimum": 1 },
+        "basis": { "$ref": "#/$defs/basis" },
+        "source": { "type": "string" },
+        "lever": { "type": "string" },
+        "confidence": { "enum": ["normal", "low"] },
+        "note": { "type": "string" }
+      }
+    },
+    "hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "y", "basis", "style", "when", "lever"],
+      "anyOf": [{ "required": ["seconds"] }, { "required": ["share"] }],
+      "properties": {
+        "id": { "type": "string" },
+        "role": { "enum": ["caption", "punch", "title", "label", "bar", "cta", "cutaway-text"] },
+        "y": { "$ref": "#/$defs/span" },
+        "x": { "$ref": "#/$defs/span" },
+        "line_h": { "$ref": "#/$defs/span" },
+        "rows": { "$ref": "#/$defs/span" },
+        "seconds": { "$ref": "#/$defs/span" },
+        "share": { "$ref": "#/$defs/span" },
+        "plate": { "type": "array", "items": { "$ref": "#/$defs/hex" } },
+        "letters": { "type": "array", "items": { "$ref": "#/$defs/hex" } },
+        "basis": { "$ref": "#/$defs/basis" },
+        "style": { "type": "string" },
+        "when": { "type": "string" },
+        "lever": { "$ref": "#/$defs/lever" }
+      }
+    },
+    "lever": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string" },
+        "fields": { "type": "object" },
+        "gap": { "type": "string" }
+      }
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "what", "when", "seen_in", "role", "basis", "lever", "needs"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "name": { "type": "string" },
+        "what": { "type": "string" },
+        "when": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["anchor", "cue"],
+          "properties": {
+            "anchor": { "enum": ["hook", "spoken-cue", "section-change", "persistent", "end"] },
+            "from": { "enum": ["start", "end"] },
+            "t": { "$ref": "#/$defs/span" },
+            "duration": { "$ref": "#/$defs/span" },
+            "cue": { "type": "string" }
+          }
+        },
+        "where": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "y": { "$ref": "#/$defs/span" },
+            "x": { "$ref": "#/$defs/span" },
+            "text_role": { "type": "string" }
+          }
+        },
+        "seen_in": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["k", "n", "evidence"],
+          "properties": {
+            "k": { "type": "integer", "minimum": 1 },
+            "n": { "type": "integer", "minimum": 1 },
+            "evidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["reel", "t"],
+                "properties": { "reel": { "type": "string" }, "t": { "type": "number" }, "note": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "role": { "enum": ["signature", "optional"] },
+        "basis": { "$ref": "#/$defs/basis" },
+        "lever": { "$ref": "#/$defs/lever" },
+        "needs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["what", "devices"],
+      "properties": {
+        "seconds": { "$ref": "#/$defs/span" },
+        "what": { "type": "string" },
+        "devices": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

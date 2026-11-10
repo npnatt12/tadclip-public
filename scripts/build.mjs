@@ -28,6 +28,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { MOTION_CSS, buildScene, buildEditorialCaptions, buildMusic } from "./lib/motion.mjs";
 import { KINETIC_CSS, buildKinetic, blockHeight, placeY } from "./lib/kinetic.mjs";
@@ -61,12 +62,50 @@ const taste = loadTaste(findTaste({ proj, skill: SKILL }));
 const { spec, applied: tasteApplied } = applyTaste(deepMerge(preset, rawSpec), rawSpec, taste);
 const BANNED_SFX = bannedSfx(taste);
 if (spec.captions?.style === "icarus") spec.captions.style = "clubgig"; // old reels
+// the user's own brand (scripts/own_brand.py -> brand/own.json) wins over the style and the example it was copied from:
+// colours, font, logos, LINE words. Only where the reel already has the slot (no chrome added to a style without one).
+const OWN = path.join(proj, "brand", "own.json"), KEY = path.join(proj, "brand", "own.key"), ownWarn = [];
+// on EVERY route, not only ClubGig's recipe (11-09 test: the "from scratch" route never ran own_brand.py and the agent
+// picked the colours by eye): (re)made here whenever ~/TadClip/brand/ changed since this reel's own.json
+const BRAND_SRC = path.join(process.env.TADCLIP_DIR || path.join(os.homedir(), "TadClip"), "brand");
+const sha = (f) => createHash("sha1").update(fs.readFileSync(f)).digest("hex");
+try {
+  const files = fs.readdirSync(BRAND_SRC).filter((f) => !f.startsWith(".") && (/\.(png|jpe?g|webp|heic|heif|svg|pdf|gif|tiff?|bmp|ttf|otf)$/i.test(f) || /^(brand|แบรนด์)\.txt$/i.test(f)));
+  // names + times of what's in the folder: an added, changed or deleted file re-makes the reel's brand
+  const key = files.map((f) => `${f}:${fs.statSync(path.join(BRAND_SRC, f)).mtimeMs}`).join("|");
+  const [kKey, kSha] = fs.existsSync(KEY) ? fs.readFileSync(KEY, "utf8").split("\n") : [];
+  // the build owns the brand (11-10 test: the agent wrote its own brand.txt, ran own_brand.py on it and edited own.json by
+  // hand, twice): a kit this build didn't make from the folder is re-made from it, and the build says so
+  const edited = fs.existsSync(OWN) && !!kSha && sha(OWN) !== kSha;
+  if (edited) ownWarn.push("brand/own.json was changed by hand: re-made from ~/TadClip/brand. Brand changes go in that folder or the page's brand fields, never in own.json or a brand.txt of your own");
+  if (files.length && (!fs.existsSync(OWN) || kKey !== key || !kSha || edited)) {
+    console.log(execFileSync("python3", [path.join(SKILL, "scripts", "own_brand.py"), proj, "--from", BRAND_SRC], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim());
+    fs.writeFileSync(KEY, key + "\n" + sha(OWN));
+  } else if (!files.length && fs.existsSync(OWN) && fs.existsSync(KEY)) { for (const f of [OWN, KEY]) fs.rmSync(f, { force: true }); console.log("own brand: folder emptied, the style's brand is back"); }
+} catch (e) {
+  if (e.code !== "ENOENT") {   // never silent (11-10: a font file crashed the loader and the reel quietly went ClubGig)
+    const why = String(e.stderr || e.message).trim().split("\n").pop();
+    ownWarn.push(`own brand: ~/TadClip/brand couldn't be read (${why}): ${fs.existsSync(OWN) ? "the last brand made from it is used" : "this reel has the style's brand"}`);
+  }
+}
+if (fs.existsSync(OWN)) {
+  const k = JSON.parse(fs.readFileSync(OWN, "utf8"));
+  for (const key of ["impact", "brand"]) if (k[key]) spec[key] = { ...(spec[key] || {}), ...k[key] };
+  if (k.swipe) spec.swipe = k.swipe;
+  if (spec.chrome && k.chrome) spec.chrome = { ...spec.chrome, ...k.chrome };
+  // a style without an end card still ends on their logo (a reel they can post is a reel with their brand on it)
+  if (k.endcard?.logo && !(spec.beats || []).some((b) => b.type === "endcard")) { spec.beats = [...(spec.beats || []), { type: "endcard", at: "outro+0", bg: "#FFFFFF", ...k.endcard }]; spec.outro ??= 2.2; }
+  if (k.endcard === null) { spec.beats = (spec.beats || []).filter((b) => b.type !== "endcard"); spec.omit = [...(spec.omit || []), "endcard"]; spec.outro = 0; }   // no logo, no name: end on the last word
+  if (k.linecta === null) { spec.beats = (spec.beats || []).filter((b) => b.type !== "linecta"); spec.omit = [...(spec.omit || []), "linecta"]; }   // no LINE ID: no button
+  for (const b of spec.beats || []) if (["endcard", "linecta"].includes(b.type) && k[b.type]) Object.assign(b, k[b.type]);
+  console.log(`own brand: ${k.name || k.from} · ${(k.colors?.list || []).map((c) => c.hex).join(" ") || "no colours"} · plate ${k.impact?.plate ?? "-"} text ${k.impact?.ink ?? "-"}${k.font ? ` · ${k.font_name || k.font}` : ""}`);
+}
 
 const FPS = spec.fps ?? 30;
 // brand kit: one accent (60/30/10), ink for text on light scenes, caption size
 const brand = { accent: "#D13F34", accentDark: "#B93026", ink: "#262626", capSize: 58, font: null, ...(spec.brand || {}) };
 const W = 1080, H = 1920;
-const warn = [];
+const warn = [...ownWarn];
 const die = (m) => { console.error("ERROR: " + m); process.exit(1); };
 
 // ---------- takes and time mapping ----------
@@ -595,7 +634,7 @@ let swipeN = 0;
 const swipeAt = (tc) => {
   // 0.6 s centred on the cut: the picture whips up with blur, a yellow field, a cyan brush on white, blue, then an iris opens
   // in orange onto the incoming shot; grain over all of it; one whoosh. The cut itself happens underneath at tc.
-  const sid = `sw${swipeN++}`, a = r3(tc - 0.3), sw = ["#F2C230", "#E5532D", "#8FE3EC", "#3DC9D6", "#7DB6DA", "#E8862E"];
+  const sid = `sw${swipeN++}`, a = r3(tc - 0.3), sw = spec.swipe ?? ["#F2C230", "#E5532D", "#8FE3EC", "#3DC9D6", "#7DB6DA", "#E8862E"];
   if (!fs.existsSync(path.join(A, "grain.png"))) fs.copyFileSync(path.join(SKILL, "templates", "grain.png"), path.join(A, "grain.png"));
   overlays.push({ html: `<div id="${sid}" class="clip layer" data-start="${Math.max(0, a)}" data-duration="0.62" data-track-index="33" style="z-index:60;overflow:hidden;pointer-events:none">
     <i id="${sid}_y" class="fld" style="background:linear-gradient(180deg,${sw[0]} 0%,${sw[0]} 55%,${sw[1]} 100%)"></i><i id="${sid}_w" class="fld" style="background:#F4FBFC"></i>
@@ -624,6 +663,7 @@ const IMPACT_LOOKS = {
 };
 const THAI_METRICS_L = () => THAI_METRICS;
 const THAI_METRICS = fs.existsSync(path.join(LIB, "fonts", "thai", "metrics.json")) ? JSON.parse(fs.readFileSync(path.join(LIB, "fonts", "thai", "metrics.json"), "utf8")) : {};
+if (fs.existsSync(path.join(proj, "brand", "own-metrics.json"))) Object.assign(THAI_METRICS, JSON.parse(fs.readFileSync(path.join(proj, "brand", "own-metrics.json"), "utf8")));   // their own font
 const THAI_MARK = /[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/; // zero-width Thai vowel and tone marks
 const IMPACT_ROLES = {
   topic: { font: "Kanit", motion: "rise", sfx: "whoosh" }, question: { font: "Chakra Petch", motion: "pop", sfx: "pop" },
@@ -764,7 +804,7 @@ for (const b of beatsList) {
       const [z0, z1] = b.zoom ?? (b.swipe ? [1.0, 1.06] : [1.0, 1.08]);
       const bh = b.mode === "split" ? (b.h ?? 960) : 1920;
       // mode "panel": the clip sits in a framed box and the speaker stays on screen (`broll.panel` {box: [x, y, w, h], frame})
-      const pn = { box: [50, 1010, 980, 640], frame: "#1FB5A5", ...spec.broll?.panel, ...b.panel }, geo = b.mode === "panel"
+      const pn = { box: [50, 1010, 980, 640], frame: brand.frame ?? "#1FB5A5", ...spec.broll?.panel, ...b.panel }, geo = b.mode === "panel"
         ? `left:${pn.box[0]}px;top:${pn.box[1]}px;width:${pn.box[2]}px;height:${pn.box[3]}px;border:10px solid ${pn.frame};border-radius:14px;overflow:hidden;background:#000`
         : `left:0;top:0;width:${W}px;height:${bh}px;overflow:hidden;background:#000`;
       const swIn = b.swipe === true || b.swipe === "in", swOut = b.swipe === true || b.swipe === "out";
@@ -785,7 +825,7 @@ for (const b of beatsList) {
         const lh = sb * 1.3 + ss * 1.4 + 8;
         overlays.push({ html: `<div id="${id}-lab" class="clip layer stack" data-start="${la}" data-duration="${r3(lb - la)}" data-track-index="30" style="z-index:40;left:0;width:${W}px;top:${Math.round((b.labelY ?? 1060) - lh / 2)}px;font-family:'${TFONT}', Kanit, sans-serif">
           <div class="row"><span id="${id}-lb" class="wt" style="font-size:${sb}px">${esc(big)}</span></div>
-          ${small ? `<div class="row" style="margin-top:8px"><span class="blk" style="font-size:${ss}px;padding:0 20px"><i id="${id}-ls" class="blkbg" style="background:#7A1F35"></i><b>${esc(small)}</b></span></div>` : ""}</div>` });
+          ${small ? `<div class="row" style="margin-top:8px"><span class="blk" style="font-size:${ss}px;padding:0 20px"><i id="${id}-ls" class="blkbg" style="background:${brand.dark ?? "#7A1F35"}"></i><b>${esc(small)}</b></span></div>` : ""}</div>` });
         tl.push(`ft("#${id}-lb", { scale: 1.12, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.18, ease: "back.out(1.6)" }, ${la});`);
         if (small) tl.push(`ft("#${id}-ls", { scaleX: 0 }, { scaleX: 1, duration: 0.14, ease: "power2.out" }, ${r3(la + 0.1)});`);
         if (swOut) [[-14, "inset(0 0 52% 0)"], [18, "inset(38% 0 0 0)"], [-6, "inset(20% 0 30% 0)"]].forEach(([dx, cp], k) => tl.push(`tl.set("#${id}-lab", { x: ${dx}, clipPath: "${cp}" }, ${r3(lb - 0.1 + k / FPS)});`));
@@ -913,9 +953,10 @@ for (const b of beatsList) {
         if (top + h > 1470) { top = Math.round(1470 - h); if (sp.seen && top < sp.bottom) warn.push(`impact at ${b.at}: no room under the chin above the Instagram UI (y 1470): fewer or shorter rows`); }
         const glyphs = [...b.text.replace(/[\s|{}]/g, "")].filter((c) => !THAI_MARK.test(c)).length, need = 0.3 + Math.min(3.2, Math.max(0.8, glyphs / 14));
         if (dur < 1.2 || dur > 4.5 || dur + 1e-6 < need) warn.push(`impact at ${b.at}: ${dur.toFixed(2)} s on screen (want 1.2-4.5 and >= ${need.toFixed(2)} to read ${glyphs} glyphs)`);
-        const pl = [spec.impact?.plate ?? "#6A2C3B", spec.impact?.plate2 ?? "#87203F"];
+        const pl = [spec.impact?.plate ?? "#6A2C3B", spec.impact?.plate2 ?? "#87203F"], ink = [spec.impact?.ink ?? "#fff", spec.impact?.ink2 ?? spec.impact?.ink ?? "#fff"];
+        const tailFont = spec.brand?.font === "Brandfont" ? `'${fam}', Kanit, sans-serif;font-weight:500` : "'Kanit Medium', Kanit, sans-serif;font-weight:500";   // their own font on every row
         inner = `<div id="${id}-in" class="ov" style="left:0;top:${top}px;width:${W}px;z-index:4;font-family:'${fam}', Kanit, sans-serif">${rows.map((r, i) => `<div id="${id}-r${i}" style="margin:0 0 14px ${Math.round(r.x)}px;line-height:1.3">${r.blk
-          ? `<span class="blk" style="font-size:${r.size}px;line-height:1.3;padding:${Math.round(r.size * 0.07)}px ${PAD}px"><i id="${id}-k${i}" class="blkbg" style="background:${pl[r.tail ? 1 : 0]}"></i><b${r.tail ? ` style="font-family:'Kanit Medium', Kanit, sans-serif;font-weight:500"` : ""}>${esc(r.text)}</b></span>`
+          ? `<span class="blk" style="font-size:${r.size}px;line-height:1.3;padding:${Math.round(r.size * 0.07)}px ${PAD}px"><i id="${id}-k${i}" class="blkbg" style="background:${pl[r.tail ? 1 : 0]}"></i><b style="color:${ink[r.tail ? 1 : 0]}${r.tail ? `;font-family:${tailFont}` : ""}">${esc(r.text)}</b></span>`
           : `<span class="wt" style="font-size:${r.size}px;line-height:1.3">${esc(r.text)}</span>`}</div>`).join("")}</div>`;
         if (t0 > 0.05) rows.forEach((r, i) => {
           const ta = r3(t0 + 0.08 * i);
@@ -944,7 +985,7 @@ for (const b of beatsList) {
         if (!onTop && beatsList.some((o) => o.type === "broll" && o.mode === "split" && E(o.at) < t1 && (o.to === undefined ? E(o.at) + 2.5 : E(o.to)) > t0))
           warn.push(`qcard at ${b.at}: a split-screen broll under the torso card slides the speaker away: open on a polaroid clip instead`);
         inner = `<div id="${id}-in" class="ov stack" style="left:0;width:${W}px;top:${top}px;z-index:4;font-family:'${fam}', Kanit, sans-serif">${rows.map((r, i) => r.blk
-          ? `<div id="${id}-r${i}" class="row"><span class="blk" style="font-size:${qs}px;line-height:1.2;padding:0 22px"><i id="${id}-k${i}" class="blkbg" style="background:${b.block ?? "#C53E2B"}"></i><b>${esc(r.text)}</b></span></div>`
+          ? `<div id="${id}-r${i}" class="row"><span class="blk" style="font-size:${qs}px;line-height:1.2;padding:0 22px"><i id="${id}-k${i}" class="blkbg" style="background:${b.block ?? spec.impact?.block ?? "#C53E2B"}"></i><b style="color:${spec.impact?.blockInk ?? "#fff"}">${esc(r.text)}</b></span></div>`
           : `<div id="${id}-r${i}" class="row"><span class="wt" style="font-size:${qs}px;line-height:1.2">${esc(r.text)}</span></div>`).join("")}</div>`;
         rows.forEach((r, i) => {
           const ta = r3(t0 + 0.06 * i);
@@ -978,7 +1019,7 @@ for (const b of beatsList) {
       const centred = zone === "center";
       // `sub`: a small qualifying line (as spoken): above the big words on a card, tucked under their right end in seoul
       const subHtml = b.sub ? `<div class="impact-sub" style="font-size:${subH}px${look === "seoul" ? ";text-align:right" : ""}">${esc(b.sub)}</div>` : "";
-      const plateCss = look === "plate" && spec.impact?.plate ? `;background:${spec.impact.plate}` : "";
+      const plateCss = look === "plate" && spec.impact?.plate ? `;background:${spec.impact.plate};color:${spec.impact.ink ?? "#fff"}` : "";
       inner = `<div id="${id}-in" class="ov impact impact-${look}" style="${centred ? "left:50%;transform:translateX(-50%);text-align:center" : "left:60px"};top:${zones[zone]}px;font-family:'${fam}', 'Kanit', sans-serif;font-size:${size}px${plateCss}">${look === "seoul" ? html + subHtml : subHtml + html}</div>`;
       const sel = `#${id}-in`, M = {
         rise: [{ autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }],
@@ -1204,6 +1245,13 @@ motionCtx.sidePad = placer.sidePad;
 
 // ---------- captions ----------
 const cap = { style: "house", group: 3, highlight: null, ...(spec.captions || {}) };
+// Thai captions are read on a phone at arm's length: twice the old sizes by default (11-09 tester: 62 px "barely
+// visible"). The face-aware placer still keeps them off the face (it scales a block down when there's no room).
+const TH_CAPS = words.some((w) => /[\u0E00-\u0E7F]/.test(w.word)), CAP_X = TH_CAPS && !cap.size ? 2 : 1;
+// Thai has no spaces to wrap at: phrase chunks (cut.py's ~12 characters) show one per screen, short tokens two
+if (TH_CAPS && rawSpec.captions?.group == null) cap.group = words.reduce((n, w) => n + w.word.trim().length, 0) / Math.max(1, words.length) > 5 ? 1 : 2;
+if (TH_CAPS && cap.size && cap.size < 100 && !cap.asked && !["none", "mini"].includes(cap.style) && !TEMPLATE_NAMES.includes(cap.style))
+  warn.push(`captions.size ${cap.size}: Thai captions under 100 px are hard to read on a phone (the default is 2x). Drop it, or keep it with captions.asked = the user's words`);
 if (cap.style === "clean" && !cap.highlight) cap.highlight = brand.accent;
 const groups = [];
 let cur = [];
@@ -1246,7 +1294,7 @@ const capHtml = chest ? chest.html : cap.style === "none" || edit || tpl ? "" : 
     tl.push(`ft("#cg${gi}w${wi}", { scale: 1 }, { scale: 1.08, duration: 0.08, yoyo: true, repeat: 1, ease: "power1.out" }, ${r3(w.start)});`);
     if (cap.highlight) tl.push(`tl.set("#cg${gi}w${wi}", { color: "${cap.highlight}" }, ${r3(w.start)}); tl.set("#cg${gi}w${wi}", { color: "#fff" }, ${r3(Math.min(w.end + 0.02, e - 0.01))});`);
   });
-  const capSize = cap.style === "pill" ? 66 : cap.style === "clubgig" ? (cap.size ?? 60) : cap.style === "clean" ? (cap.size ?? brand.capSize) : (cap.size ?? 56);
+  const capSize = cap.style === "pill" ? 66 * CAP_X : cap.style === "clubgig" ? (cap.size ?? 60 * CAP_X) : cap.style === "clean" ? (cap.size ?? brand.capSize * CAP_X) : (cap.size ?? 56 * CAP_X);
   // mini: small captions at a fixed height (reference-style); they jump to the panel seam during split-screen B-roll
   const inSplit = (spec._splitRuns || []).some(([a, b]) => s < b && e > a);
   const pl = cap.style === "mini" ? { y: inSplit ? (cap.splitY ?? 985) : (cap.y ?? 1360), mode: "fixed" } : placer.place(s, e, capSize * (cap.style === "pill" || cap.style === "clubgig" ? 1.6 : 1.3));
@@ -1254,16 +1302,18 @@ const capHtml = chest ? chest.html : cap.style === "none" || edit || tpl ? "" : 
 }).join("\n      ");
 
 const cyr = /[\u0400-\u04FF]/.test(JSON.stringify(spec.beats || []) + words.map((w) => w.word).join(" "));
-const UI_FONT = brand.font || (cyr ? "Inter" : "Geist");
+// Thai text needs a font with Thai letters (Montserrat, Geist and Inter have none): the brand's font if it has them
+// (library/fonts/thai/metrics.json, or their own Brandfont), else Kanit
+const UI_FONT = TH_CAPS ? (THAI_METRICS[brand.font] ? brand.font : "Kanit") : brand.font || (cyr ? "Inter" : "Geist");
 const capCss = cap.style === "mini"
   ? `.cap-group { font-family: '${cap.font ?? UI_FONT}', ${UI_FONT}, system-ui, sans-serif; font-size: ${cap.size ?? 40}px; font-weight: ${cap.weight ?? 800}; color: #fff; letter-spacing: ${cap.tracking ?? "1px"}; ${cap.upper ? "text-transform: uppercase;" : ""} ${cap.stroke ? `-webkit-text-stroke: ${cap.stroke}px rgba(0,0,0,.85); paint-order: stroke fill;` : ""} text-shadow: ${TEXT_SHADOW}; max-width: 940px; ${cap.strip ? `background: ${cap.strip}; padding: 4px 18px; border-radius: 6px;` : ""} }`
   : cap.style === "clean"
-  ? `.cap-group { font-family: ${UI_FONT}, system-ui, sans-serif; font-size: ${cap.size ?? brand.capSize}px; font-weight: 800; color: #fff; letter-spacing: -1px; text-shadow: 0 4px 18px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.6); }`
+  ? `.cap-group { font-family: ${UI_FONT}, system-ui, sans-serif; font-size: ${cap.size ?? brand.capSize * CAP_X}px; font-weight: 800; color: #fff; letter-spacing: ${TH_CAPS ? "0" : "-1px"}; max-width: 960px; text-shadow: 0 4px 18px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.6); }`
   : cap.style === "clubgig"
-  ? `.cap-group { font-family: '${cap.font ?? "Kanit Medium"}', Kanit, system-ui, sans-serif; font-size: ${cap.size ?? 60}px; font-weight: 500; color: #fff; background: rgba(122,59,68,.57); border-radius: 26px; padding: 12px 30px; max-width: 900px; -webkit-text-stroke: 4px rgba(20,8,10,.55); paint-order: stroke fill; }`
+  ? `.cap-group { font-family: '${cap.font ?? "Kanit Medium"}', Kanit, system-ui, sans-serif; font-size: ${cap.size ?? 60 * CAP_X}px; font-weight: 500; color: #fff; background: rgba(122,59,68,.57); border-radius: 26px; padding: 12px 30px; max-width: 900px; -webkit-text-stroke: 4px rgba(20,8,10,.55); paint-order: stroke fill; }`
   : cap.style === "pill"
-  ? `.cap-group { font-family: ${UI_FONT}, system-ui, sans-serif; font-size: 66px; font-weight: 800; color: #fff; background: rgba(12,12,14,.88); border-radius: 22px; padding: 16px 32px; max-width: 900px; }`
-  : `.cap-group { font-family: Arial, Helvetica, sans-serif; font-size: ${cap.size ?? 56}px; font-weight: 700; color: #fff; max-width: 900px;
+  ? `.cap-group { font-family: ${UI_FONT}, system-ui, sans-serif; font-size: ${66 * CAP_X}px; font-weight: 800; color: #fff; background: rgba(12,12,14,.88); border-radius: 22px; padding: 16px 32px; max-width: 900px; }`
+  : `.cap-group { font-family: ${TH_CAPS ? "Kanit, " : ""}Arial, Helvetica, sans-serif; font-size: ${cap.size ?? 56 * CAP_X}px; font-weight: 700; color: #fff; max-width: 900px;
       -webkit-text-stroke: 8px #000; paint-order: stroke fill; text-shadow: 0 4px 10px rgba(0,0,0,.35); }`;
 
 // ---------- music bed ----------
@@ -1282,11 +1332,11 @@ if (spec.music) {
 // ---------- write ----------
 const FONT_NAMES = { "playfair-display": "Playfair Display", "ibm-plex-sans-thai": "IBM Plex Sans Thai", "jetbrains-mono": "JetBrains Mono", "geist-mono": "GeistMono" };
 const RANGES = { latin: "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD", cyrillic: "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116", thai: "U+0000-00FF, U+0E01-0E5B, U+200B-200D, U+2000-206F, U+25CC" };  // thai: a project font in assets/fonts/<name>-thai.woff2 (Thai + its Latin)
-const fontFaces = fs.readdirSync(path.join(A, "fonts")).filter((f) => /-(latin|cyrillic|thai)(-italic)?\.woff2$/.test(f)).map((f) => {
-  const m = /^(.*)-(latin|cyrillic|thai)(-italic)?\.woff2$/.exec(f);
+const fontFaces = fs.readdirSync(path.join(A, "fonts")).filter((f) => /-(latin|cyrillic|thai)(-italic)?\.(woff2|ttf|otf)$/.test(f)).map((f) => {
+  const m = /^(.*)-(latin|cyrillic|thai)(-italic)?\.(woff2|ttf|otf)$/.exec(f);
   const fam = FONT_NAMES[m[1]] || m[1].split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
   if (["Geist", "Inter", "Montserrat"].includes(fam)) return "";
-  return `@font-face { font-family: "${fam}"; src: url(assets/fonts/${f}) format("woff2"); font-weight: 100 900;${m[3] ? " font-style: italic;" : ""} unicode-range: ${RANGES[m[2]]}; }`;
+  return `@font-face { font-family: "${fam}"; src: url(assets/fonts/${f}) format("${{ ttf: "truetype", otf: "opentype" }[m[4]] || "woff2"}"); font-weight: 100 900;${m[3] ? " font-style: italic;" : ""} unicode-range: ${RANGES[m[2]]}; }`;
 }).join("\n  ");
 const look = spec.look || {};
 if (look.film) { delete look.grade; delete look.grain; } // the graded plate already carries the stock's colour and grain
@@ -1340,9 +1390,9 @@ const html = `<!doctype html>
   .brush { position: absolute; left: -200px; top: 300px; width: 1500px; height: 1300px; filter: blur(16px); }
   .iris { position: absolute; left: 50%; top: 55%; width: 0; height: 0; border-radius: 50%; transform: translate(-50%, -50%); }
   .grain { position: absolute; inset: 0; background: url('assets/grain.png') repeat; opacity: 0; mix-blend-mode: overlay; }
-  .bub { position: relative; box-sizing: border-box; padding: 18px 40px 22px; border-radius: 28px; background: rgba(222,132,86,.88); color: #fff; font-weight: 500; line-height: 1.25; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  .bub { position: relative; box-sizing: border-box; padding: 18px 40px 22px; border-radius: 28px; background: ${brand.bubble || "rgba(222,132,86,.88)"}; color: ${brand.bubbleInk || "#fff"}; font-weight: 500; line-height: 1.25; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
   .bub div { white-space: pre; }
-  .tail { position: absolute; left: 50%; bottom: -20px; width: 40px; height: 40px; margin-left: -20px; transform: rotate(45deg); background: rgba(222,132,86,.88); border-radius: 4px; z-index: -1; }
+  .tail { position: absolute; left: 50%; bottom: -20px; width: 40px; height: 40px; margin-left: -20px; transform: rotate(45deg); background: ${brand.bubble || "rgba(222,132,86,.88)"}; border-radius: 4px; z-index: -1; }
   .hrow { display: flex; align-items: center; gap: 16px; margin-top: 34px; }
   .lineb { display: flex; align-items: center; justify-content: center; border-radius: 24%; background: #06C755; color: #fff; font-family: Arial, sans-serif; font-weight: 900; font-size: 19px; letter-spacing: 0.02em; }
   .pill { display: flex; align-items: center; padding: 0 34px; border-radius: 999px; background: #fff; color: #151515; font-weight: 700; letter-spacing: 0.02em; }
@@ -1357,7 +1407,7 @@ const html = `<!doctype html>
   .impact { z-index: 4; max-width: 955px; width: max-content; background: rgba(122,59,68,.84); color: #fff; border-radius: 26px; padding: 22px 34px; font-weight: 700; line-height: 1.3; text-wrap: balance; box-shadow: 0 14px 40px rgba(0,0,0,.28); }
   .card { background: rgba(14,14,16,.92); color: #fff; border-radius: 28px; padding: 28px 36px; box-shadow: 0 18px 50px rgba(0,0,0,.35); }
   .big-text { font-size: 96px; font-weight: 800; letter-spacing: -2px; line-height: 1.02; }
-  .big-sub { font-size: 38px; font-weight: 600; color: #FFD166; margin-top: 8px; }
+  .big-sub { font-size: 38px; font-weight: 600; color: ${brand.highlight ?? "#FFD166"}; margin-top: 8px; }
   .chips { display: flex; gap: 26px; }
   .chip { display: flex; flex-direction: column; align-items: center; gap: 12px; }
   .chip-face { width: 130px; height: 130px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 70px; font-weight: 800; box-shadow: 0 12px 30px rgba(0,0,0,.3); }
@@ -1368,9 +1418,9 @@ const html = `<!doctype html>
   .strike-x { position: absolute; right: 36px; top: 18px; font-size: 110px; color: #FF453A; font-weight: 900; }
   .q-head { font-size: 28px; text-transform: uppercase; letter-spacing: 3px; color: #aaa; margin-bottom: 12px; }
   .q-line { font-size: 46px; font-weight: 600; line-height: 1.2; margin: 6px 0; }
-  .q-big { font-size: 60px; font-weight: 800; line-height: 1.1; color: #FFD166; margin-top: 12px; }
+  .q-big { font-size: 60px; font-weight: 800; line-height: 1.1; color: ${brand.highlight ?? "#FFD166"}; margin-top: 12px; }
   .l-line { display: flex; gap: 20px; align-items: baseline; font-size: 46px; font-weight: 700; margin: 8px 0; }
-  .l-num { color: #FFD166; font-family: GeistMono, monospace; }
+  .l-num { color: ${brand.highlight ?? "#FFD166"}; font-family: GeistMono, monospace; }
   .l-text { position: relative; }
   .l-strike { position: absolute; left: -4px; right: -4px; top: 55%; height: 6px; background: #FF453A; transform-origin: 0 50%; display: block; }
   .stamp { position: absolute; right: 30px; top: 40%; border: 8px solid #FF453A; color: #FF453A; font-size: 78px; font-weight: 900; padding: 4px 26px; border-radius: 16px; text-transform: uppercase; background: rgba(0,0,0,.25); }

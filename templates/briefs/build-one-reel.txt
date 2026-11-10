@@ -60,7 +60,9 @@ Steps:
   g. Preview: $PY $S/scripts/finals.py preview {P} --out {P}/finals --style "{STYLE}" --code {CODE} --title "{TITLE_EN}"
      (720x1280 ~4.5 Mbit/s) in ONE foreground Bash call with timeout 600000 (the open shell keeps the HyperFrames render
      alive; never `nohup ... &`, never a background job polled turn by turn: each poll re-reads your whole context).
-     Frame 0 as a jpg. Copy both to {PREVIEW_DIR} (where the user watches previews) as "{NAME} (preview).mp4" /
+     The cover jpg ("frame 0"): not the literal first frame (11-09: text over the face, past the edge) but the first
+     frame where the hook text is fully on and nothing covers the face: pick it from the approval sheet, then
+     `ffmpeg -ss <t> -i <preview> -frames:v 1`. Copy both to {PREVIEW_DIR} (where the user watches previews) as "{NAME} (preview).mp4" /
      "{NAME} - frame 0.jpg".
   h. Report in <= 25 lines: the preview paths, its size in MB; three lines for the user (frame-1 hook, the opening line,
      length in s); the bed; the components (new ids) and the one idea no earlier reel in this style has had; face on

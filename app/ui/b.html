@@ -40,6 +40,28 @@
   .style .ph.scratch { width: 100%; aspect-ratio: 1; }
   .ph.scratch svg { width: 40%; height: 40%; }
   label.wish { display: block; margin-top: 16px; font-weight: 600; }
+  .brandrow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; padding: 10px 12px; border: 2px dashed var(--line); border-radius: 14px; }
+  .brandrow img { height: 44px; max-width: 160px; object-fit: contain; border-radius: 8px; background: #8883; padding: 4px; }
+  .brandrow .sample { color: #fff; font: 700 1.05rem/1.3 Kanit; padding: 4px 12px; border-radius: 6px; }
+  .brandrow .sample b { -webkit-text-stroke: 3px #111; paint-order: stroke fill; }
+  .brandrow .btn { margin-inline-start: auto; }
+  .brandrow .have { display: flex; flex-wrap: wrap; gap: 6px 14px; list-style: none; margin: 0; padding: 0; flex-basis: 100%; font-weight: 600; }
+  .brandrow .bkname { font: 600 1.05rem "Kanit"; } .dot { display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--line); vertical-align: middle; margin-inline-end: 4px; }
+  .bkerr { flex-basis: 100%; margin: 0; color: var(--danger, #B3261E); font-weight: 600; }
+  .bkpanel { margin-top: 10px; padding: 14px; border: 2px solid var(--line); border-radius: 14px; } .bkpanel h3 { font-size: 1rem; margin: 16px 0 8px; }
+  .proof { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+  .proof .frame { position: relative; width: 150px; aspect-ratio: 9/16; border-radius: 12px; overflow: hidden; background: linear-gradient(180deg, #8a8378, #3b3732); font: 700 15px/1.3 Kanit; flex: none; }
+  .proof .lv { position: absolute; top: 8px; right: 8px; width: 46px; } .proof .hook { position: absolute; left: 0; right: 0; top: 58%; text-align: center; font-size: 22px; -webkit-text-stroke: 4px #111; paint-order: stroke fill; }
+  .proof .pl { position: absolute; left: 10px; top: 72%; padding: 1px 8px; } .proof .pl.two { top: calc(72% + 26px); left: 34px; font-weight: 500; }
+  .proof .end { background: #fff; display: grid; place-items: center; color: #111; } .proof .end img { width: 70%; } .proof .end small { position: absolute; bottom: 6px; color: #555; }
+  .proof .pal { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; flex: 1 1 200px; } .proof .pal small { color: var(--muted); }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .slot { display: flex; flex-direction: column; gap: 4px; padding: 12px; min-height: 76px; border: 2px dashed var(--line); border-radius: 12px; cursor: pointer; }
+  .slot.has { border-style: solid; border-color: var(--accent); } .slot small { color: var(--muted); overflow-wrap: anywhere; } .slot:focus-within { outline: 3px solid var(--accent); }
+  .bkform { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; align-items: end; }
+  .fld { display: grid; gap: 4px; font-weight: 600; font-size: .9rem; min-width: 0; } .fld input { width: 100%; box-sizing: border-box; } .fld input, .lib input, .lib select { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--fg, inherit); min-height: 44px; }
+  .lib { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .brandrow .have .no { color: var(--muted); } .brandrow .want { margin: 0; flex-basis: 100%; color: var(--muted); } .brandrow .brandnotes { flex-basis: 100%; margin: 0; }
   input.wish { width: 100%; margin-top: 6px; font: inherit; font-size: 1.05rem; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: inherit; min-height: 48px; }
   .one b { font: 600 1.1rem "Kanit"; } .one small { color: var(--muted); display: block; line-height: 1.45; }
   .row2 { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -54,7 +76,7 @@
 </header>
 <div id="root"></div>
 <script type="module">
-import { t, lang, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, icon, esc, STYLES, styleName, styleAsk, tile, dropzone, fileInput } from "./app.js";
+import { t, lang, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, icon, esc, STYLES, styleName, styleAsk, tile, dropzone, fileInput, brandRow } from "./app.js";
 const root = document.getElementById("root");
 let chosen = new Set(), style = "clubgig", showAll = false, uploading = "", wish = "";
 
@@ -78,10 +100,12 @@ function home(s) {
         ${tile(x)}<div><b>${styleName(x)}${x.id === "clubgig" ? `<span class="badge">${w.recommended}</span>` : ""}</b></div></button>`).join("")}</div>
       ${showAll ? `<p class="muted" style="margin-top:10px">${w.moreStylesHint}</p>` : ""}
       ${showAll ? `<p style="margin-top:12px"><button class="btn ghost small" data-act="more">${w.lessStyles}</button></p>` : ""}
+      ${brandRow(s.brand, s.brands)}
       <label class="wish" for="wish">${w.wish}</label><input id="wish" class="wish" value="${esc(wish)}" placeholder="${w.wishEg}" maxlength="300" autocomplete="off">
     </section>
     <section class="go" aria-label="${w.step3}"><span class="num" aria-hidden="true">3</span>
-      <button class="btn primary" data-act="go" ${chosen.size && s.net ? "" : "disabled"}>${icon("scissors")}<span>${w.start}</span></button>
+      ${s.signedIn === false ? `<button class="btn primary" data-act="signin">${icon("check")}<span>${w.signFirst}</span></button>`
+        : `<button class="btn primary" data-act="go" ${chosen.size && s.net ? "" : "disabled"}>${icon("scissors")}<span>${w.start}</span></button>`}
     </section>
   </main>`;
 }
@@ -96,9 +120,9 @@ function render(s) {
   const wi = root.querySelector("#wish");
   if (wi) wi.oninput = () => (wish = wi.value);
 }
-async function add(files) {
+async function add(files, role) {
   uploading = files[0]?.name || ""; refresh(true);
-  const names = await api.upload(files, (n) => { uploading = n; });
+  const names = await api.upload(files, (n) => { uploading = n; }, role);
   uploading = ""; chosen = new Set(names.length ? names : chosen); refresh(true);
 }
 api.settings({ ui: "b" });

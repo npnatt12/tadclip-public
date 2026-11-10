@@ -163,6 +163,55 @@ async function dark(browser, m) {   // home + preview in dark, English too
   return out;
 }
 
+// 11-09: a picture dropped on the page must go to brand/ and show up as their logo, not join the clips
+async function intake() {
+  const s0 = await state(), png = fs.readFileSync(new URL("./fixture/logo.png", import.meta.url));
+  const r = await (await fetch(`${BASE}/api/upload?name=my-logo.png`, { method: "POST", headers: { origin: BASE }, body: png })).json();
+  let s = s0; for (let i = 0; i < 20 && !s.brand?.have?.logo; i++) { await new Promise((ok) => setTimeout(ok, 500)); s = await state(); }
+  const bad = [];
+  if (r.to !== "brand" || !fs.existsSync(path.join(s.folder, "brand", "my-logo.png"))) bad.push("a dropped picture did not go to brand/");
+  if (s.files.some((f) => f.name === "my-logo.png")) bad.push("a dropped picture joined the clips");
+  if (s.brand?.have?.logo !== "file") bad.push("the page doesn't show the dropped logo as taken in");
+  fs.rmSync(path.join(s.folder, "brand", "my-logo.png"), { force: true });
+  return bad;
+}
+// 11-10: the brand panel. A slot per asset (named by role, the last one replaced), every colour of a sheet with the brand's
+// own text colour on its plate, the typed fields -> brand.txt, the library, a loader crash shown on the page
+async function brandPanel(browser) {
+  const bad = [], s0 = await state(), B = path.join(s0.folder, "brand"), up = (name, role, body) => fetch(`${BASE}/api/upload?name=${encodeURIComponent(name)}&role=${role}`, { method: "POST", headers: { origin: BASE }, body });
+  const until = async (pred) => { let s; for (let i = 0; i < 40; i++) { s = await state(); if (pred(s)) return s; await new Promise((ok) => setTimeout(ok, 500)); } return s; };
+  const fx = (f) => fs.readFileSync(new URL(`./fixture/${f}`, import.meta.url));
+  for (const f of fs.readdirSync(B)) fs.rmSync(path.join(B, f), { recursive: true, force: true });
+  await up("first.png", "logo", fx("logo.png")); await up("my logo v2.png", "logo", fx("logo.png")); await up("colours.png", "sheet", fx("brand-sheet.png"));
+  const logos = fs.readdirSync(B).filter((f) => /logo/i.test(f));
+  if (logos.join() !== "logo.png") bad.push(`a second logo didn't replace the first: ${logos}`);
+  let s = await until((x) => x.brand?.colors?.list?.length === 3);
+  if ((s.brand?.colors?.list || []).map((c) => c.hex).join(" ") !== "#00CCFF #A0ECFF #344054") bad.push(`the sheet's colours: ${JSON.stringify(s.brand?.colors?.list)}`);
+  if (s.brand?.impact?.plate !== "#00CCFF" || s.brand?.impact?.ink !== "#344054") bad.push(`the cyan plate with Oxford Blue text: ${JSON.stringify(s.brand?.impact)}`);
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.goto(BASE + "/"); await page.waitForSelector("[data-act=bk]"); await page.click("[data-act=bk]"); await page.waitForSelector(".bkpanel");
+  if (await page.locator(".slot").count() !== 5) bad.push("the panel doesn't show 5 slots");
+  const pl = await page.locator(".proof .pl").first().evaluate((e) => [getComputedStyle(e).backgroundColor, getComputedStyle(e).color]);
+  if (pl.join() !== "rgb(0, 204, 255),rgb(52, 64, 84)") bad.push(`the proof's plate: ${pl}`);
+  const v = await axe(page); if (v.length) bad.push(`brand panel axe: ${v.join(" ")}`);
+  await page.fill("#f-name", "Test Clinic"); await page.fill("#f-line", "@testclinic"); await page.click(".bkform [type=submit]");
+  s = await until((x) => x.brand?.typed?.line === "@testclinic");
+  const txt = fs.existsSync(path.join(B, "brand.txt")) ? fs.readFileSync(path.join(B, "brand.txt"), "utf8") : "";
+  if (!/ชื่อ: Test Clinic/.test(txt) || !/LINE: @testclinic/.test(txt) || /สีหลัก/.test(txt)) bad.push(`brand.txt from the fields: ${JSON.stringify(txt)}`);
+  if (s.brand?.colors?.list?.length !== 3) bad.push("typing a name and LINE dropped the sheet's colours");
+  await post("/api/brands", { act: "save", name: "Test Clinic" }); await post("/api/brands", { act: "use", name: "" });
+  s = await until((x) => !x.brand);
+  if (!s.brands?.includes("Test Clinic") || s.brand) bad.push(`library: saved ${JSON.stringify(s.brands)}, ClubGig after "no brand": ${!s.brand}`);
+  await post("/api/brands", { act: "use", name: "Test Clinic" }); s = await until((x) => x.brand?.name === "Test Clinic");
+  if (s.brand?.name !== "Test Clinic") bad.push("using a saved brand didn't bring it back");
+  fs.rmSync(path.join(B, "brand.txt"), { force: true }); fs.mkdirSync(path.join(B, "brand.txt"));   // a brand.txt the loader can't read at all: said on the page, not a silent ClubGig
+  s = await until((x) => x.brand?.error); await page.reload(); await page.waitForSelector("[data-act=bk]");
+  if (!s.brand?.error || !(await page.locator(".bkerr").count())) bad.push("a loader crash isn't shown on the page");
+  fs.rmSync(path.join(B, "brand.txt"), { recursive: true }); await page.close();
+  for (const f of fs.readdirSync(B)) fs.rmSync(path.join(B, f), { recursive: true, force: true });
+  fs.rmSync(path.join(s0.folder, "brands"), { recursive: true, force: true });
+  return bad;
+}
 const browser = await (process.env.TADCLIP_BROWSER === "webkit" ? webkit : chromium).launch();
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const report = {};
@@ -171,6 +220,7 @@ for (const m of models.length ? models : ["a", "b", "c"]) {
   r.themes = await dark(browser, m);   // first: it shows the preview the task just made; layout() clears the folder
   r.layout = await layout(browser, m);
   r.errors = await errors(browser, m);
+  if (m === "b") r.errors.push(...await intake(), ...await brandPanel(browser));
   r.fails = r.problems.length + r.layout.length + r.errors.length + r.themes.length + (r.fold ? 0 : 1);
   report[m] = r;
   console.log(`${m}: clicks ${r.clicks}, screens ${r.screens}, words ${r.wordsRead} ${JSON.stringify(r.perScreen)}, tabs ${r.tabs}, start ${r.toStart}s, fold ${r.fold ? "ok" : "BELOW"}, fails ${r.fails}`);

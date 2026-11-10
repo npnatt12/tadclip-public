@@ -13,6 +13,10 @@ cp "$DIR"/.tadclip/{events.log,server.log,job.json,settings.json} "$OUT/app/" 2>
 cp "$DIR"/.tadclip/*.stream.jsonl "$OUT/app/" 2>/dev/null
 for p in "$DIR"/*/build/progress.log; do [ -f "$p" ] || continue; n=$(basename "$(dirname "$(dirname "$p")")")
   mkdir -p "$OUT/reels/$n"; cp "$p" "$OUT/reels/$n/"; cp "$DIR/$n"/finals/*.log "$DIR/$n"/finals/*.qa.json "$OUT/reels/$n/" 2>/dev/null; done
+# their brand folder (names and sizes only: their logo stays theirs) and what the brand kit made of it per reel
+mkdir -p "$OUT/brand"; ls -la "$DIR/brand" > "$OUT/brand/folder.txt" 2>&1; ls -la "$DIR/brands" "$DIR"/brands/* >> "$OUT/brand/folder.txt" 2>/dev/null
+python3 "$(dirname "$0")/own_brand.py" --show --from "$DIR/brand" > "$OUT/brand/show.json" 2> "$OUT/brand/show.err"   # what the page saw
+for k in "$DIR"/*/brand/own.json; do [ -f "$k" ] && cp "$k" "$OUT/brand/$(basename "$(dirname "$(dirname "$k")")")-own.json"; done
 # the chats of the last 3 days that ran TadClip (the prompts typed in Claude, and what it did)
 find "$HOME/.claude/projects" -name "*.jsonl" -mtime -3 2>/dev/null | while read -r f; do
   grep -q -i "tadclip" "$f" && cp "$f" "$OUT/chats/$(basename "$(dirname "$f")")--$(basename "$f")"; done

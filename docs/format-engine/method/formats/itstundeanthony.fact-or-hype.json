@@ -1,0 +1,199 @@
+{
+  "format_id": "itstundeanthony-fact-or-hype",
+  "creator": "itstundeanthony",
+  "version": 2,
+  "measurer_version": 2,
+  "language": ["en"],
+  "summary": "A test-the-claim series. The hook (0 to 6.4-8.8 s) shows the claim under test in a rounded inset on the left (another creator's clip, or a repo page with a picture-in-picture), with tags stating the claim's surprising property, while the speaker stands to its right under a white 'Fact or Hype?' pill. A hard cut to a wider full-frame shot then lands 'IS IT FACT OR HYPE' in huge yellow italic on the chest. That shot lasts 1.97 s in all three reels. After it, a FACT / OR / HYPE checkbox bar sits across the chest to the end, and a panel fills the lower half: first the claim's own page (unframed), then a teal-framed screen recording of the speaker running the test. The body is jump-cut: 87-95 % of all detections are shot cuts, and the speaker's shot is cut about every 4-5 s (11-14 cuts/min in the body). Each jump cut also brings the next panel clip, so voice cuts and test steps move together. His own speech has no captions and the voice is cut tight (at most 2.7 pauses/min).",
+  "reels": [
+    { "id": "creator-itstundeanthony-DdWmIHTC322", "account": "itstundeanthony", "seconds": 45.0, "w": 720, "h": 1280, "member": true, "reason": "Title pill y 17.5, IS IT FACT OR stack t 7.0, FACT/OR/HYPE chrome y 50, panel; hook end 6.37 s." },
+    { "id": "creator-itstundeanthony-De1zlGniBQp", "account": "itstundeanthony", "seconds": 63.85, "w": 720, "h": 1280, "member": true, "reason": "Title pill y 17.3, IS IT stack t 9.0, FACT/OR/HYPE chrome y 51, panel; hook end 8.80 s.", "sheet_covers_to": 59.03 },
+    { "id": "creator-itstundeanthony-DfIM7fyIZXI", "account": "itstundeanthony", "seconds": 66.8, "w": 720, "h": 1280, "member": true, "reason": "Title pill y 17.5, IS IT stack t 7.5, FACT/OR/HYPE chrome y 52, panel; hook end 7.10 s." },
+    { "id": "creator-itstundeanthony-C1-K1UfM_eB", "account": "itstundeanthony", "seconds": 23.98, "w": 360, "h": 640, "member": false, "reason": "Shares no device: typed code under language labels (text.chrome), no pill, bar or panel, 360x640, 10 pauses/min. A different, older series." }
+  ],
+  "length": {
+    "seconds": { "observed": [45.0, 66.8], "accept": [38.3, 76.8], "unit": "s", "n": 3, "basis": "measured", "source": "seconds", "lever": "none: length follows the content; the fit flags a clip outside accept" }
+  },
+  "rhythm": {
+    "per_min": { "observed": [13.3, 20.7], "accept": [10.3, 23.8], "unit": "cuts/min", "n": 3, "basis": "measured", "source": "cuts.per_min", "lever": "takes + panel clips together (see coincident)" },
+    "shot_per_min": { "observed": [11.7, 19.7], "accept": [8.7, 22.7], "unit": "cuts/min", "n": 3, "basis": "measured", "source": "cuts.shot_cuts_per_min", "lever": "takes boundaries", "note": "De1zlGniBQp's 19.7 is inflated by 7 hook detections on the second-face inset (see corrections). Corrected over the whole reel: 10.8-13.2/min. Use body_shot_per_min for fitting." },
+    "insert_per_min": { "observed": [0.94, 1.8], "accept": [0.0, 4.8], "unit": "/min", "n": 3, "basis": "derived", "source": "len(cuts.insert_changes) / seconds x 60 (1/45.0, 1/63.85, 2/66.8)", "lever": "panel content changes without a voice cut (rare)" },
+    "shot_median": { "observed": [1.95, 4.33], "accept": [1.66, 4.98], "unit": "s", "n": 3, "basis": "measured", "source": "cuts.shot_median", "lever": "takes length", "note": "The 1.95 is pulled down by the hook artefact; see body_shot_median." },
+    "shot_p90": { "observed": [5.64, 9.49], "accept": [4.79, 10.91], "unit": "s", "n": 3, "basis": "measured", "source": "cuts.shot_p90", "lever": "takes: unbroken stretches of 6-10 s are allowed while a test step plays" },
+    "first": { "observed": [0.1, 6.37], "accept": [0.0, 7.33], "unit": "s", "n": 3, "basis": "measured", "source": "cuts.first", "lever": "none: early detections belong to the inset clip; use hook_end" },
+    "hook_end": { "observed": [6.37, 8.8], "accept": [5.41, 10.12], "unit": "s", "n": 3, "basis": "measured", "source": "cuts.shot_cuts (the cut out of the inset into the stack shot: 6.367 / 8.8 / 7.1)", "lever": "the end of the inset panel beat and the first takes boundary after the claim" },
+    "body_shot_per_min": { "observed": [11.1, 14.2], "accept": [8.1, 17.2], "unit": "cuts/min", "n": 3, "basis": "derived", "source": "shot cuts after hook_end / (seconds - hook_end) x 60: 8/38.6, 13/55.1, 11/59.7", "lever": "takes boundaries at sentence starts; each one starts a new panel clip" },
+    "body_shot_median": { "observed": [2.7, 5.0], "accept": [2.3, 5.75], "unit": "s", "n": 3, "basis": "derived", "source": "shot lengths from hook_end to the end", "lever": "takes length" },
+    "cut_shares": {
+      "shot": { "observed": [0.87, 0.95], "accept": [0.82, 1.0], "n": 3, "basis": "measured", "source": "len(shot_cuts)/n: 9/10, 21/22, 13/15", "lever": "takes" },
+      "insert": { "observed": [0.05, 0.13], "accept": [0.0, 0.18], "n": 3, "basis": "measured", "source": "len(insert_changes)/n", "lever": "panel clip changes" },
+      "body_shot": { "observed": [0.9, 0.93], "accept": [0.85, 0.98], "n": 3, "basis": "derived", "source": "from hook_end: 9/10, 14/15, 12/13", "lever": "takes" },
+      "body_insert": { "observed": [0.07, 0.1], "accept": [0.02, 0.15], "n": 3, "basis": "derived", "source": "from hook_end", "lever": "panel clip changes" }
+    },
+    "shot_kinds": {
+      "speaker": { "observed": [0.78, 0.86], "accept": [0.73, 0.91], "n": 3, "basis": "looked", "source": "contact sheet, body shot cuts: pose/framing jumps with the bar and panel unchanged in layout", "lever": "takes (plain jump cuts; no punch-in seen)" },
+      "layout": { "observed": [0.14, 0.22], "accept": [0.09, 0.27], "n": 3, "basis": "looked", "source": "contact sheet: inset -> full speaker (hook end), full speaker -> panel (bar start)", "lever": "panel beat on/off" },
+      "cutaway": { "observed": [0.0, 0.0], "accept": [0.0, 0.05], "n": 3, "basis": "looked", "source": "contact sheet; face.share 1.0", "lever": "none" }
+    },
+    "coincident": { "value": true, "basis": "looked", "lever": "beats[type=broll,mode=panel].at = the start (a) of each take", "note": "On the sheet every body shot cut shows a new panel clip and a jumped speaker pose (e.g. DfIM7fyIZXI 9.07, 11.47, 19.57, 25.93 s). Voice cut and test step change together." },
+    "corrections": [
+      "De1zlGniBQp 0.10, 0.63, 0.90, 1.17, 1.73, 2.47, 6.97 s: labelled shot cuts, but the sheet shows the speaker unchanged while stickers and tags pop on the inset clip (it holds a second face). Counted as insert changes.",
+      "DfIM7fyIZXI 2.93 s: labelled a shot cut; the cut is inside the inset clip (second face). Counted as an insert change."
+    ]
+  },
+  "text": {
+    "first_seen": { "observed": [0.0, 0.0], "accept": [0.0, 0.5], "unit": "s", "n": 3, "basis": "measured", "source": "text.first_seen", "lever": "beats[type=impact,look=pill].at = 0" },
+    "seconds_median": { "observed": [1.5, 3.5], "accept": [1.0, 4.03], "unit": "s", "n": 3, "basis": "measured", "source": "text.seconds_median", "lever": "none: dominated by screen text inside the panel", "note": "Own graphics are three long-lived treatments; see roles." },
+    "gap_median": { "observed": [1.0, 1.0], "accept": [0.5, 1.5], "unit": "s", "n": 3, "basis": "measured", "source": "text.gap_median", "lever": "none: panel UI text" },
+    "rows_median": { "observed": [1.0, 3.0], "accept": [1.0, 4.0], "n": 3, "basis": "measured", "source": "text.rows_median", "lever": "none: panel UI text" },
+    "line_h_median": { "observed": [0.87, 0.94], "accept": [0.37, 1.44], "unit": "% of h", "n": 3, "basis": "measured", "source": "text.line_h_median", "lever": "none: panel UI text; own sizes are in roles" },
+    "own_share_of_time": { "observed": [0.95, 1.0], "accept": [0.9, 1.0], "n": 3, "basis": "derived", "source": "text.list (pill + stack) + text.chrome (bar)", "lever": "pill, stack and verdict bar together cover the reel" },
+    "own_events_per_min": { "observed": [2.7, 4.0], "accept": [0.0, 7.0], "unit": "/min", "n": 3, "basis": "derived", "source": "3 own treatments / minutes", "lever": "few impacts: the format is carried by layout, not text" },
+    "roles": [
+      {
+        "id": "title-pill", "role": "title",
+        "y": { "observed": [17.3, 17.5], "accept": [14.3, 20.5], "unit": "%", "n": 3, "basis": "measured", "source": "text.list[t0=0, 'Fact or Hype?'].y" },
+        "x": { "observed": [50.0, 50.4], "accept": [47.0, 53.4], "unit": "%", "n": 3, "basis": "measured", "source": "text.list[...].x" },
+        "line_h": { "observed": [3.68, 4.22], "accept": [3.13, 4.85], "unit": "% of h", "n": 3, "basis": "measured", "source": "text.list[...].line_h" },
+        "rows": { "observed": [1, 1], "accept": [1, 2], "n": 3, "basis": "measured", "source": "text.list[...].rows" },
+        "seconds": { "observed": [6.5, 9.0], "accept": [5.5, 10.35], "unit": "s", "n": 3, "basis": "measured", "source": "text.list[...].t1 - t0" },
+        "plate": ["#FEFEFE"], "letters": ["#080808"], "basis": "measured",
+        "style": "Black medium sans, sentence case with a question mark, on a white rounded pill, centred above the head.",
+        "when": "Frame 0 until the hook end.",
+        "lever": { "path": "beats[type=impact,look=pill]", "fields": { "at": 0, "y": 336, "text": "<the user's own series question>" } }
+      },
+      {
+        "id": "is-it-stack", "role": "punch",
+        "y": { "observed": [55.5, 60.5], "accept": [52.5, 63.5], "unit": "%", "n": 3, "basis": "measured", "source": "text.list['IS IT ...'].y" },
+        "line_h": { "observed": [8.74, 8.75], "accept": [7.43, 10.06], "unit": "% of h", "n": 3, "basis": "measured", "source": "text.list[...].line_h" },
+        "rows": { "observed": [2, 3], "accept": [1, 4], "n": 3, "basis": "measured", "source": "text.list[...].rows" },
+        "seconds": { "observed": [1.5, 2.0], "accept": [1.0, 2.5], "unit": "s", "n": 3, "basis": "measured", "source": "text.list[...].t1 - t0" },
+        "plate": [], "letters": ["#080808", "#F8E808"], "basis": "measured",
+        "style": "Huge heavy italic uppercase, yellow with a thick black outline, words appearing one at a time (the sheet catches 'IS' alone, then 'IS IT'), over a wider full-frame shot.",
+        "when": "The 1.97 s shot right after the hook end.",
+        "lever": { "path": "beats[type=impact,look=stack]", "fields": { "text": "<question>|{<option A>}|OR|{<option B>}", "place": "torso", "impact.color": "#F8E808", "to": "+1.9 s" } }
+      },
+      {
+        "id": "verdict-bar", "role": "bar",
+        "y": { "observed": [50, 52], "accept": [47, 55], "unit": "%", "n": 3, "basis": "measured", "source": "text.chrome['FACT','OR','HYPE'].y" },
+        "x": { "observed": [27, 77], "accept": [24, 80], "unit": "%", "n": 3, "basis": "measured", "source": "text.chrome[...].x" },
+        "share": { "observed": [0.82, 0.86], "accept": [0.77, 0.91], "n": 3, "basis": "derived", "source": "(seconds - bar start) / seconds; bar start = the second body shot cut (8.33 / 10.77 / 9.07 s)" },
+        "plate": [], "letters": [], "basis": "measured",
+        "style": "White empty checkboxes, then FACT, OR, HYPE in small white heavy uppercase with a black outline, and an emoji after HYPE, straight on the footage across the chest.",
+        "when": "From the end of the stack shot to the end.",
+        "lever": { "path": "beats[type=verdict]", "fields": { "left": "<option A>", "mid": "OR", "right": "<option B>", "y": 980, "pick": "<from the user's own result>" }, "gap": "No emoji field on verdict." }
+      }
+    ]
+  },
+  "layout": {
+    "face_share": { "observed": [1.0, 1.0], "accept": [0.95, 1.0], "n": 3, "basis": "measured", "source": "face.share", "lever": "none: the speaker is always on screen" },
+    "face_top": { "observed": [23.4, 28.1], "accept": [20.4, 31.1], "unit": "%", "n": 3, "basis": "measured", "source": "face.top", "lever": "zoom.faceAt[1], zoom.base" },
+    "face_bottom": { "observed": [40.6, 45.1], "accept": [37.6, 48.1], "unit": "%", "n": 3, "basis": "measured", "source": "face.bottom", "lever": "zoom.faceAt (the chin stays above the bar)" },
+    "face_height": { "observed": [16.9, 18.3], "accept": [14.37, 21.05], "unit": "%", "n": 3, "basis": "measured", "source": "face.height", "lever": "zoom.base (medium shot)" },
+    "face_cx": { "observed": [48.9, 62.8], "accept": [45.9, 65.8], "unit": "%", "n": 3, "basis": "measured", "source": "face.cx", "lever": "zoom.faceAt[0] (right of centre while the inset is up)" },
+    "shares": {
+      "inset": { "observed": [0.11, 0.14], "accept": [0.06, 0.19], "n": 3, "basis": "derived", "source": "hook_end / seconds", "lever": "beats[type=broll,mode=panel] (hook inset)" },
+      "full_speaker": { "observed": [0.03, 0.04], "accept": [0.0, 0.09], "n": 3, "basis": "derived", "source": "1.97 s stack shot / seconds", "lever": "no broll during the stack beat" },
+      "panel": { "observed": [0.82, 0.86], "accept": [0.77, 0.91], "n": 3, "basis": "derived", "source": "bar start to the end / seconds", "lever": "beats[type=broll,mode=panel]" },
+      "split": { "observed": [0.0, 0.0], "accept": [0.0, 0.05], "n": 3, "basis": "looked", "source": "contact sheet", "lever": "none" },
+      "full_cutaway": { "observed": [0.0, 0.0], "accept": [0.0, 0.05], "n": 3, "basis": "measured", "source": "face.share", "lever": "none" }
+    }
+  },
+  "audio": {
+    "pauses_per_min": { "observed": [0.0, 2.7], "accept": [0.0, 5.7], "unit": "/min", "n": 3, "basis": "measured", "source": "audio.pauses_per_min", "lever": "takes a/b padding tight (0.10 / 0.20 s)" },
+    "longest_pause": { "observed": [0.0, 0.87], "accept": [0.0, 1.37], "unit": "s", "n": 3, "basis": "measured", "source": "audio.longest_pause", "lever": "takes; no hold" },
+    "lufs_note": "Measured -14.5..-14.3 LUFS is platform normalisation, not a style; TadClip keeps its -16 voice target."
+  },
+  "devices": [
+    {
+      "id": "claim-inset", "name": "Claim under test, inset beside the speaker",
+      "what": "The thing being tested (another creator's clip with its own captions, or a repo page with a picture-in-picture) plays in a rounded box on the left; the speaker stands to its right.",
+      "when": { "anchor": "hook", "from": "start",
+        "t": { "observed": [0.0, 0.0], "accept": [0.0, 0.5], "unit": "s", "n": 3, "basis": "looked", "source": "contact sheet frame 0.00" },
+        "duration": { "observed": [6.37, 8.8], "accept": [5.41, 10.12], "unit": "s", "n": 3, "basis": "measured", "source": "rhythm.hook_end" },
+        "cue": "The speaker states the claim." },
+      "where": { "x": { "observed": [2, 68], "accept": [0, 71], "unit": "%", "n": 3, "basis": "looked", "source": "contact sheet" }, "y": { "observed": [28, 93], "accept": [25, 96], "unit": "%", "n": 3, "basis": "looked", "source": "contact sheet" } },
+      "seen_in": { "k": 3, "n": 3, "evidence": [ { "reel": "creator-itstundeanthony-DdWmIHTC322", "t": 0.0 }, { "reel": "creator-itstundeanthony-De1zlGniBQp", "t": 0.0 }, { "reel": "creator-itstundeanthony-DfIM7fyIZXI", "t": 0.0 } ] },
+      "role": "signature", "basis": "looked",
+      "lever": { "path": "beats[type=broll,mode=panel]", "fields": { "at": 0, "panel": { "box": [30, 540, 700, 1250], "frame": "none" }, "src": "<a capture of the claim the user may show>" }, "gap": "Hide TadClip captions while the inset carries its own." },
+      "needs": ["a clip, screenshot or page of the claim being tested, which the user has the right to show"]
+    },
+    {
+      "id": "claim-tags", "name": "Tags on the inset stating the claim's hook",
+      "what": "Short labels and stickers pop on the inset as the claim is stated (FREE / OPEN SOURCE tags, a star counter, an emoji). Whether they are the creator's own or part of the source clip cannot be told from the sheet.",
+      "when": { "anchor": "spoken-cue", "from": "start", "t": { "observed": [0.0, 4.67], "accept": [0.0, 5.37], "unit": "s", "n": 2, "basis": "looked", "source": "contact sheet; text.list events at y 39-46 in DfIM7fyIZXI" }, "cue": "The surprising part of the claim (free, open source, a number)." },
+      "seen_in": { "k": 2, "n": 3, "evidence": [ { "reel": "creator-itstundeanthony-De1zlGniBQp", "t": 0.63, "note": "emoji + title tag, then FREE tag at 1.17" }, { "reel": "creator-itstundeanthony-DfIM7fyIZXI", "t": 0.0, "note": "PAID -> OPEN SOURCE tag, star counter 2.93, product card 4.67" } ] },
+      "role": "signature", "basis": "looked",
+      "lever": { "path": "beats[type=emoji] / beats[type=chips]", "fields": { "size": 200 } },
+      "needs": ["a checkable property of the claim (price, a number) said aloud"]
+    },
+    {
+      "id": "series-pill", "name": "Series question pill",
+      "what": "The series question on a white pill above the head for the whole hook.",
+      "when": { "anchor": "hook", "from": "start", "cue": "Frame 0." },
+      "where": { "text_role": "title-pill" },
+      "seen_in": { "k": 3, "n": 3, "evidence": [ { "reel": "creator-itstundeanthony-DdWmIHTC322", "t": 0.0 }, { "reel": "creator-itstundeanthony-De1zlGniBQp", "t": 0.0 }, { "reel": "creator-itstundeanthony-DfIM7fyIZXI", "t": 0.0 } ] },
+      "role": "signature", "basis": "measured",
+      "lever": { "path": "beats[type=impact,look=pill]", "fields": { "at": 0, "y": 336 } },
+      "needs": ["a series name or question the user owns (not this creator's)"]
+    },
+    {
+      "id": "question-shot", "name": "The question slammed on the chest, 1.97 s",
+      "what": "A hard cut to a wider full-frame shot of the speaker with the series question appearing word by word in yellow italic. The shot lasts exactly 1.97 s in all three reels.",
+      "when": { "anchor": "section-change", "from": "start",
+        "t": { "observed": [6.37, 8.8], "accept": [5.41, 10.12], "unit": "s", "n": 3, "basis": "measured", "source": "rhythm.hook_end" },
+        "duration": { "observed": [1.97, 1.97], "accept": [1.67, 2.27], "unit": "s", "n": 3, "basis": "measured", "source": "next shot cut - hook_end: 8.333-6.367, 10.767-8.8, 9.067-7.1" },
+        "cue": "The speaker asks the series question." },
+      "where": { "text_role": "is-it-stack" },
+      "seen_in": { "k": 3, "n": 3, "evidence": [ { "reel": "creator-itstundeanthony-DdWmIHTC322", "t": 6.37 }, { "reel": "creator-itstundeanthony-De1zlGniBQp", "t": 8.8 }, { "reel": "creator-itstundeanthony-DfIM7fyIZXI", "t": 7.1 } ] },
+      "role": "signature", "basis": "measured",
+      "lever": { "path": "beats[type=impact,look=stack]", "fields": { "to": "+1.97 s", "impact.color": "#F8E808" } },
+      "needs": ["the speaker saying the question in one take"]
+    },
+    {
+      "id": "verdict-bar", "name": "Two-option checkbox bar",
+      "what": "Empty checkboxes across the chest that stay up for the whole test.",
+      "when": { "anchor": "persistent", "from": "start", "t": { "observed": [8.33, 10.77], "accept": [7.08, 12.39], "unit": "s", "n": 3, "basis": "measured", "source": "cuts.shot_cuts (the cut after the question shot)" }, "cue": "Right after the question shot, to the end." },
+      "where": { "text_role": "verdict-bar" },
+      "seen_in": { "k": 3, "n": 3, "evidence": [ { "reel": "creator-itstundeanthony-DdWmIHTC322", "t": 8.33 }, { "reel": "creator-itstundeanthony-De1zlGniBQp", "t": 10.77 }, { "reel": "creator-itstundeanthony-DfIM7fyIZXI", "t": 9.07 } ] },
+      "role": "signature", "basis": "measured",
+      "lever": { "path": "beats[type=verdict]", "fields": { "y": 980 }, "gap": "Whether the tick lands is not visible in the sampled frames." },
+      "needs": ["a two-way verdict the speaker gives at the end"]
+    },
+    {
+      "id": "source-page-first", "name": "The claim's own page before the test",
+      "what": "The first 1-3 panel shots show the claim's own page (repo, docs, a blank app) in an unframed white box, before the teal-framed test recording starts.",
+      "when": { "anchor": "section-change", "from": "start", "t": { "observed": [8.33, 10.77], "accept": [7.08, 12.39], "unit": "s", "n": 3, "basis": "looked", "source": "contact sheet" }, "duration": { "observed": [2.4, 5.96], "accept": [2.04, 6.85], "unit": "s", "n": 3, "basis": "looked", "source": "contact sheet: first teal frame at 11.07 / 16.73 / 11.47 s" }, "cue": "The speaker says where the thing comes from or how to get it." },
+      "seen_in": { "k": 3, "n": 3, "evidence": [ { "reel": "creator-itstundeanthony-DdWmIHTC322", "t": 8.33 }, { "reel": "creator-itstundeanthony-De1zlGniBQp", "t": 10.77 }, { "reel": "creator-itstundeanthony-DfIM7fyIZXI", "t": 9.07 } ] },
+      "role": "signature", "basis": "looked",
+      "lever": { "path": "beats[type=broll,mode=panel]", "fields": { "panel": { "frame": "none" } } },
+      "needs": ["a capture of the source page"]
+    },
+    {
+      "id": "test-panel", "name": "Teal-framed screen recording of the test",
+      "what": "A screen recording of the speaker trying the thing, in a teal-framed box over the lower half under the bar. Each new clip arrives with a jump cut of the speaker.",
+      "when": { "anchor": "persistent", "from": "start", "t": { "observed": [11.07, 16.73], "accept": [9.41, 19.24], "unit": "s", "n": 3, "basis": "looked", "source": "contact sheet (first teal frame)" }, "cue": "Each step the speaker narrates (install, settings, first run, result)." },
+      "where": { "y": { "observed": [53, 100], "accept": [50, 100], "unit": "%", "n": 3, "basis": "looked", "source": "contact sheet" }, "x": { "observed": [0, 100], "accept": [0, 100], "unit": "%", "n": 3, "basis": "looked", "source": "contact sheet" } },
+      "seen_in": { "k": 3, "n": 3, "evidence": [ { "reel": "creator-itstundeanthony-DdWmIHTC322", "t": 11.07 }, { "reel": "creator-itstundeanthony-De1zlGniBQp", "t": 16.73 }, { "reel": "creator-itstundeanthony-DfIM7fyIZXI", "t": 11.47 } ] },
+      "role": "signature", "basis": "looked",
+      "lever": { "path": "beats[type=broll,mode=panel]", "fields": { "panel": { "box": [20, 1020, 1040, 780], "frame": "#1FB5A5" }, "at": "<each take's a>" } },
+      "needs": ["screen recordings of the user actually running the test, one clip per narrated step"]
+    }
+  ],
+  "structure": {
+    "hook": { "seconds": { "observed": [6.37, 8.8], "accept": [5.41, 10.12], "unit": "s", "n": 3, "basis": "measured", "source": "rhythm.hook_end" }, "what": "State the claim over its source, under the series pill, with tags on its surprising property.", "devices": ["claim-inset", "claim-tags", "series-pill"] },
+    "body": { "what": "The 1.97 s question shot, then the open checkboxes; show the source page, then run the test step by step, one jump cut per step.", "devices": ["question-shot", "verdict-bar", "source-page-first", "test-panel"] },
+    "end": { "what": "The result on screen in the panel with the bar still open in the last sampled frames; the tick is not visible.", "devices": ["verdict-bar", "test-panel"] }
+  },
+  "unknown": [
+    "Pop/slide motion of the pill, stack words and bar",
+    "Sound effects and music",
+    "Whether a tick or an end card appears after the last sampled frame",
+    "Whether the inset tags are the creator's own graphics or part of the source clip"
+  ],
+  "fit_notes": [
+    "The format needs a real test with screen recordings. Without them, drop the panel and the bar; only the pill and the question shot transfer.",
+    "Reach the body rate (8-17 shot cuts/min) with take boundaries at sentence starts, each one starting the next test clip. Never cut words to hit it.",
+    "No captions on the speaker's voice in the source. For Thai or sound-off audiences, record whether captions.style 'mini' goes between the chin and the bar."
+  ]
+}

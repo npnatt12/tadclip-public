@@ -17,7 +17,8 @@ function run(argv) {
     const req = $.VNRecognizeTextRequest.alloc.init;
     req.recognitionLevel = 0;               // accurate
     req.usesLanguageCorrection = false;
-    req.recognitionLanguages = $(['ru-RU', 'en-US']);
+    const langs = $.NSProcessInfo.processInfo.environment.objectForKey('OCR_LANGS');   // e.g. th-TH,en-US (own_brand.py)
+    req.recognitionLanguages = $(langs.isNil() ? ['ru-RU', 'en-US'] : ObjC.unwrap(langs).split(','));
     req.minimumTextHeight = 0.008;
     const handler = $.VNImageRequestHandler.alloc.initWithURLOptions($.NSURL.fileURLWithPath(path), $({}));
     const ok = handler.performRequestsError($([req]), null);

@@ -1,0 +1,236 @@
+{
+  "format_id": "kamchai-split-explainer",
+  "creator": "kamchai",
+  "version": 2,
+  "measurer_version": 2,
+  "language": ["th"],
+  "summary": "A fast Thai explainer about a product or tool, built on a split screen. B-roll fills the top half and the seated speaker (mic in shot, bookshelf behind) sits in the bottom half. The hook opens split, with a 2-3 row Thai headline in heavy white type (one phrase in yellow) just above the seam and the product's name on the footage. It ends with the first layout switch at 2.5-7.7 s. The body then alternates blocks of 2.5-8.6 s: split blocks carry one-line seam captions on a dark strip, full-speaker blocks carry a big chest punch phrase and sometimes a yellow label above the head, and one reel adds full-frame cutaways with a centred phrase. The speaker's shot is cut 30-38 times a minute in the body (median shot 1.4-1.6 s). About half to three quarters of those cuts are jump cuts of the speaker and about 30 % are layout switches. B-roll swaps without a speaker cut add 0-12 more per minute. The voice has no pauses, and one reel ends on a comment-keyword CTA with the handle.",
+  "reels": [
+    { "id": "creator-kamchai-Detm2VPS1Mp", "account": "kamchai_live", "seconds": 52.22, "w": 540, "h": 960, "member": true, "reason": "Split hook with title y 46.1 and yellow keyword, seam captions y 49.5-50.3, chest punch words, yellow label y 22.9.", "sheet_covers_to": 29.67 },
+    { "id": "creator-kamchai-DeUOm5syXua", "account": "kamchai_live", "seconds": 36.13, "w": 720, "h": 1280, "member": true, "reason": "Same split, hook title y 46.7, seam captions y 49.5-50.0, chest punch y 60.5-62.5, yellow label y 24.4." },
+    { "id": "creator-kamchai-DeQr_7OKgcZ", "account": "oanzz", "seconds": 12.81, "w": 720, "h": 1280, "member": false, "reason": "face.share 0: a phone filming a monitor under a fixed 4-row POV title. Shares no device, and the study file shows it was posted by a different account handle. Excluded." }
+  ],
+  "length": {
+    "seconds": { "observed": [36.13, 52.22], "accept": [30.71, 60.05], "unit": "s", "n": 2, "basis": "measured", "source": "seconds", "lever": "none: length follows the content" }
+  },
+  "rhythm": {
+    "per_min": { "observed": [36.5, 46.0], "accept": [31.0, 52.9], "unit": "cuts/min", "n": 2, "basis": "measured", "source": "cuts.per_min", "lever": "takes + broll switches + broll clips" },
+    "shot_per_min": { "observed": [29.9, 33.3], "accept": [25.4, 38.3], "unit": "cuts/min", "n": 2, "basis": "measured", "source": "cuts.shot_cuts_per_min", "lever": "takes boundaries + zoom.snaps + split/full switches" },
+    "insert_per_min": { "observed": [6.6, 12.6], "accept": [3.6, 15.6], "unit": "/min", "n": 2, "basis": "derived", "source": "len(cuts.insert_changes)/seconds x 60: 11/52.22, 4/36.13", "lever": "broll clips inside a split block; graphic onsets", "note": "After the R2.3 corrections, B-roll swaps alone are 11.5/min in Detm2VPS1Mp and about 0/min in DeUOm5syXua. All four of DeUOm5syXua's inserts are own graphics appearing, and its B-roll changes come with speaker cuts." },
+    "shot_median": { "observed": [1.38, 1.57], "accept": [1.13, 1.82], "unit": "s", "n": 2, "basis": "measured", "source": "cuts.shot_median", "lever": "takes length / zoom.snaps spacing" },
+    "shot_p90": { "observed": [2.91, 3.37], "accept": [2.47, 3.88], "unit": "s", "n": 2, "basis": "measured", "source": "cuts.shot_p90", "lever": "no unbroken speaker shot over ~3.5 s" },
+    "first": { "observed": [1.8, 2.5], "accept": [1.53, 2.88], "unit": "s", "n": 2, "basis": "measured", "source": "cuts.first", "lever": "the first B-roll change in the hook split, or the first take boundary" },
+    "hook_end": { "observed": [2.5, 7.67], "accept": [2.13, 8.82], "unit": "s", "n": 2, "basis": "derived", "source": "first layout shot cut (DeUOm5syXua 2.5; Detm2VPS1Mp 7.667, labelled insert, corrected)", "lever": "end of the first split broll run" },
+    "body_shot_per_min": { "observed": [30.3, 37.7], "accept": [25.8, 43.4], "unit": "cuts/min", "n": 2, "basis": "derived", "source": "shot cuts after hook_end / body minutes: 28/44.55 s, 17/33.63 s", "lever": "takes boundaries at most sentence starts, zoom.snaps, layout switches" },
+    "cut_shares": {
+      "shot": { "observed": [0.73, 0.82], "accept": [0.68, 0.87], "n": 2, "basis": "measured", "source": "len(shot_cuts)/n: 29/40, 18/22", "lever": "takes, snaps, switches" },
+      "insert": { "observed": [0.18, 0.28], "accept": [0.13, 0.33], "n": 2, "basis": "measured", "source": "len(insert_changes)/n: 11/40, 4/22", "lever": "broll clips, graphic onsets" }
+    },
+    "shot_kinds": {
+      "speaker": { "observed": [0.5, 0.72], "accept": [0.45, 0.77], "n": 2, "basis": "looked", "source": "contact sheet: pose jumps in full-speaker and split blocks", "lever": "takes, zoom.snaps", "note": "Detm2VPS1Mp read over 0-29.67 s only (the sheet stops there)." },
+      "layout": { "observed": [0.28, 0.31], "accept": [0.23, 0.36], "n": 2, "basis": "looked", "source": "contact sheet: split <-> full speaker <-> full cutaway", "lever": "beats[type=broll] mode split / full on and off" },
+      "cutaway": { "observed": [0.0, 0.19], "accept": [0.0, 0.24], "n": 2, "basis": "looked", "source": "contact sheet: cuts between full-frame footage shots", "lever": "beats[type=broll].clips (full)" }
+    },
+    "coincident": { "value": false, "basis": "looked", "lever": "none fixed: split B-roll may change on or between take boundaries", "note": "Mixed. In DeUOm5syXua the B-roll changes land with speaker cuts. In Detm2VPS1Mp the top half often changes alone (1.80, 3.80, 5.67, 18.40, 20.20 s)." },
+    "corrections": [
+      "Detm2VPS1Mp 7.667 s: labelled an insert change, but the sheet shows a cut from the split to full-frame footage. Counted as a layout shot cut and the hook end.",
+      "DeUOm5syXua 5.30, 18.90, 29.70, 32.43 s: insert changes that coincide with own graphics appearing or changing (icons, a punch phrase, the yellow label). Counted as graphic onsets."
+    ]
+  },
+  "text": {
+    "first_seen": { "observed": [0.0, 0.0], "accept": [0.0, 0.5], "unit": "s", "n": 2, "basis": "measured", "source": "text.first_seen", "lever": "hook title impact at 0" },
+    "seconds_median": { "observed": [1.5, 1.5], "accept": [1.0, 2.0], "unit": "s", "n": 2, "basis": "measured", "source": "text.seconds_median", "lever": "captions.group; impact to" },
+    "gap_median": { "observed": [1.5, 1.5], "accept": [1.0, 2.0], "unit": "s", "n": 2, "basis": "measured", "source": "text.gap_median", "lever": "captions.group + impact spacing" },
+    "rows_median": { "observed": [1.0, 1.0], "accept": [1.0, 2.0], "n": 2, "basis": "measured", "source": "text.rows_median", "lever": "one row per caption / punch" },
+    "line_h_median": { "observed": [4.61, 5.35], "accept": [3.92, 6.15], "unit": "% of h", "n": 2, "basis": "measured", "source": "text.line_h_median", "lever": "captions.size, impact size" },
+    "own_share_of_time": { "observed": [0.7, 0.9], "accept": [0.65, 0.95], "n": 2, "basis": "derived", "source": "text.share_of_time 0.75 / 0.93 minus footage text", "lever": "captions in splits + impacts in full blocks" },
+    "own_events_per_min": { "observed": [20.7, 28.2], "accept": [17.6, 32.4], "unit": "/min", "n": 2, "basis": "derived", "source": "own-graphic text.list events (about 18 / 17) per minute", "lever": "caption grouping + impact density" },
+    "roles": [
+      {
+        "id": "hook-title", "role": "title",
+        "y": { "observed": [46.1, 46.7], "accept": [43.1, 49.7], "unit": "%", "n": 2, "basis": "measured", "source": "text.list[t0=0].y" },
+        "line_h": { "observed": [6.04, 7.02], "accept": [5.13, 8.07], "unit": "% of h", "n": 2, "basis": "measured", "source": "text.list[t0=0].line_h" },
+        "rows": { "observed": [3, 3], "accept": [2, 4], "n": 2, "basis": "measured", "source": "text.list[t0=0].rows", "note": "Includes a small Latin product line above the Thai rows." },
+        "seconds": { "observed": [2.5, 8.0], "accept": [2.0, 9.2], "unit": "s", "n": 2, "basis": "measured", "source": "text.list[t0=0].t1 - t0" },
+        "plate": [], "letters": ["#F8F8F8", "#F8E838"], "basis": "measured",
+        "style": "Heavy Thai display sans, white with a soft dark shadow, one phrase in yellow, on the bottom edge of the B-roll just above the seam; a small product name above it.",
+        "when": "Frame 0 for the whole hook split.",
+        "lever": { "path": "beats[type=impact,look=headline]", "fields": { "at": 0, "y": 890, "size": 115, "font": "Kanit", "impact.color": "#F8E838" } }
+      },
+      {
+        "id": "seam-caption", "role": "caption",
+        "y": { "observed": [49.5, 50.3], "accept": [46.5, 53.3], "unit": "%", "n": 2, "basis": "measured", "source": "text.list[rows=1, x~50, y~50].y" },
+        "line_h": { "observed": [4.06, 4.48], "accept": [3.45, 5.15], "unit": "% of h", "n": 2, "basis": "measured", "source": "text.list[...].line_h" },
+        "rows": { "observed": [1, 1], "accept": [1, 2], "n": 2, "basis": "measured", "source": "text.list[...].rows" },
+        "seconds": { "observed": [1.0, 1.5], "accept": [0.5, 2.0], "unit": "s", "n": 2, "basis": "measured", "source": "text.list[...].t1 - t0" },
+        "plate": [], "letters": ["#F8F8F8"], "basis": "measured",
+        "style": "Medium Thai, white, centred on the seam on a translucent dark strip (visible on the sheet; Vision reports no plate).",
+        "when": "Only while the screen is split.",
+        "lever": { "path": "captions", "fields": { "style": "mini", "onlyInSplits": true, "splitY": 935, "size": 66, "font": "Kanit Medium", "strip": "rgba(0,0,0,.55)", "group": 4 } }
+      },
+      {
+        "id": "chest-punch", "role": "punch",
+        "y": { "observed": [60.5, 64.9], "accept": [57.5, 67.9], "unit": "%", "n": 2, "basis": "measured", "source": "text.list[zone=chest, line_h>=5].y" },
+        "line_h": { "observed": [5.4, 9.81], "accept": [4.59, 11.28], "unit": "% of h", "n": 2, "basis": "measured", "source": "text.list[...].line_h" },
+        "rows": { "observed": [1, 2], "accept": [1, 3], "n": 2, "basis": "measured", "source": "text.list[...].rows" },
+        "seconds": { "observed": [1.0, 3.0], "accept": [0.5, 3.5], "unit": "s", "n": 2, "basis": "measured", "source": "text.list[...].t1 - t0" },
+        "plate": [], "letters": ["#F8F8F8", "#F8E838"], "basis": "measured",
+        "style": "Big heavy Thai on the chest over the full-frame speaker, white with a soft shadow, keyword in yellow.",
+        "when": "On the key phrase of a sentence in full-speaker blocks.",
+        "lever": { "path": "beats[type=impact,look=headline]", "fields": { "y": 1190, "size": 120, "font": "Kanit", "impact.color": "#F8E838" } }
+      },
+      {
+        "id": "yellow-label", "role": "label",
+        "y": { "observed": [22.9, 24.4], "accept": [19.9, 27.4], "unit": "%", "n": 2, "basis": "measured", "source": "text.list[plate=#FAF441/#FAF342].y" },
+        "line_h": { "observed": [3.75, 5.12], "accept": [3.19, 5.89], "unit": "% of h", "n": 2, "basis": "measured", "source": "text.list[...].line_h" },
+        "rows": { "observed": [1, 2], "accept": [1, 3], "n": 2, "basis": "measured", "source": "text.list[...].rows" },
+        "seconds": { "observed": [3.5, 5.0], "accept": [2.98, 5.75], "unit": "s", "n": 2, "basis": "measured", "source": "text.list[...].t1 - t0" },
+        "plate": ["#FAF441", "#FAF342"], "letters": ["#080808", "#F8F8F8"], "basis": "measured",
+        "style": "Above the head: an optional white first row, then black Thai on a bright yellow box.",
+        "when": "On a 'what it is for' or summary line in full-speaker blocks.",
+        "lever": { "path": "beats[type=impact,look=stair]", "fields": { "place": "top", "impact.plate": "#FAF441" }, "gap": "Plate ink colour is not a documented lever." }
+      },
+      {
+        "id": "cutaway-centre", "role": "cutaway-text",
+        "y": { "observed": [49.5, 50.1], "accept": [46.5, 53.1], "unit": "%", "n": 1, "basis": "measured", "source": "text.list[zone=no-face].y" },
+        "line_h": { "observed": [5.12, 6.67], "accept": [3.84, 8.34], "unit": "% of h", "n": 1, "basis": "measured", "source": "text.list[zone=no-face].line_h", "note": "n = 1: +-25 %, low confidence." },
+        "seconds": { "observed": [1.0, 3.0], "accept": [0.5, 3.75], "unit": "s", "n": 1, "basis": "measured", "source": "text.list[zone=no-face].t1 - t0" },
+        "plate": [], "letters": ["#F8F8F8"], "basis": "measured",
+        "style": "Medium white Thai or Latin centred on full-frame B-roll.",
+        "when": "During full-frame B-roll only (Detm2VPS1Mp 8.5, 26.5, 43.5 s).",
+        "lever": { "path": "beats[type=impact]", "fields": { "place": "center", "centerY": 0.5 } }
+      }
+    ]
+  },
+  "layout": {
+    "face_share": { "observed": [0.8, 1.0], "accept": [0.75, 1.0], "n": 2, "basis": "measured", "source": "face.share", "lever": "share of full-frame broll" },
+    "face_top": { "observed": [45.2, 56.1], "accept": [42.2, 59.1], "unit": "%", "n": 2, "basis": "measured", "source": "face.top", "lever": "broll.shift (split), zoom.faceAt (full)", "note": "A median over mixed layouts." },
+    "face_bottom": { "observed": [59.9, 71.4], "accept": [56.9, 74.4], "unit": "%", "n": 2, "basis": "measured", "source": "face.bottom", "lever": "broll.shift" },
+    "face_height": { "observed": [15.3, 15.7], "accept": [13.0, 18.06], "unit": "%", "n": 2, "basis": "measured", "source": "face.height", "lever": "zoom.base" },
+    "face_cx": { "observed": [49.2, 50.1], "accept": [46.2, 53.1], "unit": "%", "n": 2, "basis": "measured", "source": "face.cx", "lever": "zoom.faceAt[0] = 0.5" },
+    "shares": {
+      "split": { "observed": [0.45, 0.55], "accept": [0.4, 0.6], "n": 2, "basis": "looked", "source": "contact sheet (Detm2VPS1Mp: first 29.67 s only)", "lever": "beats[type=broll,mode=split]" },
+      "full_speaker": { "observed": [0.25, 0.49], "accept": [0.2, 0.54], "n": 2, "basis": "looked", "source": "contact sheet", "lever": "no broll" },
+      "full_cutaway": { "observed": [0.0, 0.21], "accept": [0.0, 0.26], "n": 2, "basis": "looked", "source": "contact sheet + face.share", "lever": "beats[type=broll] (full)" },
+      "panel": { "observed": [0.0, 0.0], "accept": [0.0, 0.05], "n": 2, "basis": "looked", "source": "contact sheet", "lever": "none" },
+      "inset": { "observed": [0.0, 0.0], "accept": [0.0, 0.05], "n": 2, "basis": "looked", "source": "contact sheet", "lever": "none" }
+    },
+    "block_seconds": { "observed": [2.47, 8.63], "accept": [2.1, 9.92], "unit": "s", "n": 2, "basis": "derived", "source": "intervals between layout shot cuts (times measured, kinds looked)", "lever": "length of each run of adjacent split broll beats" }
+  },
+  "audio": {
+    "pauses_per_min": { "observed": [0.0, 0.0], "accept": [0.0, 3.0], "unit": "/min", "n": 2, "basis": "measured", "source": "audio.pauses_per_min", "lever": "takes a/b padding tight (0.10 / 0.20 s), no hold" },
+    "longest_pause": { "observed": [0.0, 0.0], "accept": [0.0, 0.5], "unit": "s", "n": 2, "basis": "measured", "source": "audio.longest_pause", "lever": "takes" },
+    "lufs_note": "Measured -14.2..-14.1 LUFS is the platform's delivery level, not a style."
+  },
+  "devices": [
+    {
+      "id": "split-broll", "name": "B-roll top half, speaker bottom half",
+      "what": "The frame splits at y~50 %: footage of the topic on top, the speaker pushed into the lower half. It opens the reel and returns in blocks.",
+      "when": { "anchor": "section-change", "from": "start",
+        "t": { "observed": [0.0, 0.0], "accept": [0.0, 0.5], "unit": "s", "n": 2, "basis": "looked", "source": "contact sheet" },
+        "duration": { "observed": [2.47, 8.63], "accept": [2.1, 9.92], "unit": "s", "n": 2, "basis": "derived", "source": "layout.block_seconds" },
+        "cue": "Frame 0; afterwards, whenever the speaker names or describes something that can be shown." },
+      "where": { "y": { "observed": [48, 52], "accept": [45, 55], "unit": "% (seam)", "n": 2, "basis": "looked", "source": "contact sheet" } },
+      "seen_in": { "k": 2, "n": 2, "evidence": [ { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 0.0 }, { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 13.53 }, { "reel": "creator-kamchai-DeUOm5syXua", "t": 0.0 }, { "reel": "creator-kamchai-DeUOm5syXua", "t": 8.73 } ] },
+      "role": "signature", "basis": "looked",
+      "lever": { "path": "beats[type=broll,mode=split]", "fields": { "h": 960, "shift": 560, "clips": "<2-3 shots per block>" } },
+      "needs": ["footage of the topic (the user's own, licensed, or stock for illustrative shots)"]
+    },
+    {
+      "id": "hook-title", "name": "Promise headline at the seam",
+      "what": "A 2-3 row headline with a yellow keyword over the hook B-roll just above the seam, with the product name on the footage.",
+      "when": { "anchor": "hook", "from": "start",
+        "t": { "observed": [0.0, 0.0], "accept": [0.0, 0.5], "unit": "s", "n": 2, "basis": "measured", "source": "text.list[t0=0].t0" },
+        "duration": { "observed": [2.5, 8.0], "accept": [2.0, 9.2], "unit": "s", "n": 2, "basis": "measured", "source": "text.list[t0=0].t1" },
+        "cue": "Frame 0: the promise of the reel." },
+      "where": { "text_role": "hook-title" },
+      "seen_in": { "k": 2, "n": 2, "evidence": [ { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 0.0 }, { "reel": "creator-kamchai-DeUOm5syXua", "t": 0.0 } ] },
+      "role": "signature", "basis": "measured",
+      "lever": { "path": "beats[type=impact,look=headline]", "fields": { "at": 0, "y": 890 } },
+      "needs": ["a one-line promise in the speaker's words", "hook footage"]
+    },
+    {
+      "id": "product-label", "name": "Product name on the footage",
+      "what": "The product's name or wordmark sits on the B-roll.",
+      "when": { "anchor": "spoken-cue", "cue": "The product is named." },
+      "seen_in": { "k": 2, "n": 2, "evidence": [ { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 0.0 }, { "reel": "creator-kamchai-DeUOm5syXua", "t": 8.73 } ] },
+      "role": "signature", "basis": "looked",
+      "lever": { "path": "beats[type=logo]", "fields": { "src": "<official wordmark>" }, "gap": "A wordmark placed on split B-roll has no lever; closest is a small first headline row." },
+      "needs": ["the product's official name or wordmark"]
+    },
+    {
+      "id": "seam-captions", "name": "Captions on the seam, only in splits",
+      "what": "One short Thai phrase at a time on a dark strip across the seam.",
+      "when": { "anchor": "persistent", "cue": "Every phrase while the split is up." },
+      "where": { "text_role": "seam-caption" },
+      "seen_in": { "k": 2, "n": 2, "evidence": [ { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 14.0 }, { "reel": "creator-kamchai-DeUOm5syXua", "t": 24.0 } ] },
+      "role": "signature", "basis": "measured",
+      "lever": { "path": "captions", "fields": { "style": "mini", "onlyInSplits": true, "splitY": 935, "strip": "rgba(0,0,0,.55)" } },
+      "needs": []
+    },
+    {
+      "id": "chest-punch", "name": "Punch phrase on the chest",
+      "what": "In full-speaker blocks, the key phrase of a sentence in big white type, keyword in yellow.",
+      "when": { "anchor": "spoken-cue", "cue": "A claim, a number, a benefit." },
+      "where": { "text_role": "chest-punch" },
+      "seen_in": { "k": 2, "n": 2, "evidence": [ { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 12.0 }, { "reel": "creator-kamchai-DeUOm5syXua", "t": 31.0 } ] },
+      "role": "signature", "basis": "measured",
+      "lever": { "path": "beats[type=impact,look=headline]", "fields": { "y": 1190 } },
+      "needs": ["short quotable phrases in the speech"]
+    },
+    {
+      "id": "yellow-label", "name": "Label on a yellow box above the head",
+      "what": "A summary line above the head, black on yellow.",
+      "when": { "anchor": "spoken-cue", "cue": "'This is for ...' / a summary." },
+      "where": { "text_role": "yellow-label" },
+      "seen_in": { "k": 2, "n": 2, "evidence": [ { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 10.0 }, { "reel": "creator-kamchai-DeUOm5syXua", "t": 29.0 } ] },
+      "role": "signature", "basis": "measured",
+      "lever": { "path": "beats[type=impact,look=stair]", "fields": { "place": "top", "impact.plate": "#FAF441" }, "gap": "Plate ink colour." },
+      "needs": []
+    },
+    {
+      "id": "full-cutaway", "name": "Full-frame B-roll with a centred phrase",
+      "what": "The footage takes the whole frame for 2-4 s with a white phrase centred on it.",
+      "when": { "anchor": "spoken-cue", "cue": "A visual payoff." },
+      "where": { "text_role": "cutaway-centre" },
+      "seen_in": { "k": 1, "n": 2, "evidence": [ { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 7.67 }, { "reel": "creator-kamchai-Detm2VPS1Mp", "t": 25.73 } ] },
+      "role": "optional", "basis": "looked",
+      "lever": { "path": "beats[type=broll]", "fields": { "zoom": [1, 1.08] } },
+      "needs": ["strong footage of the thing in use"]
+    },
+    {
+      "id": "tool-icons", "name": "Tool icons on the chest",
+      "what": "App icons of the tools named pop up on the chest with a short phrase, while a photo collage sits above the head.",
+      "when": { "anchor": "spoken-cue", "t": { "observed": [2.5, 5.3], "accept": [1.88, 6.63], "unit": "s", "n": 1, "basis": "looked", "source": "contact sheet + insert change 5.30" }, "cue": "The tools are named." },
+      "seen_in": { "k": 1, "n": 2, "evidence": [ { "reel": "creator-kamchai-DeUOm5syXua", "t": 2.5 } ] },
+      "role": "optional", "basis": "looked",
+      "lever": { "path": "beats[type=chips]", "fields": { "items": "[{icon: <simple-icons slug>, at}]" }, "gap": "No collage lever." },
+      "needs": ["named tools with icons"]
+    },
+    {
+      "id": "comment-cta", "name": "Comment-keyword CTA with the handle",
+      "what": "'Comment <keyword>' on the chest, then the handle on a white sticker above the head, in the last ~3 s.",
+      "when": { "anchor": "end", "from": "end", "t": { "observed": [2.1, 3.1], "accept": [1.58, 3.88], "unit": "s before the end", "n": 1, "basis": "measured", "source": "text.list (DeUOm5syXua 33.0 and 34.0 of 36.13 s)" }, "cue": "The offer." },
+      "seen_in": { "k": 1, "n": 2, "evidence": [ { "reel": "creator-kamchai-DeUOm5syXua", "t": 33.0 } ] },
+      "role": "optional", "basis": "measured",
+      "lever": { "path": "beats[type=cta]", "fields": { "word": "<keyword>" } },
+      "needs": ["something the user will actually send"]
+    }
+  ],
+  "structure": {
+    "hook": { "seconds": { "observed": [2.5, 7.67], "accept": [2.13, 8.82], "unit": "s", "n": 2, "basis": "derived", "source": "rhythm.hook_end" }, "what": "Split screen, footage of the thing, promise headline with a yellow keyword at the seam, product name on the footage.", "devices": ["split-broll", "hook-title", "product-label"] },
+    "body": { "what": "Alternate split blocks (seam captions) and full-speaker blocks (chest punch, yellow label), occasionally a full cutaway; the speaker's shot is cut every ~1.5 s.", "devices": ["split-broll", "seam-captions", "chest-punch", "yellow-label", "full-cutaway", "tool-icons"] },
+    "end": { "what": "Full speaker with an offer (comment keyword + handle) in 1 of 2 reels; the other ends on a punch number.", "devices": ["comment-cta", "chest-punch"] }
+  },
+  "unknown": [
+    "Entry motion of captions and punch words",
+    "Transitions beyond the torn-paper wipe at DeUOm5syXua 17.37 s",
+    "Sound effects and music",
+    "Layout shares and shot kinds after 29.67 s in Detm2VPS1Mp (the sheet stops there)"
+  ],
+  "fit_notes": [
+    "The split needs footage for about half the reel. With no product footage, use stock only for illustrative shots and mark product-label 'ask'.",
+    "Reach 26-43 shot cuts/min in the body with take boundaries and zoom.snaps at sentence starts. Changing the B-roll does not raise the shot-cut rate.",
+    "Thai rows: break only at phrase ends; seam captions at most 17 chars/s and 35 chars per line."
+  ]
+}

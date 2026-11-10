@@ -54,9 +54,11 @@ ffmpeg -v error -i $P/assets/talk.mp4 -vn -ac 1 -b:a 96k $P/build/voice.mp3
 python3 $S/scripts/gem_audit.py ask $P/build/voice.mp3 $S/recipes/clubgig/prompt-thai-verbatim.txt --out $P/build/gemini_tx.txt
 python3 $S/scripts/face_track.py $P/assets/talk.mp4 --out $P/build/face.json
 # Thai words: timing from per-island mlx-whisper, TEXT from Gemini (whole-file whisper drops Thai speech)
-python3 $S/recipes/clubgig/islands.py $P/assets/talk.mp4 $P/build/vad.json
-~/.venvs/mlxw/bin/python $S/scripts/islands_tx.py $P/build/voice.mp3 --vad $P/build/vad.json --lang th \
-    --mlx-model mlx-community/whisper-large-v3-turbo --out $P/build/islands.json
+# from the ORIGINAL recording's sound: the same timeline as talk.mp4 (measured 0.0 ms on 11-09), while prep's loudness
+# normalisation makes breaths count as speech: 87 islands, 397 s, 1.9 % character errors vs 68 islands, 221 s, 1.5 %
+ffmpeg -v error -y -i <recording.mov> -vn -ac 1 -b:a 96k $P/build/voice-raw.mp3
+python3 $S/recipes/clubgig/islands.py $P/build/voice-raw.mp3 $P/build/vad.json
+~/.venvs/mlxw/bin/python $S/scripts/islands_tx.py $P/build/voice-raw.mp3 --vad $P/build/vad.json --lang th --out $P/build/islands.json
 ```
 **Without a Gemini key** (it's optional; `doctor.sh` says `opt GEMINI_API_KEY`), the same reel with three changes, and
 "Gemini off: the Thai text is whisper's, pictures were picked by eye" next to the preview:
@@ -69,7 +71,13 @@ python3 $S/recipes/clubgig/islands.py $P/assets/talk.mp4 $P/build/vad.json
    asides; keep the whole argument + the CTA; cut on real pauses; total speech <= the user's limit minus the 2.2 s outro.
 2. **Captions:** copy `recipes/clubgig/cut.py` to `$P/build/cut.py`, write TAKES = (a, b, verbatim Gemini text,
    "?" on questions) from THIS recording's transcript (it refuses the stored KG01 example), run `~/.venvs/mlxw/bin/python -I build/cut.py` -> build/words.th.json + build/takes.json.
-3. **Brand:** `$S/profile.json` `brand` if set; else no brand named means Clubgig: copy `recipes/clubgig/brand/clubgig/` to `$P/brand/`; its `brand.json` holds the tagline,
+3. **Brand:** first their own: `python3 $S/scripts/own_brand.py $P` (reads ~/TadClip/brand/: logos, a colour sheet or
+   brand guide, a page screenshot, brand.txt, a font; docs/BRAND-KIT.md). Never edit what it makes, never feed it a
+   folder of your own: build.mjs re-makes it from ~/TadClip/brand/ and warns. If it prints `own brand from ...`, that is the brand: build.mjs lays
+   `$P/brand/own.json` over the style (plate colours, highlight, font, logo top right, end card, LINE handle; no LINE ID =
+   no LINE button), so plan the example's chrome/linecta/endcard beats as usual and don't copy Clubgig's files. Its
+   `avoid` = pictures never to use. Put its notes lines, in plain Thai, in the summary. If it prints `no brand kit`:
+   `$S/profile.json` `brand` if set; else no brand named means Clubgig: copy `recipes/clubgig/brand/clubgig/` to `$P/brand/`; its `brand.json` holds the tagline,
    LINE handle and bubble lines. Say so next to the preview. Don't stop to ask. Keep only the bubble lines that fit
    this reel's topic (Clubgig's "ปรึกษาปัญหาความรัก" doesn't belong on an AI reel); at least one stays.
    Another brand named: ask once for its logo (white wordmark + dark lockup PNGs), tagline, LINE handle and bubble lines.

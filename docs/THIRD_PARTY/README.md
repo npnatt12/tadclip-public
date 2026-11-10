@@ -11,6 +11,7 @@ Model weights are downloaded at setup into `~/.cache`, never committed.
 | transitions + film looks | [looks.md](looks.md) | xfade-easing expression files (MIT) in `scripts/vendor/xfade-easing`; LUTs generated with Spectral Film LUT (MIT) |
 | person matte + cutout effects | [matte.md](matte.md) | BiRefNet-portrait / BiRefNet_lite and the other ZhengPeng7 weights (MIT) via rembg/transformers in an optional venv; own effect code; bria refused |
 | audio QA | [audioqa.md](audioqa.md) | ClearerVoice (Apache-2.0), silero-vad (MIT) |
+| format engine + video teardown | [../format-engine/PROVENANCE.md](../format-engine/PROVENANCE.md) | own code (`format_spec.py`, `format_score.py`, `video_rea.py`) and an own method written in a sealed clean room; measures with ffmpeg, OpenCV YuNet (MIT) and macOS Vision; sources cited in `docs/format-engine/method/SOURCES.md` |
 | workflow | [workflow.md](workflow.md) | own code; ideas only (OpenMontage is AGPL) |
 | fonts | [fonts.md](fonts.md) | 8 OFL families; Playfair Display (Reserved Font Name) ships unmodified |
 | models | [models.md](models.md) | MediaPipe Face Landmarker bundled (Apache-2.0); YuNet (MIT) and SFace (Apache-2.0) downloaded |

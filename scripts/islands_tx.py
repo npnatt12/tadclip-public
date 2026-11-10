@@ -23,6 +23,12 @@ def read16k(path):
                                         capture_output=True, check=True).stdout, np.float32)
 
 
+def looping(text):
+    """one short pattern said over and over: a hallucination on noise, not speech (the same 2-6 characters 6+ times in a row)"""
+    t = re.sub(r"\s+", "", text)
+    return bool(re.search(r"(.{2,6}?)\1{5,}", t))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("audio"); ap.add_argument("--vad", required=True); ap.add_argument("--lang", default="ru")
@@ -33,10 +39,13 @@ def main():
     x = read16k(a.audio); out = []; t0 = time.time()
     for isl in json.load(open(a.vad))["islands"]:
         a0 = max(0.0, isl["a"] - 0.15); b0 = min(len(x) / SR, isl["b"] + 0.15)
-        r = run(x[int(a0 * SR):int(b0 * SR)].copy(), word_timestamps=True, condition_on_previous_text=False, temperature=(0.0, 0.2), verbose=None)
+        # tokens capped by the island's length: real Thai speech here peaks at ~16 tokens/s, while a breath or a click
+        # loops "ที่สุด" up to whisper's 224-token limit (11-09 fresh-account test: 15 of 87 islands, ~200 of 396 s)
+        r = run(x[int(a0 * SR):int(b0 * SR)].copy(), word_timestamps=True, condition_on_previous_text=False, temperature=(0.0, 0.2), verbose=None,
+                sample_len=int(24 * (b0 - a0)) + 16)
         words = []
         for s in r["segments"]:
-            if HALL.search(s["text"]) or s.get("no_speech_prob", 0) > 0.8: continue
+            if HALL.search(s["text"]) or s.get("no_speech_prob", 0) > 0.8 or looping(s["text"]): continue
             for w in s.get("words", []):
                 words.append({"w": w["word"].strip(), "a": round(a0 + w["start"], 3), "b": round(a0 + w["end"], 3), "p": round(w.get("probability", 1), 3)})
         out.append({"a": isl["a"], "b": isl["b"], "text": " ".join(w["w"] for w in words), "words": words})
