@@ -53,6 +53,8 @@ irm https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.ps1 |
 
 ## สไตล์และเอฟเฟกต์
 
+<img src="docs/media/styles-grid.gif" width="100%" alt="35 สไตล์เล่นพร้อมกันเป็นช่องแนวตั้ง ใช้คำไทยและคลิปจาก ClubGig จุดเขียว: สั่งชื่อได้เลย จุดม่วง: ใหม่ ยังไม่มีสูตร บอกลักษณะแล้ว Claude ทำให้">
+
 <img src="docs/media/effects-grid.gif" width="100%" alt="เอฟเฟกต์ 18 แบบเล่นพร้อมกัน เช่น แผนที่เส้นทาง ตัวเลขวิ่ง ภาพซ้อนกอง กระดานวาดมือ ตัวอักษรเคลื่อนไหว">
 
 สั่งเป็นชื่อได้เลย เช่น Seoul list, Clean OS, RESULT, Whiteboard, Kinetic doc ([ทั้งหมด](docs/PLAYBOOK.md)) ก๊อปสไตล์ครีเอเตอร์เอามาแค่จังหวะ ตำแหน่ง ตัวอักษร และโครงเรื่อง **ไม่เอา**หน้า คำพูด โลโก้ เพลง หรือฟุตเทจของเขา
