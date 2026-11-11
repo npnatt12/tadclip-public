@@ -35,6 +35,7 @@ Read it before every reel; if it's missing, use the defaults (Clubgig) and don't
 | They say | Do |
 |---|---|
 | "ตรวจเครื่อง", "check the machine" | `bash $S/scripts/doctor.sh`, then say in Thai what's ready and what to do about each MISS |
+| "เช็กความพร้อม TadClip", "ready check", before a class | `bash $S/scripts/ready.sh` (~20 s: the Mac, the install, Claude signed in on a paid plan, a real 2-second Thai render). Show the user its last line exactly (`TADCLIP READY ✓ <code> ...` or `TADCLIP NOT READY ...`) and tell them, in Thai, to paste it in the class's LINE group; for each ✗ line, help fix it, then run it again |
 | "เก็บบันทึก TadClip", "collect the logs", a bug report | `bash $S/scripts/logs.sh`: install logs, the app's events, run records, recent TadClip chats, doctor, versions into /Users/Shared/TadClip-logs/<user>-<time> (keys blanked); tell them the folder, in Thai |
 | "ดูความคืบหน้า", "progress?" | during a reel: `tail -3 <project>/build/progress.log`, in Thai |
 | "มีสไตล์อะไรบ้าง", "what styles" | the styles table in `README.md` ("Styles you can ask for today"), in Thai, one line each |

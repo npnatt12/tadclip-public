@@ -6,13 +6,16 @@ export const T = {
     start: "ตัดต่อให้หน่อย", drop: "ลากคลิปมาวางตรงนี้", browse: "เลือกคลิปจากเครื่อง", openFolder: "เปิดโฟลเดอร์ TadClip",
     step1: "เลือกคลิป", step2: "เลือกสไตล์", step3: "กดตัดต่อ", inFolder: "คลิปในโฟลเดอร์ TadClip", noFiles: "ยังไม่มีคลิป",
     picked: "เลือกแล้ว", audio: "เสียง/เพลง", recommended: "แนะนำ", moreStyles: "ดูสไตล์อื่น", lessStyles: "ซ่อนสไตล์อื่น",
-    uploading: "กำลังคัดลอกคลิป", working: "กำลังตัดต่อ", about: "ใช้เวลาประมาณ 30-40 นาที",
+    uploading: "กำลังคัดลอกคลิป", working: "กำลังตัดต่อ", about: "ใช้เวลาประมาณ 30-60 นาที",
     left: (m) => (m > 1 ? `เหลืออีกประมาณ ${m} นาที` : "ใกล้เสร็จแล้ว"), stepOf: (n, of) => `ขั้นที่ ${n} จาก ${of}`, starting: "กำลังเริ่ม",
     tips: ["ปิดหน้านี้ได้ เสร็จแล้วจะมีเสียงเตือน", "อย่าปิดฝาเครื่อง และเสียบสายชาร์จไว้"],
     slept: "เครื่องหลับไปพักหนึ่ง ตอนนี้ทำต่อแล้ว", stop: "หยุด",
-    moreStylesHint: "ทุกแบบใช้ ClubGig เป็นพื้น แล้วเพิ่มลูกเล่นนี้", previewReady: "คลิปตัวอย่างพร้อมแล้ว", whatDone: "TadClip ทำอะไรไปบ้าง", ok: "โอเค ทำไฟล์จริงเลย", change: "อยากแก้ตรงไหน แตะได้เลย",
-    chips: ["สว่างขึ้น", "ซูมน้อยลง", "เพลงเบาลง", "สั้นลง"], other: "แก้อย่างอื่น", otherHint: "พิมพ์สิ่งที่อยากแก้", send: "ส่ง",
+    moreStylesHint: "ทุกแบบใช้ ClubGig เป็นพื้น แล้วเพิ่มลูกเล่นนี้", previewReady: "คลิปตัวอย่างพร้อมแล้ว", whatDone: "TadClip ทำอะไรไปบ้าง", ok: "โอเค ทำไฟล์จริงเลย", change: "อยากแก้ตรงไหน กดได้เลย",
+    chips: ["สว่างขึ้น", "ซูมน้อยลง", "เพลงเบาลง", "สั้นลง"], other: "แก้อย่างอื่น", otherHint: "พิมพ์สิ่งที่อยากแก้", send: "ส่ง", wishEgs: ["ซับตัวใหญ่", "ไม่ใส่เพลง", "สั้นลง เหลือ 1 นาที", "เปิดคลิปให้แรงๆ", "ใส่ปุ่ม LINE ตอนท้าย"], help: "ดูวิธีใช้อีกครั้ง",
     finalReady: "ไฟล์จริงเสร็จแล้ว", showFile: "เปิดดูในโฟลเดอร์", another: "ตัดคลิปใหม่",
+    batch: (n) => `ตัดแยกทีละคลิป (${n} คลิป)`, batchHint: "ทำต่อกันจนได้ไฟล์จริงทุกคลิป ไม่ต้องกด OK ทีละคลิป อยากแก้คลิปไหนค่อยเปิดทีหลัง",
+    queued: (n) => `รอคิวอีก ${n} คลิป`, waitQuota: (hm) => `รอโควตา Claude ถึง ${hm} แล้ว TadClip จะทำต่อเอง`, doneList: "คลิปที่ตัดแล้ว", openJob: "เปิด",
+    limitAt: (hm) => `TadClip จะทำต่อเองเวลา ${hm} ไม่ต้องกดอะไร ปิดหน้านี้ได้ งานที่ทำไปแล้วไม่หาย`,
     asks: "TadClip ถามว่า", yes: "ตกลง ทำต่อเลย", retry: "ลองอีกครั้ง", resume: "ทำต่อจากที่ค้างไว้", back: "กลับไปหน้าแรก",
     folderHow: "ใส่คลิปในโฟลเดอร์ TadClip แล้วรอได้เลย", folderAuto: "ไม่ต้องกดอะไร TadClip เริ่มตัดเอง เสร็จแล้วจะมีเสียงเตือน",
     orDrop: "หรือลากคลิปมาวางที่หน้านี้", hello: "สวัสดี ส่งคลิปที่อยากตัดมาได้เลย", willCut: (s) => `จะตัดแบบ ${s} นะ`,
@@ -33,13 +36,16 @@ export const T = {
     start: "Cut it for me", drop: "Drop your clip here", browse: "Choose from this Mac", openFolder: "Open the TadClip folder",
     step1: "Choose a clip", step2: "Choose a style", step3: "Start", inFolder: "Clips in the TadClip folder", noFiles: "No clips yet",
     picked: "Chosen", audio: "Audio", recommended: "Recommended", moreStyles: "More styles", lessStyles: "Fewer styles",
-    uploading: "Copying your clip", working: "Editing", about: "Takes about 30-40 minutes",
+    uploading: "Copying your clip", working: "Editing", about: "Takes about 30-60 minutes",
     left: (m) => (m > 1 ? `About ${m} min left` : "Almost done"), stepOf: (n, of) => `Step ${n} of ${of}`, starting: "Starting",
     tips: ["You can close this page. You'll hear a sound when it's done", "Keep the lid open and the charger in"],
     slept: "The Mac slept for a while. It's working again", stop: "Stop",
-    moreStylesHint: "Each one is ClubGig plus this effect", previewReady: "Your preview is ready", whatDone: "What TadClip did", ok: "Looks good, make the final", change: "Want a change? Tap one",
-    chips: ["Brighter", "Less zoom", "Quieter music", "Shorter"], other: "Something else", otherHint: "Type what to change", send: "Send",
+    moreStylesHint: "Each one is ClubGig plus this effect", previewReady: "Your preview is ready", whatDone: "What TadClip did", ok: "Looks good, make the final", change: "Want a change? Click one",
+    chips: ["Brighter", "Less zoom", "Quieter music", "Shorter"], other: "Something else", otherHint: "Type what to change", send: "Send", wishEgs: ["Big captions", "No music", "Shorter, about 1 minute", "A strong opening", "A LINE button at the end"], help: "Show the tips again",
     finalReady: "Your final file is ready", showFile: "Show in folder", another: "Cut another clip",
+    batch: (n) => `Each clip on its own (${n})`, batchHint: "Runs one after another to finished files, no OK for each. Open any of them later to change it",
+    queued: (n) => `${n} more in the queue`, waitQuota: (hm) => `Waiting for Claude's usage window until ${hm}. TadClip carries on by itself`, doneList: "Finished clips", openJob: "Open",
+    limitAt: (hm) => `TadClip carries on by itself at ${hm}. Nothing to press; you can close this page. Nothing is lost`,
     asks: "TadClip asks", yes: "OK, carry on", retry: "Try again", resume: "Carry on", back: "Back to start",
     folderHow: "Put clips in the TadClip folder, then wait", folderAuto: "Nothing to press. TadClip starts by itself and plays a sound when it's done",
     orDrop: "or drop a clip on this page", hello: "Hi! Send me the clip you want edited", willCut: (s) => `I'll cut it in ${s}`,
@@ -115,6 +121,8 @@ export const api = {
   start: (files, style, wish) => fetch("/api/start", { method: "POST", headers: H, body: JSON.stringify({ files, style, wish }) }).then((r) => r.json()),
   reply: (text) => fetch("/api/reply", { method: "POST", headers: H, body: JSON.stringify({ text }) }),
   retry: () => fetch("/api/retry", { method: "POST", headers: H }),
+  queue: (files, style, wish) => fetch("/api/queue", { method: "POST", headers: H, body: JSON.stringify({ files, style, wish }) }).then((r) => r.json()),
+  pick: (id) => fetch("/api/pick", { method: "POST", headers: H, body: JSON.stringify({ id }) }),
   signin: () => fetch("/api/signin", { method: "POST", headers: H }),
   openBrand: () => fetch("/api/open?what=brand", { method: "POST", headers: H }),
   stop: () => fetch("/api/stop", { method: "POST", headers: H }),
@@ -239,7 +247,8 @@ export function brandRow(k, saved = []) {
       <button class="btn ghost small" data-act="brand">${b.folder}</button></div></div>`;
 }
 export function errorScreen(s) {
-  const w = t(), code = errCode(s), [what, todo] = w.err[code] || w.err.crashed;
+  const w = t(), code = errCode(s); let [what, todo] = w.err[code] || w.err.crashed;
+  if (code === "limit" && s.job?.resumeAt) todo = w.limitAt(hm(s.job.resumeAt));
   const act = code === "no_claude" ? `<a class="btn primary" href="https://claude.ai/download" target="_blank" rel="noopener">${icon("upload")}<span>${w.getClaude}</span></a>`
     : code === "signed_out" ? `<button class="btn primary" data-act="signin">${icon("check")}<span>${w.signin}</span></button>`
     : code === "crashed" || code === "stopped" || code === "limit" ? `<button class="btn primary" data-act="retry">${icon("retry")}<span>${w.resume}</span></button>`
@@ -281,8 +290,30 @@ export function finalScreen(j) {
     <div class="side"><h2>${icon("check")}<span>${w.finalReady}</span></h2>
     <button class="btn primary" data-act="show">${icon("folder")}<span>${w.showFile}</span></button>
     <button class="btn ghost" data-act="fresh">${icon("plus")}<span>${w.another}</span></button>
+    ${j.batch ? `<p class="muted">${w.change}</p>${chipsHTML()}` : ""}
     ${j.result ? `<details class="said" open><summary>${w.whatDone}</summary><p>${esc(plain(j.result))}</p></details>` : ""}
   </div></section>`;   // open: the final summary carries what to check before posting (e.g. strangers' faces unchecked)
+}
+export const hm = (ms) => new Date(ms).toLocaleTimeString(lang === "th" ? "th-TH" : "en-GB", { hour: "2-digit", minute: "2-digit" });
+// the batch: what's waiting, why it waits (Claude's usage window), and the finished clips, each one can be opened again
+export function queueRow(s) {
+  const w = t(), mine = (s.done || []).filter((d) => d.batch && d.id !== s.job?.id);
+  if (!s.queue?.length && !mine.length) return "";
+  return `<section class="queue" aria-live="polite">
+    ${s.queue?.length ? `<p class="big">${w.queued(s.queue.length)}</p>` : ""}
+    ${s.waitUntil ? `<p class="note">${w.waitQuota(hm(s.waitUntil))}</p>` : ""}
+    ${mine.length ? `<h3>${w.doneList}</h3><ul class="donelist">${mine.map((d) => `<li><span>${d.status === "final" ? icon("check") : icon("alert")} ${esc(d.name)}</span>
+      ${s.job?.status === "running" || s.job?.error === "limit" ? "" : `<button class="btn ghost small" data-pick="${esc(d.id)}">${w.openJob}</button>`}</li>`).join("")}</ul>` : ""}
+  </section>`;
+}
+// the header carries their brand once they have one (the app is then theirs: a brand asset, not ClubGig's); ClubGig's
+// wordmark only while no brand is set. Models A and B share this header.
+const CLUBGIG_HEAD = `<img class="logo-light" src="clubgig-wordmark-black.png" alt="ClubGig"><img class="logo-dark" src="clubgig-wordmark-white.png" alt="ClubGig"><span class="tc">TadClip</span>`;
+export function brandHead(s) {
+  const h = document.querySelector(".top .brand"); if (!h) return;
+  const k = s.brand && !s.brand.error && (s.brand.logo || s.brand.name) ? s.brand : null;
+  const html = k ? `${k.logo ? `<img class="own" src="${esc(k.logo)}" alt="${esc(k.name || "")}">` : ""}${k.name ? `<b class="ownname">${esc(k.name)}</b>` : ""}<span class="tc">TadClip</span>` : CLUBGIG_HEAD;
+  if (h.innerHTML !== html) { h.innerHTML = html; h.classList.toggle("mine", !!k); }
 }
 export function questionScreen(j) {
   const w = t();
@@ -297,9 +328,10 @@ export function questionScreen(j) {
 // clicks every model shares; a model handles its own data-act values first and returns true
 export function wire(root, refresh, own = () => false) {
   root.addEventListener("click", async (e) => {
-    const b = e.target.closest("[data-act],[data-chip],[data-lang],[data-file],[data-style]");
+    const b = e.target.closest("[data-act],[data-chip],[data-lang],[data-file],[data-style],[data-pick],[data-eg]");
     if (!b || (await own(b))) return;
     if (b.dataset.lang !== undefined) { setLang(lang === "th" ? "en" : "th"); return refresh(true); }
+    if (b.dataset.pick) { await api.pick(b.dataset.pick); return refresh(true); }
     if (b.dataset.chip !== undefined) { b.disabled = true; await api.reply(CHIP_TH[+b.dataset.chip]); return refresh(true); }
     const a = b.dataset.act;
     if (a === "speak") return speak();
@@ -339,7 +371,7 @@ export function poll(render) {
     if (busy) return; busy = true;
     try {
       const s = await api.state();
-      const key = JSON.stringify([lang, screen(s), s.job?.status, s.job?.step, s.job?.error, s.job?.slept, s.files.map((f) => f.name + f.size), s.net, s.brandId, s.signedIn]);
+      const key = JSON.stringify([lang, screen(s), s.job?.status, s.job?.step, s.job?.error, s.job?.slept, s.files.map((f) => f.name + f.size), s.net, s.brandId, s.signedIn, s.queue, s.waitUntil, (s.done || []).map((d) => d.id + d.status)]);
       if (force || key !== last) {
         const moved = last && JSON.parse(last)[1] !== screen(s);
         last = key;

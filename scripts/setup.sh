@@ -8,6 +8,16 @@ S="$(cd "$(dirname "$0")/.." && pwd)"
 waitnet() { local i=0; until curl -fsI -m 10 https://pypi.org >/dev/null 2>&1; do
   [ $i = 0 ] && echo "No internet right now. Waiting for it to come back... (ไม่มีอินเทอร์เน็ต กำลังรอ)"; i=$((i+1)); [ $i -ge 90 ] && return 1; sleep 10; done; }
 N=0; say() { N=$((N+1)); echo; echo "== [$N/8] $1"; waitnet; }    # progress the user (or the agent relaying it) can see
+# stop before downloading anything on a Mac that can't run TadClip: arm64-only builds, mlx needs macOS 14 (its wheel is
+# macosx_14_0_arm64), a first install takes ~7.3 GB (11-10). A paying beginner must hear this in minute 1, not minute 12
+mac=$(sw_vers -productVersion 2>/dev/null); free=$(df -k "$HOME" | awk 'NR==2{print int($4/1048576)}')
+if [ "$(uname -sm)" != "Darwin arm64" ] || [ "${mac%%.*}" -lt 14 ] 2>/dev/null; then
+  echo "TADCLIP_STATUS=unsupported: TadClip needs a Mac with an Apple chip (M1 or newer) and macOS 14 or newer. This one: $(uname -sm), macOS ${mac:-?}."
+  echo "เครื่องนี้ใช้ TadClip ไม่ได้: ต้องเป็น Mac ชิป Apple (M1 ขึ้นไป) และ macOS 14 ขึ้นไป เครื่องนี้: $(uname -m), macOS ${mac:-?}"; exit 2
+fi
+[ -x "$HOME/.venvs/mlxw/bin/python" ] || [ "$free" -ge 8 ] || {
+  echo "TADCLIP_STATUS=no_space: TadClip needs about 8 GB free; this Mac has $free GB. Free some space, then run this again."
+  echo "พื้นที่ไม่พอ: ต้องว่างประมาณ 8 GB ตอนนี้ว่าง $free GB ลบไฟล์ที่ไม่ใช้ออกก่อน แล้วรันคำสั่งเดิมอีกครั้ง"; exit 2; }
 [ "$S" -ef "$HOME/.claude/skills/tadclip" ] || echo "WARNING: TadClip belongs in ~/.claude/skills/tadclip (some scripts look for their face models there). This copy is in $S."
 BIN="$HOME/.local/bin"; T="$HOME/.local/share/tadclip-tools"; mkdir -p "$BIN" "$T"
 export PATH="$BIN:$PATH"

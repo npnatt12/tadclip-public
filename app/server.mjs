@@ -15,7 +15,8 @@ const APP = path.dirname(fileURLToPath(import.meta.url));
 const PORT = +(process.env.TADCLIP_PORT || 4747);
 const DIR = process.env.TADCLIP_DIR || path.join(HOME, "TadClip");
 const STATE = path.join(DIR, ".tadclip");
-const REPLAY = process.env.TADCLIP_REPLAY || "";
+const REPLAY = process.env.TADCLIP_REPLAY ? path.resolve(process.env.TADCLIP_REPLAY) : "";   // resolved: the replay runs with cwd = the clip folder
+let testSignedIn = true;   // test mode only: replay is always signed in, so /api/test can sign it out to check the sign-in step
 const TEST = process.env.TADCLIP_TEST === "1";   // lets the checks force any error screen
 const PATHX = [`${HOME}/.local/bin`, "/opt/homebrew/opt/node@22/bin", "/opt/homebrew/bin", "/usr/local/bin", process.env.PATH].join(":");
 const VIDEO = /\.(mov|mp4|m4v|avi|mkv|mts|3gp|hevc|webm)$/i, AUDIO = /\.(mp3|m4a|wav|aac|aif|aiff|flac|ogg)$/i;
@@ -62,7 +63,8 @@ const TXT = [["name", "ชื่อ"], ["primary", "สีหลัก"], ["seco
   ["tagline", "สโลแกน"], ["line", "LINE"], ["linebutton", "ปุ่ม LINE"], ["avoid", "ห้ามใช้"]];
 // one timestamped line per event, for test runs and bug reports (scripts/logs.sh collects it)
 const EV = path.join(STATE, "events.log");
-const log = (...a) => fs.appendFileSync(EV, `${new Date().toISOString()} ${a.join(" ")}\n`);
+// never throws: a full disk made appendFileSync throw inside a request handler, which ends the whole server (Node 22)
+const log = (...a) => { try { fs.appendFileSync(EV, `${new Date().toISOString()} ${a.join(" ")}\n`); } catch {} };
 
 const run = (cmd, args, ms = 15000) => new Promise((ok) =>
   execFile(cmd, args, { timeout: ms, env: { ...process.env, PATH: PATHX } }, (e, out, err) => ok({ code: e ? (e.code ?? 1) : 0, out: String(out), err: String(err) })));
@@ -110,7 +112,23 @@ async function probe(file) {   // a video the editor can read: has a picture and
 const JOB = path.join(STATE, "job.json");
 let job = fs.existsSync(JOB) ? JSON.parse(fs.readFileSync(JOB, "utf8")) : null;
 let child = null;
-const save = () => fs.writeFileSync(JOB, JSON.stringify(job, null, 1));
+// every job is also kept in jobs/<id>.json: a batch makes several, and any finished one can be opened again for changes
+const JOBS = path.join(STATE, "jobs");
+fs.mkdirSync(JOBS, { recursive: true });
+const save = () => { fs.writeFileSync(JOB, JSON.stringify(job, null, 1)); if (job?.id) fs.writeFileSync(path.join(JOBS, `${job.id}.json`), JSON.stringify(job)); };
+const history = () => fs.readdirSync(JOBS).filter((f) => f.endsWith(".json")).sort().reverse().slice(0, 12).map((f) => {
+  try { const j = JSON.parse(fs.readFileSync(path.join(JOBS, f), "utf8")); return { id: j.id, name: (j.files || []).find((x) => VIDEO.test(x)) || "", status: j.status, error: j.error || null, batch: !!j.batch }; } catch { return null; }
+}).filter(Boolean);
+
+// Claude's 5-hour usage window, read off the run's own stream (rate_limit_event). Measured 11-09/10: one reel used 14-46 %
+// of it on Pro, so a queue starts the next clip only under HEADROOM and otherwise waits for the reset; a run that hits
+// the limit carries on by itself after the reset (it used to stop on an error screen: "wait until Claude says, press Carry on")
+const USAGE = path.join(STATE, "usage.json"), HEADROOM = +(process.env.TADCLIP_HEADROOM || 0.55), PAD = +(process.env.TADCLIP_RESUME_PAD_MS ?? 60000);   // a minute past the reset
+let usage = (() => { try { return JSON.parse(fs.readFileSync(USAGE, "utf8")); } catch { return null; } })();
+const QUEUE = path.join(STATE, "queue.json");
+let queue = (() => { try { return JSON.parse(fs.readFileSync(QUEUE, "utf8")); } catch { return []; } })();
+const saveQ = () => fs.writeFileSync(QUEUE, JSON.stringify(queue));
+const paceUntil = () => usage && usage.five >= HEADROOM && usage.resetsAt + PAD > Date.now() ? usage.resetsAt + PAD : 0;
 if (job?.status === "running") { job.status = "error"; job.error = "crashed"; save(); }   // the app stopped mid-run
 
 function newest(glob) {   // glob: [subdir pattern] -> newest file under DIR/*/<sub> matching re, after t
@@ -141,7 +159,7 @@ function progress() {
   return { lines, step: m ? { n: +m[1], of: +m[2], th: th?.trim(), en: (en || th)?.trim() } : null };
 }
 
-function message(files, style, wish) {
+function message(files, style, wish, batch) {
   const vids = files.filter((f) => VIDEO.test(f)).map((f) => path.join(DIR, f));
   const auds = files.filter((f) => AUDIO.test(f)).map((f) => path.join(DIR, f));
   let m = `ตัดต่อคลิปนี้ ${vids.join(" ")}`;   // the same words a user types in chat
@@ -150,6 +168,9 @@ function message(files, style, wish) {
   if (auds.length) m += `\nใช้ไฟล์เสียงนี้ด้วย: ${auds.join(" ")}`;
   // 11-09: "Font ของ <a clinic>" made the editor warn that the clip never mentions that clinic: a brand here is theirs
   if (wish) m += `\nผู้ใช้อยากได้: "${String(wish).replace(/\s+/g, " ").slice(0, 300)}" (ชื่อแบรนด์ในนี้คือแบรนด์ของคลิป ไม่ใช่เนื้อหา ไม่ต้องเตือนว่าคลิปไม่พูดถึง)`;
+  // a batch: nobody is watching each preview, so the editor checks its own sheet and makes the final (11-09 evening run:
+  // "อนุมัติเอง (ผู้ใช้ขอไม่ให้ถาม)" already works that way); changes come later, per clip, from the finished list
+  if (batch) m += `\nผู้ใช้สั่งตัดหลายคลิปต่อกัน: ไม่ต้องหยุดรอให้ผู้ใช้ OK คลิปตัวอย่าง ตรวจแผ่นภาพเองแล้วทำไฟล์จริงจนเสร็จ`;
   return m + `\n\n(ส่งมาจากแอป TadClip: ผู้ใช้ตอบระหว่างทางไม่ได้ ตัดสินใจเองจนได้คลิปตัวอย่าง เก็บงานไว้ในโฟลเดอร์ ${DIR}/<ชื่อคลิป> ` +
     `จบทุกครั้งด้วยสรุปภาษาไทยง่ายๆ 2-3 บรรทัด ไม่มีศัพท์เทคนิค ` +
     `บอกสิ่งที่ผู้ใช้ต้องดูเองก่อนโพสต์ไว้บรรทัดสุดท้าย)`;
@@ -163,7 +184,7 @@ async function turn(text, resume) {
     if (!(await signedIn(bin))) return fail("signed_out");
   }
   log("turn", resume ? "resume" : "new", `job=${job.id}`, `bin=${REPLAY ? "replay" : bin}`, JSON.stringify(text.split("\n")[0].slice(0, 120)));
-  Object.assign(job, { status: "running", error: null, turnStarted: Date.now(), result: "", said: [...(job.said || []), text] });
+  Object.assign(job, { status: "running", error: null, limit: false, resumeAt: null, turnStarted: Date.now(), result: "", said: [...(job.said || []), text] });
   save();
   const out = fs.createWriteStream(path.join(STATE, `${job.id}.stream.jsonl`), { flags: "a" });
   const args = ["-p", text, "--output-format", "stream-json", "--verbose", "--permission-mode", "dontAsk",
@@ -181,6 +202,8 @@ async function turn(text, resume) {
     for (let i; (i = buf.indexOf("\n")) >= 0; buf = buf.slice(i + 1)) {
       let e; try { e = JSON.parse(buf.slice(0, i)); } catch { continue; }
       if (e.session_id) job.session = e.session_id;
+      const w = e.type === "rate_limit_event" && e.rate_limit_info?.unifiedWindows?.five_hour;
+      if (w && typeof w.utilization === "number") { usage = { five: w.utilization, resetsAt: w.resetsAt * 1000, week: e.rate_limit_info.unifiedWindows.seven_day?.utilization ?? null, t: Date.now() }; fs.writeFileSync(USAGE, JSON.stringify(usage)); }
       if (e.type === "result") { Object.assign(job, { result: e.result || "", isError: !!e.is_error });
         log("result", `job=${job.id}`, `error=${!!e.is_error}`, `turns=${e.num_turns}`, `ms=${e.duration_ms}`, `usd=${e.total_cost_usd}`, e.api_error || "", JSON.stringify(String(e.result || "").slice(0, 160))); }
       if (e.type === "result" && e.api_error === "usage_limit_reached") job.limit = true;   // 11-09: the 5-hour limit looked like a crash
@@ -202,7 +225,7 @@ async function turn(text, resume) {
     const final = named.find((f) => !/\((preview|no music)\)/.test(f)) || newest(["finals", /^(?!\.)(?!.*\((preview|no music)).*\.mp4$/, after]);
     const prev = named.find((f) => /\(preview\)\.mp4$/.test(f)) || newest(["finals", /\(preview\)\.mp4$/, after]);
     if (/login|log in|auth|API key/i.test(job.result) && job.isError) return fail("signed_out");
-    if (job.limit) return fail("limit");
+    if (job.limit) { job.resumeAt = (usage?.resetsAt > Date.now() ? usage.resetsAt : Date.now() + 30 * 60000) + PAD; log("limit", `job=${job.id}`, `resume=${new Date(job.resumeAt).toISOString()}`); return fail("limit"); }
     if (code !== 0 || job.isError) return fail("crashed");
     if (final && final !== prev && (!prev || fs.statSync(final).mtimeMs >= fs.statSync(prev).mtimeMs)) Object.assign(job, { status: "final", final });
     else if (prev) Object.assign(job, { status: "preview", preview: prev });
@@ -238,18 +261,32 @@ function listFiles() {
   }).sort((a, b) => b.mtime - a.mtime);
 }
 
-async function start(files, style, wish = "") {
+async function start(files, style, wish = "", batch = false) {
   if (child) return { error: "busy" };
   const vids = files.filter((f) => VIDEO.test(f));
   if (!vids.length) { job = { id: Date.now().toString(36), files, status: "error", error: "bad_file", started: Date.now() }; save(); return job; }
   for (const f of vids) if (!REPLAY && !(await probe(path.join(DIR, f)))) {
     job = { id: Date.now().toString(36), files, status: "error", error: "bad_file", bad: f, started: Date.now() }; save(); log("error", "bad_file", JSON.stringify(f)); return job;
   }
-  job = { id: Date.now().toString(36), files, style, wish, started: Date.now(), said: [] };
+  job = { id: Date.now().toString(36), files, style, wish, batch, started: Date.now(), said: [] };
   log("start", `job=${job.id}`, `files=${JSON.stringify(files)}`, `style=${JSON.stringify(style)}`, `wish=${JSON.stringify(wish)}`, `ui=${settings().ui}`);
-  turn(message(files, style, wish));
+  turn(message(files, style, wish, batch));
   return job;
 }
+const carryOn = () => job.session ? turn(job.batch ? "ทำต่อจากที่ค้างไว้ แล้วทำไฟล์จริงจนเสร็จ" : "ทำต่อจากที่ค้างไว้", true) : start(job.files, job.style, job.wish, job.batch);
+
+// every 5 s: a run stopped by the usage limit carries on after the reset; else the next clip in the queue starts, unless
+// their own one-off clip is waiting for them (a preview or a question) or the window is too full for another reel
+setInterval(() => {
+  if (child) return;
+  if (job?.status === "error" && job.error === "limit") {
+    if (job.resumeAt && Date.now() >= job.resumeAt) { log("resume", `job=${job.id}`, "usage window reset"); carryOn(); }
+    return;
+  }
+  if (!queue.length || (job && !job.batch && job.status !== "final") || job?.status === "running" || paceUntil()) return;
+  const it = queue.shift(); saveQ(); log("queue", "next", JSON.stringify(it.files), `left=${queue.length}`);
+  start(it.files, it.style, it.wish, true);
+}, +(process.env.TADCLIP_QUEUE_MS || 5000));
 
 // ---- http ----
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
@@ -261,7 +298,8 @@ function file(req, res, f) {
   let st; try { st = fs.statSync(f); } catch { return send(res, 404, { error: "not found" }); }
   const type = types[path.extname(f).toLowerCase()] || "application/octet-stream";
   const m = /bytes=(\d*)-(\d*)/.exec(req.headers.range || "");
-  if (!m) { res.writeHead(200, { "content-type": type, "content-length": st.size, "accept-ranges": "bytes" }); return fs.createReadStream(f).pipe(res); }
+  // !st.size: an empty file (still copying in) asked for by range crashed the whole server (end = -1): send it whole
+  if (!m || !st.size) { res.writeHead(200, { "content-type": type, "content-length": st.size, "accept-ranges": "bytes" }); return fs.createReadStream(f).pipe(res); }
   const a = m[1] ? +m[1] : 0, b = m[2] ? +m[2] : st.size - 1;
   res.writeHead(206, { "content-type": type, "content-range": `bytes ${a}-${b}/${st.size}`, "content-length": b - a + 1, "accept-ranges": "bytes" });
   fs.createReadStream(f, { start: a, end: b }).pipe(res);
@@ -278,16 +316,30 @@ const server = http.createServer(async (req, res) => {
     const s = settings();
     const net = REPLAY ? true : await online();
     const b = await brand(), k = b.kit, bin = claudeBin();
-    const signed = REPLAY ? true : bin ? await signedIn(bin, false) : null;
+    const signed = REPLAY ? testSignedIn : bin ? await signedIn(bin, false) : null;
     return send(res, 200, { folder: DIR, ui: s.ui, lang: s.lang, files: listFiles(), net, claude: !!bin || !!REPLAY, signedIn: signed, brandId: b.id,
       brand: k && { error: k.error, name: k.name, logo: k.logo && "/media/brand/" + k.logo.file.split("/").map(encodeURIComponent).join("/"), impact: k.impact, font: k.font, fontName: k.font_name,
         colors: k.colors, notes: k.notes, notes_en: k.notes_en, have: k.have, files: k.files, why: k.why, typed: k.typed, avoid: k.avoid,
         proof: k.proof && { video: "/media/brand/" + k.proof.video + "?" + b.id, card: "/media/brand/" + k.proof.card + "?" + b.id } },
-      brands: brandNames(),
+      brands: brandNames(), queue: queue.map((i) => i.files.find((f) => VIDEO.test(f))), done: history(),
+      waitUntil: (job?.status === "error" && job.error === "limit" && job.resumeAt) || (queue.length && paceUntil()) || 0,
       job: job && { ...job, ...(job.status === "running" ? progress() : { lines: progress().lines }),
         preview: job.preview && "/media/" + path.relative(DIR, job.preview), final: job.final && "/media/" + path.relative(DIR, job.final) } });
   }
   if (req.method === "POST" && p === "/api/start") { const b = await body(req); return send(res, 200, await start(b.files || [], b.style || "clubgig", String(b.wish || "").slice(0, 300))); }
+  if (req.method === "POST" && p === "/api/queue") {   // several clips, each its own reel, one after another
+    const b = await body(req), files = (b.files || []).map(String), auds = files.filter((f) => AUDIO.test(f));
+    const items = files.filter((f) => VIDEO.test(f) && fs.existsSync(path.join(DIR, path.basename(f)))).map((f) => ({ files: [f, ...auds], style: b.style || "clubgig", wish: String(b.wish || "").slice(0, 300) }));
+    queue.push(...items); saveQ(); log("queue", "add", items.length, JSON.stringify(items.map((i) => i.files[0])));
+    return send(res, 200, { queued: items.length });
+  }
+  if (req.method === "POST" && p === "/api/pick") {   // open a finished (or failed) job again: its preview/final, and changes resume its session
+    const b = await body(req), f = path.join(JOBS, `${String(b.id || "").replace(/[^a-z0-9]/gi, "")}.json`);
+    // not while a reel waits out the usage limit: swapping it out would drop its carry-on
+    if (child || (job?.status === "error" && job.error === "limit") || !fs.existsSync(f)) return send(res, 409, { error: "busy" });
+    job = JSON.parse(fs.readFileSync(f, "utf8")); fs.writeFileSync(JOB, JSON.stringify(job, null, 1)); log("pick", `job=${job.id}`, job.status);
+    return send(res, 200, {});
+  }
   if (req.method === "POST" && p === "/api/reply") {   // a change after the preview, OK, or an answer to its question
     const b = await body(req);
     if (!job?.session || child) return send(res, 409, { error: "busy" });
@@ -295,12 +347,17 @@ const server = http.createServer(async (req, res) => {
     turn(String(b.text || "").slice(0, 500), true);
     return send(res, 200, job);
   }
-  if (req.method === "POST" && p === "/api/retry") { log("retry", `job=${job?.id}`, job?.error || job?.status); if (job && !child) { job.session ? turn("ทำต่อจากที่ค้างไว้", true) : start(job.files, job.style, job.wish); } return send(res, 200, {}); }
+  if (req.method === "POST" && p === "/api/retry") { log("retry", `job=${job?.id}`, job?.error || job?.status); if (job && !child) carryOn(); return send(res, 200, {}); }
   if (req.method === "POST" && p === "/api/stop") {   // stopping a change keeps the preview they already had
     if (child) { job.status = job.preview && fs.existsSync(job.preview) ? "preview" : "stopped"; save(); log("stop", `job=${job.id}`, `back to ${job.status}`); child.kill(); }
+    if (job?.batch && queue.length) { log("queue", "cleared by stop", queue.length); queue = []; saveQ(); }   // stop means stop, not "next clip"
     return send(res, 200, {});
   }
   if (req.method === "POST" && p === "/api/new") { if (!child) { log("new", `was=${job?.id}`, job?.status); job = null; fs.rmSync(JOB, { force: true }); } return send(res, 200, {}); }
+  if (req.method === "POST" && p === "/api/guide") {   // the spotlight guide's steps: shown / next / skip / close / restart, for drop-off per step
+    const b = await body(req); log("guide", String(b.step || "").replace(/[^a-z]/g, "").slice(0, 12), String(b.act || "").replace(/[^a-z]/g, "").slice(0, 8));
+    return send(res, 200, {});
+  }
   if (req.method === "POST" && p === "/api/settings") { const b = await body(req); if (b.ui && b.ui !== settings().ui) log("model", b.ui); fs.writeFileSync(path.join(STATE, "settings.json"), JSON.stringify({ ...settings(), ...b })); return send(res, 200, settings()); }
   // sign-in (11-09 test): the desktop app's sign-in doesn't reach its bundled claude, and auth login wants a real terminal,
   // so a Terminal window runs it; the waiting job starts by itself once auth status says yes
@@ -367,7 +424,7 @@ const server = http.createServer(async (req, res) => {
     req.pipe(out); out.on("finish", () => { log("upload", JSON.stringify(name), `to=${to}`, role ? `role=${role}` : "", `bytes=${out.bytesWritten}`, `ms=${Date.now() - t0}`); send(res, 200, { name, to }); });
     return;
   }
-  if (TEST && req.method === "POST" && p === "/api/test") { const b = await body(req); job = b.job; save(); return send(res, 200, {}); }
+  if (TEST && req.method === "POST" && p === "/api/test") { const b = await body(req); if ("job" in b) { job = b.job; save(); } if ("signedIn" in b) testSignedIn = !!b.signedIn; return send(res, 200, {}); }
   if (p.startsWith("/media/")) { const f = inside(DIR, p.slice(7)); return f ? file(req, res, f) : send(res, 403, {}); }
   if (p === "/" || p.endsWith(".html")) log("page", p, JSON.stringify((req.headers["user-agent"] || "").replace(/^.*\) /, "").slice(0, 60)));
   const f = inside(path.join(APP, "ui"), p === "/" ? `${settings().ui}.html` : p.slice(1));

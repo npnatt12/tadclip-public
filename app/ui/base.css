@@ -95,3 +95,17 @@ details.said summary { min-height: 48px; display: flex; align-items: center; cur
 .tools { display: flex; gap: 10px; } .tools .langbtn { display: grid; place-items: center; }
 header.top { gap: 12px; flex-wrap: wrap; }
 @media (max-width: 480px) { .brand img { height: 22px; } .brand .tc { font-size: 1rem; } .who small { display: none; } }
+
+/* the spotlight guide (guide.js): the dim layer is the hole's shadow, so it never takes a click; the tip sits beside it */
+.gd-hole { position: fixed; z-index: 50; border-radius: 16px; box-shadow: 0 0 0 200vmax #0b06088c; outline: 3px solid #ffe11a; pointer-events: none; transition: all .25s ease; }
+.gd-box { position: fixed; z-index: 51; width: min(360px, calc(100vw - 16px)); box-sizing: border-box; padding: 16px 18px 14px; border-radius: 18px;
+  background: var(--card); color: var(--ink); box-shadow: 0 10px 40px #0007; border: 2px solid #ffe11a; transition: top .25s ease, left .25s ease; }
+.gd-box .gd-n:empty { display: none; } .gd-box .gd-n { margin: 0 0 4px; color: var(--muted); font: 600 .85rem "Kanit"; }
+.gd-box .gd-t { margin: 0 0 12px; font: 600 1.15rem/1.5 "Kanit"; }
+.gd-box .gd-a { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.gd-box[hidden], .gd-hole[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .gd-hole, .gd-box { transition: none; } }
+/* the wish box's tap-to-fill examples, and the user's own brand in the header */
+.wishbox .eg { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; } .wishbox .eg .chip { min-height: 44px; font-size: .95rem; }
+.brand .own { height: 34px; max-width: 140px; object-fit: contain; } .brand .ownname { font: 700 1.1rem "Kanit"; }
+.brand.mine .tc { font: 600 .8rem "Kanit"; color: var(--muted); }

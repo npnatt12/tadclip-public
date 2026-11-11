@@ -213,6 +213,9 @@ async function brandPanel(browser) {
   return bad;
 }
 const browser = await (process.env.TADCLIP_BROWSER === "webkit" ? webkit : chromium).launch();
+// the base flow, with the spotlight tips switched off (as after "ข้ามคำแนะนำ"): guide.mjs checks the tips themselves
+const newPage = browser.newPage.bind(browser);
+browser.newPage = async (o) => { const p = await newPage(o); await p.addInitScript(() => (localStorage.tcGuide = JSON.stringify({ done: [], off: true }))); return p; };
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const report = {};
 for (const m of models.length ? models : ["a", "b", "c"]) {

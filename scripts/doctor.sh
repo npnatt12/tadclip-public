@@ -69,7 +69,8 @@ print((c.models.generate_content(model="gemini-flash-latest", contents="Reply wi
 PYEOF
 )
   case "$r" in [Oo]k*) pass "GEMINI_API_KEY works (one test call)";;
-    *503*|*UNAVAILABLE*|*504*|*DEADLINE_EXCEEDED*) pass "GEMINI_API_KEY set; Google is busy, so the key is untested: run this again later";;
+    # any Google-side 5xx is Google's trouble, not a missing install (11-11: a 504 made ready.sh say "not ready")
+    *503*|*UNAVAILABLE*|*DEADLINE_EXCEEDED*|*ServerError*) pass "GEMINI_API_KEY set; Google is busy (server error), so the key is untested: run this again later";;
     *429*|*RESOURCE_EXHAUSTED*) pass "GEMINI_API_KEY works, but today's free quota is used up (429): Gemini steps wait for the reset";;
     *ConnectError*|*nodename*|*"Errno 8"*|*Timeout*|*"timed out"*|*"Network is unreachable"*) fail "GEMINI_API_KEY set, but Google can't be reached (no internet?), so the key is untested" "check the internet connection, then run this again";;
     *) r=${r##*$'\n'}; fail "GEMINI_API_KEY is set but the test call failed: ${r:0:140}" "check the key at aistudio.google.com/apikey (env or $S/.env)";; esac

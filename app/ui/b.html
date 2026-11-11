@@ -66,22 +66,28 @@
   .one b { font: 600 1.1rem "Kanit"; } .one small { color: var(--muted); display: block; line-height: 1.45; }
   .row2 { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
   .solo { max-width: 620px; margin: 0 auto; padding: 10px 24px 64px; }
+  .queue { margin: 18px 0; padding: 14px 18px; border: 2px solid var(--line); border-radius: 16px; } .queue h3 { font-size: 1rem; margin: 10px 0 6px; }
+  .donelist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; } .donelist li { display: flex; justify-content: space-between; align-items: center; gap: 10px; overflow-wrap: anywhere; }
+  .go { flex-wrap: wrap; } .go .btn.ghost { min-height: 60px; font-size: 1.1rem; padding: .4em 1.2em; }
+  .batchhint { flex-basis: 100%; text-align: center; margin: 0; font-size: .9rem; }
   .net { background: var(--accent-soft); text-align: center; padding: 10px; border-radius: 14px; margin-bottom: 14px; }
 </style>
 </head>
 <body>
 <header class="top">
   <div class="brand"><img class="logo-light" src="clubgig-wordmark-black.png" alt="ClubGig"><img class="logo-dark" src="clubgig-wordmark-white.png" alt="ClubGig"><span class="tc">TadClip</span></div>
-  <div class="tools"><button class="langbtn" data-act="theme" aria-label="โหมดมืด"></button><button class="langbtn" data-act="speak" aria-label="ฟัง"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button><button class="langbtn" data-lang></button></div>
+  <div class="tools"><button class="langbtn" data-act="guidehelp" aria-label="ดูวิธีใช้อีกครั้ง">?</button><button class="langbtn" data-act="theme" aria-label="โหมดมืด"></button><button class="langbtn" data-act="speak" aria-label="ฟัง"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button><button class="langbtn" data-lang></button></div>
 </header>
 <div id="root"></div>
 <script type="module">
-import { t, lang, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, icon, esc, STYLES, styleName, styleAsk, tile, dropzone, fileInput, brandRow } from "./app.js";
+import { t, lang, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, queueRow, brandHead, icon, esc, STYLES, styleName, styleAsk, tile, dropzone, fileInput, brandRow } from "./app.js";
+import { guide, restart } from "./guide.js";
 const root = document.getElementById("root");
 let chosen = new Set(), style = "clubgig", showAll = false, uploading = "", wish = "";
 
 function home(s) {
   const w = t(), vids = s.files.filter((f) => f.kind !== "other");
+  const nv = [...chosen].filter((n) => s.files.find((f) => f.name === n)?.kind === "video").length;   // 2+ videos: also "each on its own"
   if (!chosen.size && vids[0]) chosen.add(vids.find((f) => f.kind === "video" && !f.done)?.name || vids[0].name);   // newest clip, picked for them
     return `<main>
     ${s.net ? "" : `<p class="net">${w.err.no_net[0]} · ${w.err.no_net[1]}</p>`}
@@ -101,12 +107,15 @@ function home(s) {
       ${showAll ? `<p class="muted" style="margin-top:10px">${w.moreStylesHint}</p>` : ""}
       ${showAll ? `<p style="margin-top:12px"><button class="btn ghost small" data-act="more">${w.lessStyles}</button></p>` : ""}
       ${brandRow(s.brand, s.brands)}
-      <label class="wish" for="wish">${w.wish}</label><input id="wish" class="wish" value="${esc(wish)}" placeholder="${w.wishEg}" maxlength="300" autocomplete="off">
+      <div class="wishbox"><label class="wish" for="wish">${w.wish}</label><input id="wish" class="wish" value="${esc(wish)}" placeholder="${w.wishEg}" maxlength="300" autocomplete="off">
+        <div class="eg">${w.wishEgs.map((x) => `<button class="chip" data-eg="${esc(x)}">${icon("plus")}<span>${esc(x)}</span></button>`).join("")}</div></div>
     </section>
     <section class="go" aria-label="${w.step3}"><span class="num" aria-hidden="true">3</span>
       ${s.signedIn === false ? `<button class="btn primary" data-act="signin">${icon("check")}<span>${w.signFirst}</span></button>`
-        : `<button class="btn primary" data-act="go" ${chosen.size && s.net ? "" : "disabled"}>${icon("scissors")}<span>${w.start}</span></button>`}
+        : `<button class="btn primary" data-act="go" ${chosen.size && s.net ? "" : "disabled"}>${icon("scissors")}<span>${w.start}</span></button>
+           ${nv > 1 ? `<button class="btn ghost" data-act="batch" aria-describedby="bh" ${s.net ? "" : "disabled"}>${icon("film")}<span>${w.batch(nv)}</span></button><p class="muted batchhint" id="bh">${w.batchHint}</p>` : ""}`}
     </section>
+    ${queueRow(s)}
   </main>`;
 }
 
@@ -114,7 +123,9 @@ function render(s) {
   document.querySelector("[data-lang]").textContent = t().lang; document.querySelector("[data-act=speak]").setAttribute("aria-label", t().listen);
   const sc = screen(s);
   root.innerHTML = sc === "home" ? home(s) : `<main class="solo">${
-    sc === "running" ? waiting(s.job) : sc === "preview" ? previewScreen(s.job) : sc === "final" ? finalScreen(s.job) : sc === "question" ? questionScreen(s.job) : errorScreen(s)}</main>`;
+    sc === "running" ? waiting(s.job) : sc === "preview" ? previewScreen(s.job) : sc === "final" ? finalScreen(s.job) : sc === "question" ? questionScreen(s.job) : errorScreen(s)}${queueRow(s)}</main>`;
+  brandHead(s); guide(sc, lang);
+  document.querySelector("[data-act=guidehelp]").setAttribute("aria-label", t().help);
   const inp = root.querySelector("#pick");
   if (inp) inp.onchange = () => add([...inp.files]);
   const wi = root.querySelector("#wish");
@@ -130,10 +141,13 @@ const refresh = poll(render);
 dropzone(document.body, add);
 wire(document.body, refresh, async (b) => {
   if (b.dataset.file) { const n = b.dataset.file; chosen.has(n) ? chosen.delete(n) : chosen.add(n); refresh(true); return true; }
+  if (b.dataset.eg) { wish = wish.includes(b.dataset.eg) ? wish : (wish.trim() ? wish.trim() + ", " : "") + b.dataset.eg; refresh(true); return true; }   // tap-to-fill: never added twice
+  if (b.dataset.act === "guidehelp") { restart(); refresh(true); return true; }
   if (b.dataset.style) { style = b.dataset.style; showAll = false; refresh(true); return true; }
   const a = b.dataset.act;
   if (a === "more") { showAll = !showAll; refresh(true); return true; }
   if (a === "browse") { root.querySelector("#pick").click(); return true; }
+  if (a === "batch") { b.disabled = true; await api.queue([...chosen], styleAsk(style), wish.trim()); chosen.clear(); wish = ""; refresh(true); return true; }
   if (a === "go") { b.disabled = true; await api.start([...chosen], styleAsk(style), wish.trim()); chosen.clear(); wish = ""; refresh(true); return true; }
   if (a === "fresh") { chosen.clear(); }
   return false;

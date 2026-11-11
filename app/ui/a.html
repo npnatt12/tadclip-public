@@ -37,7 +37,7 @@
 </header>
 <main><div class="card" id="root"></div></main>
 <script type="module">
-import { t, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, icon, esc, dropzone } from "./app.js";
+import { t, api, poll, wire, screen, waiting, errorScreen, previewScreen, finalScreen, questionScreen, brandHead, icon, esc, dropzone } from "./app.js";
 const root = document.getElementById("root");
 let uploading = "";
 api.settings({ ui: "a" });   // the folder starts cuts by itself only while this model is the one in use
@@ -55,6 +55,7 @@ function home(s) {
   ${done.length ? `<div class="done"><h3>${w.finalReady}</h3>${done.map((f) => `<div class="row">${icon("check")}<span>${esc(f.name)}</span></div>`).join("")}</div>` : ""}`;
 }
 function render(s) {
+  brandHead(s);   // their brand in the header once they have one
   document.querySelector("[data-lang]").textContent = t().lang; document.querySelector("[data-act=speak]").setAttribute("aria-label", t().listen);
   const sc = screen(s);
   root.innerHTML = sc === "home" ? home(s) : sc === "running" ? waiting(s.job) : sc === "preview" ? previewScreen(s.job)
