@@ -19,7 +19,7 @@ What this does NOT catch (independent review, 2026-11-05):
           change (a 500x120 box scored 0.985) and audio is not compared at all. scdet finds hard cuts, not same-framing
           jump cuts: compare build_report.json takes for those. A human still watches the render.
 """
-import argparse, difflib, hashlib, json, re, shutil, subprocess, sys, tempfile
+import argparse, difflib, hashlib, json, os, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
 SKILL = Path(__file__).resolve().parent.parent
@@ -48,7 +48,10 @@ def check(a):
     try:
         # ponytail: APFS clone (cp -c) so an 800 MB project costs no disk; macOS only, plain copy elsewhere.
         # resolve(): cp -R keeps a symlink as a link, and the build would then write through it into the real project
-        subprocess.run(["cp", "-c", "-R", str(Path(a.project).resolve()), str(work)], check=True)
+        if sys.platform == "darwin":
+            subprocess.run(["cp", "-c", "-R", str(Path(a.project).resolve()), str(work)], check=True)
+        else:
+            shutil.copytree(Path(a.project).resolve(), work)
         shutil.copy2(d / "reel.json", work / "reel.json")
         b = subprocess.run(["node", str(skill / "scripts/build.mjs"), str(work)], capture_output=True, text=True)
         if b.returncode:
@@ -65,8 +68,8 @@ def check(a):
         shutil.rmtree(tmp)
 
 
-def ff(args):
-    r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", *args], capture_output=True, text=True)
+def ff(args, cwd=None):
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", *args], capture_output=True, text=True, cwd=cwd)
     if r.returncode:  # a failed analysis must not read as a clean one
         sys.exit("ffmpeg failed: " + r.stderr.strip()[-400:])
     return r.stderr
@@ -85,9 +88,11 @@ def cuts(p, thr=10):
 
 
 def video(a):
-    with tempfile.NamedTemporaryFile(suffix=".log") as log:
-        ff(["-i", a.a, "-i", a.b, "-lavfi", f"[0:v][1:v]ssim=stats_file={log.name}", "-f", "null", "-"])
-        s = [float(m) for m in re.findall(r"All:([\d.]+)", Path(log.name).read_text())]
+    # the stats file by a bare name in a temp folder: a Windows path's "C:" ends an ffmpeg filter option, and an open
+    # NamedTemporaryFile can't be written by another process on Windows
+    with tempfile.TemporaryDirectory() as td:
+        ff(["-i", os.path.abspath(a.a), "-i", os.path.abspath(a.b), "-lavfi", "[0:v][1:v]ssim=stats_file=ssim.log", "-f", "null", "-"], cwd=td)
+        s = [float(m) for m in re.findall(r"All:([\d.]+)", Path(td, "ssim.log").read_text())]
     (da, fa), (db, fb) = stream(a.a), stream(a.b)
     ca, cb = cuts(a.a), cuts(a.b)
     fps_tol = 1 / fa + 1e-3

@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 # Gathers everything about this Mac's TadClip runs into one folder for a bug report or a test review:
 # the install logs, the app's event log and run records, each reel's progress lines and render logs, recent TadClip
-# chats, a doctor run and the versions. It goes to /Users/Shared so another account on this Mac can read it.
+# chats, a doctor run and the versions. It goes to /Users/Shared (Windows: C:\Users\Public) so another account on this
+# computer can read it.
 #   bash ~/.claude/skills/tadclip/scripts/logs.sh          (or tell Claude: "เก็บบันทึก TadClip")
 # Holds the transcripts of your clips; keys in .env are never copied.
 set -u
 S="$(cd "$(dirname "$0")/.." && pwd)"; DIR="${TADCLIP_DIR:-$HOME/TadClip}"
-OUT="${TADCLIP_LOGS_OUT:-/Users/Shared/TadClip-logs}/$(whoami)-$(date +%Y%m%d-%H%M%S)"
+. "$S/scripts/lib/plat.sh"
+if [ -n "$TC_WIN" ]; then SHARED="$(cygpath -u "${PUBLIC:-C:\Users\Public}")"; ILOGS="$(cygpath -u "$LOCALAPPDATA")/TadClip/Logs"
+else SHARED=/Users/Shared; ILOGS="$HOME/Library/Logs/TadClip"; fi
+OUT="${TADCLIP_LOGS_OUT:-$SHARED/TadClip-logs}/$(whoami)-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$OUT"/{install,app,reels,chats}
-cp "$HOME"/Library/Logs/TadClip/*.log "$OUT/install/" 2>/dev/null
-cp "$DIR"/.tadclip/{events.log,server.log,job.json,settings.json} "$OUT/app/" 2>/dev/null
+cp "$ILOGS"/*.log "$OUT/install/" 2>/dev/null
+cp "$DIR"/.tadclip/{events.log,server.log,server.err.log,job.json,settings.json} "$OUT/app/" 2>/dev/null
 cp "$DIR"/.tadclip/*.stream.jsonl "$OUT/app/" 2>/dev/null
 for p in "$DIR"/*/build/progress.log; do [ -f "$p" ] || continue; n=$(basename "$(dirname "$(dirname "$p")")")
   mkdir -p "$OUT/reels/$n"; cp "$p" "$OUT/reels/$n/"; cp "$DIR/$n"/finals/*.log "$DIR/$n"/finals/*.qa.json "$OUT/reels/$n/" 2>/dev/null; done
@@ -21,11 +25,12 @@ for k in "$DIR"/*/brand/own.json; do [ -f "$k" ] && cp "$k" "$OUT/brand/$(basena
 find "$HOME/.claude/projects" -name "*.jsonl" -mtime -3 2>/dev/null | while read -r f; do
   grep -q -i "tadclip" "$f" && cp "$f" "$OUT/chats/$(basename "$(dirname "$f")")--$(basename "$f")"; done
 { echo "collected $(date '+%Y-%m-%d %H:%M:%S %z') by $(whoami)"
-  sw_vers 2>/dev/null; uname -m; df -h "$HOME" | tail -1
+  machine; echo "$TC_DESC"; df -h "$HOME" | tail -1
   echo "tadclip $(git -C "$S" log -1 --format='%h %cd' 2>/dev/null || cat "$S/.tadclip-commit" 2>/dev/null)"
-  export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH"
+  export PATH="$HOME/.local/bin:$HOME/.local/share/tadclip-tools/node:/opt/homebrew/opt/node@22/bin:$PATH"
   for c in claude codex node ffmpeg uv; do v=$($c --version 2>/dev/null || $c -version 2>/dev/null); printf '%-7s %s\n' "$c" "${v%%$'\n'*}"; done
-  launchctl print "gui/$(id -u)/com.tadclip.app" 2>/dev/null | grep -E "state =|last exit" | head -2
+  if [ -n "$TC_WIN" ]; then curl -fs -m 2 http://127.0.0.1:4747/api/state >/dev/null && echo "app: running" || echo "app: not running"
+  else launchctl print "gui/$(id -u)/com.tadclip.app" 2>/dev/null | grep -E "state =|last exit" | head -2; fi
 } > "$OUT/versions.txt" 2>&1
 bash "$S/scripts/doctor.sh" > "$OUT/doctor.txt" 2>&1
 # keys never leave: every value in .env, and anything shaped like a Google / Anthropic / OpenAI key, is blanked out in

@@ -36,7 +36,7 @@ Read it before every reel; if it's missing, use the defaults (Clubgig) and don't
 |---|---|
 | "ตรวจเครื่อง", "check the machine" | `bash $S/scripts/doctor.sh`, then say in Thai what's ready and what to do about each MISS |
 | "เช็กความพร้อม TadClip", "ready check", before a class | `bash $S/scripts/ready.sh` (~20 s: the Mac, the install, Claude signed in on a paid plan, a real 2-second Thai render). Show the user its last line exactly (`TADCLIP READY ✓ <code> ...` or `TADCLIP NOT READY ...`) and tell them, in Thai, to paste it in the class's LINE group; for each ✗ line, help fix it, then run it again |
-| "เก็บบันทึก TadClip", "collect the logs", a bug report | `bash $S/scripts/logs.sh`: install logs, the app's events, run records, recent TadClip chats, doctor, versions into /Users/Shared/TadClip-logs/<user>-<time> (keys blanked); tell them the folder, in Thai |
+| "เก็บบันทึก TadClip", "collect the logs", a bug report | `bash $S/scripts/logs.sh`: install logs, the app's events, run records, recent TadClip chats, doctor, versions into /Users/Shared/TadClip-logs/<user>-<time> (Windows: C:\Users\Public\TadClip-logs) (keys blanked); tell them the folder, in Thai |
 | "ดูความคืบหน้า", "progress?" | during a reel: `tail -3 <project>/build/progress.log`, in Thai |
 | "มีสไตล์อะไรบ้าง", "what styles" | the styles table in `README.md` ("Styles you can ask for today"), in Thai, one line each |
 | "ปรับอะไรได้บ้าง", "what can I change" | the "ปรับได้" part of `docs/WELCOME.th.txt` |
@@ -111,8 +111,12 @@ finals.py deliver -> optional: -14 LUFS into the user's library of finished vide
 ```
 
 ### 0. Check the toolchain once per session
-Start every shell command with `export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH";` (the installer's
-tools live there, and the desktop app keeps the PATH it was opened with until it restarts).
+Start every shell command with `export PATH="$HOME/.local/bin:$HOME/.local/share/tadclip-tools/node:/opt/homebrew/opt/node@22/bin:$PATH";`
+(the installer's tools live there, and the desktop app keeps the PATH it was opened with until it restarts).
+**On Windows** the same commands run in Git Bash (install.ps1 sets `CLAUDE_CODE_GIT_BASH_PATH`): `bash $S/scripts/...`
+and `python3 ...` work as written. If your shell tool is PowerShell instead, run each script through Git Bash:
+`& $env:CLAUDE_CODE_GIT_BASH_PATH -lc 'bash ~/.claude/skills/tadclip/scripts/doctor.sh'`. Thai speech-to-text there is
+faster-whisper (same model; `--backend mlx` and islands_tx.py pick it by themselves), about 2-3x slower than on a Mac.
 `bash $S/scripts/doctor.sh`: tools, the optional GEMINI_API_KEY and the media library, each with its fix. Gemini is
 optional: without it the Thai text comes from whisper, pictures are picked by eye and B-roll isn't vision-checked; with
 people rules set, a shot nobody could check fails the QA. On a fresh machine run `python3 $S/scripts/library_restore.py`
@@ -162,7 +166,7 @@ meme sound has air. Aim for 45 to 75 s.
 `takes.py` finds every attempt at every script sentence with its face flags, `plan_cut.py` turns your picks (cut.json)
 into frame-exact pieces with trimmed pauses, blink-safe edges and keep/cover labels, `subcheck.py` catches merged
 restarts, `assemble.py --plan` + `voice_smooth.py --plan` make the plates and the voice, `qa_cut.py` checks the result.
-On Apple silicon, transcribe with mlx-whisper (`transcribe.py --backend mlx`).
+Transcribe Thai with `transcribe.py --backend mlx`: mlx-whisper on Apple silicon, faster-whisper on Windows (picked by itself).
 
 **Audit the rough cut before building.** Whisper merges restarts and false starts into one clean sentence and smears
 timestamps across them ("And even the… and even the thing that…"). Render the rough cut, re-transcribe THAT voice, and ask

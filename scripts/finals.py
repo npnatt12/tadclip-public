@@ -50,7 +50,11 @@ import argparse
 import contextlib
 import csv
 import datetime as dt
-import fcntl
+try:
+    import fcntl
+except ImportError:   # Windows: msvcrt's byte-range lock instead (tracker_lock)
+    fcntl = None
+    import msvcrt
 import hashlib
 import json
 import os
@@ -490,16 +494,18 @@ def tracker_lock(content):
     t0 = time.time()
     while True:
         try:
-            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            if fcntl: fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            else: f.seek(0); msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
             break
-        except BlockingIOError:
+        except OSError:   # held by another writer (BlockingIOError on a Mac, PermissionError on Windows)
             if time.time() - t0 > 120:
                 raise SystemExit("TRACKER.csv is locked by another writer for 120 s")
             time.sleep(0.5)
     try:
         yield
     finally:
-        fcntl.flock(f, fcntl.LOCK_UN)
+        if fcntl: fcntl.flock(f, fcntl.LOCK_UN)
+        else: f.seek(0); msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
         f.close()
 
 

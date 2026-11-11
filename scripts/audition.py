@@ -13,6 +13,7 @@ import html
 import json
 import os
 import subprocess
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LIB = os.path.abspath(os.path.join(HERE, "..", "library"))
@@ -52,7 +53,7 @@ def main():
     open(out, "w").write(page)
     print(out)
     if a.open:
-        subprocess.run(["open", out])
+        os.startfile(out) if sys.platform == "win32" else subprocess.run(["open", out])
 
 
 if __name__ == "__main__":

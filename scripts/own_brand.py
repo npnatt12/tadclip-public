@@ -150,9 +150,24 @@ def tinted(im, rgb):   # same shape, one colour
 # ---------- any file a shop has -> a PNG Pillow reads ----------
 def to_png(src, f):
     """iPhone HEIC, SVG, a PDF guide (its first page), GIF, TIFF -> src/.converted/<f>.png (hidden, so never an input and
-    never a change the build reacts to); re-made only when the file is newer. macOS only (sips, Quick Look)."""
+    never a change the build reacts to); re-made only when the file is newer. macOS: sips, Quick Look. Windows: Pillow,
+    pillow-heif (HEIC), pypdfium2 (PDF); no SVG there yet (the page asks for a PNG)."""
     p, out = os.path.join(src, f), os.path.join(src, ".converted", f + ".png")
     if os.path.exists(out) and os.path.getmtime(out) >= os.path.getmtime(p): return out
+    if sys.platform == "win32":
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        try:
+            fl = f.lower()
+            if fl.endswith(".svg"): return None   # ponytail: no SVG renderer on Windows; add one (with a clear licence) if shops send SVGs
+            if fl.endswith((".heic", ".heif")):
+                from pillow_heif import register_heif_opener; register_heif_opener()
+            if fl.endswith(".pdf"):
+                import pypdfium2 as pdfium
+                pdfium.PdfDocument(p)[0].render(scale=1600 / 612).to_pil().save(out)   # first page, ~1600 px wide like Quick Look
+            else:
+                with Image.open(p) as im: im.save(out)
+            return out
+        except Exception: return None
     if sys.platform != "darwin": return None
     os.makedirs(os.path.dirname(out), exist_ok=True)
     try:
@@ -164,12 +179,10 @@ def to_png(src, f):
         return out
     except Exception: return None
 
-def ocr(path):   # macOS Vision: [{"text", "box": [x, y, w, h] in pixels, top-left origin}]
-    if sys.platform != "darwin": return []
+def ocr(path):   # macOS Vision or Windows OCR (scripts/ocr.py): [{"text", "box": [x, y, w, h] in pixels, top-left origin}]
     try:
-        r = subprocess.run(["osascript", "-l", "JavaScript", os.path.join(SKILL, "scripts", "ocr_text.js"), path], capture_output=True, text=True,
-                           timeout=60, env={**os.environ, "OCR_LANGS": "th-TH,en-US"})
-        return json.loads(r.stdout.strip().splitlines()[0]).get("lines", [])
+        sys.path.insert(0, os.path.join(SKILL, "scripts")); import ocr as _ocr
+        return ((_ocr.lines([path], "th-TH,en-US", timeout=60) or {}).get(path) or {}).get("lines", [])
     except Exception: return []
 
 HEXRE, TRIPLE = re.compile(r"#\s?([0-9A-Fa-fOo]{6})(?![0-9A-Za-z])"), re.compile(r"(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})")
@@ -207,7 +220,7 @@ def from_screenshot(path):
     text block at the top left (where sites put it): stacked lines merged ("Name / Bangkok / Clinic"), a 1-2 letter
     misread mark in front dropped from the name. A logo with no text in it (a picture-only mark)
     isn't found: the page asks for the logo file instead."""
-    if sys.platform != "darwin": return None, None
+    if sys.platform not in ("darwin", "win32"): return None, None   # needs OCR (scripts/ocr.py)
     im = Image.open(path).convert("RGB"); W, H = im.size; band = im.crop((0, 0, W, int(H * 0.16)))
     tmp = tempfile.mkdtemp(); bp = os.path.join(tmp, "band.png"); band.save(bp); lines = ocr(bp)
     lines = sorted((l for l in lines if l["box"][0] < 0.15 * W and l["text"].strip()), key=lambda l: (l["box"][0], l["box"][1]))

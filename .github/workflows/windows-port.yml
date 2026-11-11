@@ -1,0 +1,196 @@
+# TadClip on Windows, end to end (branch windows-port). Two jobs:
+#   suite            setup.sh installs everything itself (the runner's own node/python/ffmpeg are taken off PATH), then the
+#                    whole test suite, the render fixture and Thai speech-to-text; outputs uploaded for the Mac comparison
+#   fresh-thai-user  a new Windows account named สมศรี (a Thai profile path), Git for Windows hidden, a bare PATH: the
+#                    one-line installer (install.ps1) as that user, then ready.sh. The closest CI gets to a buyer's laptop
+# Read the job summaries; artifacts: windows-port-suite, windows-port-fresh.
+name: windows-port
+on: { workflow_dispatch: {}, push: { branches: [windows-port] } }
+jobs:
+  suite:
+    runs-on: windows-latest
+    timeout-minutes: 180
+    env: { PYTHONUTF8: "1", PYTHONIOENCODING: utf-8, TADCLIP_NO_START: "1", TADCLIP_NO_DESKTOP: "1" }
+    defaults: { run: { shell: "bash --noprofile --norc {0}" } }   # no -e: a failing check is a result, not a stop
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup.sh, as a buyer's machine would run it
+        run: |
+          mkdir -p out; t0=$(date +%s)
+          # the runner's own tools off PATH, so setup.sh must fetch node, ffmpeg, uv and python itself
+          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -viE 'node|python|ffmpeg|hostedtoolcache|chocolatey|/uv' | paste -sd:)
+          bash scripts/setup.sh > out/setup.log 2>&1; rc=$?
+          { echo "## setup.sh: rc=$rc, $(( ($(date +%s) - t0) / 60 )) min"; echo '```'; tail -40 out/setup.log; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          tail -60 out/setup.log
+          for d in "$HOME/.local/bin" "$HOME/.local/share/tadclip-tools/node" "$HOME/.venvs/media/Scripts"; do cygpath -w "$d" >> $GITHUB_PATH; done
+      - name: what setup installed
+        run: |
+          { echo "## tools"; echo '```'; which python3 node ffmpeg uv; python3 --version; node --version; ffmpeg -version | head -1
+            python3 -c "import sys; print(sys.prefix)"; ls scripts/hf_ffmpeg.exe; echo '```'; } 2>&1 | tee -a $GITHUB_STEP_SUMMARY
+      - name: hf_ffmpeg.exe passes arguments through and pins x264 threads
+        if: always()
+        run: |
+          got=$(HF_REAL_FFMPEG="$(cygpath -w "$(type -P echo)")" scripts/hf_ffmpeg.exe -i "a b.mp4" -c:v libx264 -vf "drawtext=text='x y'" "ไฟล์ out.mp4" | tr -d '\r')
+          want="-i a b.mp4 -c:v libx264 -threads $(cat scripts/X264_THREADS) -vf drawtext=text='x y' ไฟล์ out.mp4"
+          [ "$got" = "$want" ] && r=pass || r="FAIL: got [$got]"; echo "## hf_ffmpeg.exe: $r" | tee -a $GITHUB_STEP_SUMMARY
+      - name: unit tests
+        if: always()
+        run: |
+          echo "## Unit tests" >> $GITHUB_STEP_SUMMARY; echo "| test | result | last line |" >> $GITHUB_STEP_SUMMARY; echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          for t in tests/test_*.py; do
+            out=$(timeout 900 python3 "$t" 2>&1); rc=$?
+            echo "| $t | $([ $rc = 0 ] && echo pass || echo "FAIL ($rc)") | $(echo "$out" | tail -1 | tr '|' '/' | cut -c1-120) |" >> $GITHUB_STEP_SUMMARY
+            echo "=== $t rc=$rc"; echo "$out" | tail -15
+          done
+      - name: app tests (queue, guide, check a/b/c, matrix b)
+        if: always()
+        run: |
+          cd app/test && npm ci --no-audit --no-fund > /dev/null && npx playwright install chromium > /dev/null; cd ../..
+          for t in queue guide; do out=$(timeout 900 node app/test/$t.mjs out/shots-guide 2>&1); rc=$?; echo "$out" | tail -12
+            { echo "## $t.mjs: rc=$rc"; echo '```'; echo "$out" | tail -8; echo '```'; } >> $GITHUB_STEP_SUMMARY; done
+          D=$(mktemp -d); TADCLIP_PORT=4848 TADCLIP_TEST=1 TADCLIP_DIR=$D TADCLIP_REPLAY=app/test/fixture TADCLIP_REPLAY_SECONDS=8 node app/server.mjs > out/server.log 2>&1 &
+          sleep 3; mkdir -p out/states
+          out=$(timeout 1500 node app/test/check.mjs a b c 2>&1); rc=$?; echo "$out" | tail -8; { echo "## check.mjs a b c: rc=$rc"; echo '```'; echo "$out" | tail -6; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          out=$(timeout 900 node app/test/matrix.mjs b --shots out/states 2>&1); rc=$?; echo "$out" | tail -4; { echo "## matrix.mjs b: rc=$rc"; echo '```'; echo "$out" | tail -3; echo '```'; } >> $GITHUB_STEP_SUMMARY
+      - name: Thai voices the page's ฟัง gets, in Edge (Windows' default browser) and in Chromium
+        if: always()
+        run: |
+          cat > v.cjs <<'JS'
+          const { chromium } = require("./app/test/node_modules/playwright");
+          (async () => { for (const ch of ["msedge", undefined]) { try {
+            const b = await chromium.launch(ch ? { channel: ch } : {}); const p = await b.newPage(); await p.goto("about:blank");
+            const v = await p.evaluate(() => new Promise((r) => { const f = () => r(speechSynthesis.getVoices().filter((x) => /^th/i.test(x.lang)).map((x) => x.name + (x.localService ? "" : " (online)"))); speechSynthesis.getVoices().length ? f() : (speechSynthesis.onvoiceschanged = f, setTimeout(f, 4000)); }));
+            console.log(`${ch || "chromium"}: ${v.length ? v.join(", ") : "no Thai voice"}`); await b.close(); } catch (e) { console.log(`${ch}: ${e.message.split("\n")[0]}`); } } })();
+          JS
+          out=$(node v.cjs 2>&1); echo "$out"; { echo "## Thai voices for ฟัง"; echo '```'; echo "$out"; echo '```'; } >> $GITHUB_STEP_SUMMARY
+      - name: brand intake on Windows (OCR, HEIC, PDF, through own_brand.py)
+        if: always()
+        run: |
+          out=$(python3 - <<'PY' 2>&1
+          import os, sys, tempfile
+          sys.path.insert(0, "scripts")
+          from PIL import Image, ImageDraw, ImageFont
+          import ocr, own_brand
+          d = tempfile.mkdtemp(); im = Image.new("RGB", (1000, 320), "white"); dr = ImageDraw.Draw(im)
+          dr.text((40, 40), "#1F6FEB TadClip", fill="black", font=ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 64))
+          dr.text((40, 170), "สีหลัก ร้านทดสอบ", fill="black", font=ImageFont.truetype("C:/Windows/Fonts/tahoma.ttf", 64))
+          p = os.path.join(d, "sheet.png"); im.save(p)
+          r = ocr.lines([p], "th-TH,en-US")[p]; print("ocr:", [x["text"] for x in r.get("lines", [])], r.get("error", ""))
+          from pillow_heif import from_pillow; from_pillow(im).save(os.path.join(d, "logo.heic")); im.save(os.path.join(d, "guide.pdf"))
+          for f in ("logo.heic", "guide.pdf"):
+              o = own_brand.to_png(d, f); print(f, "->", o and Image.open(o).size)
+          import finals   # TRACKER.csv lock: msvcrt on Windows
+          with finals.tracker_lock(d): print("tracker lock: held")
+          print("tracker lock: released")
+          PY
+          ); echo "$out"; { echo "## brand intake on Windows"; echo '```'; echo "$out" | tail -5; echo '```'; } >> $GITHUB_STEP_SUMMARY
+      - name: render fixture (build.mjs -> HyperFrames -> mp4)
+        if: always()
+        run: |
+          out=$(timeout 1800 python3 tests/render_fixture.py out/render-win.mp4 --keep out/render-proj 2>&1); rc=$?
+          echo "$out" | tail -30; { echo "## render fixture: rc=$rc"; echo '```'; echo "$out" | tail -3; echo '```'; } >> $GITHUB_STEP_SUMMARY
+      - name: Thai speech-to-text through transcribe.asr (faster-whisper)
+        if: always()
+        run: |
+          out=$(timeout 1800 python3 tests/asr_fixture.py --out out/asr-win.json 2>&1); rc=$?
+          echo "$out" | tail -5; { echo "## ASR fixture: rc=$rc"; echo '```'; echo "$out" | tail -1 | cut -c1-300; echo '```'; } >> $GITHUB_STEP_SUMMARY
+      - name: real Thai speech (FLEURS th_th dev, 40 clips, CC-BY 4.0) through transcribe.asr
+        if: always()
+        run: |
+          # the default (float32: int8 math differed by CPU, runs 3-7); the CPU named
+          cpu=$(powershell -NoProfile -Command "(Get-CimInstance Win32_Processor).Name" | tr -d '\r'); echo "cpu: $cpu"; echo "## FLEURS CPU: $cpu" >> $GITHUB_STEP_SUMMARY
+          for c in float32; do out=$(FW_COMPUTE=$c timeout 3600 python3 tests/asr_fleurs.py --n 40 --out out/fleurs40-win-$c.json 2>&1); rc=$?
+            echo "$out" | tail -3; { echo "## FLEURS $c: rc=$rc"; echo '```'; echo "$out" | tail -1 | cut -c1-200; echo '```'; } >> $GITHUB_STEP_SUMMARY; done
+      - name: doctor
+        if: always()
+        run: bash scripts/doctor.sh 2>&1 | tee out/doctor.txt | tail -50; { echo "## doctor"; echo '```'; grep -E "MISS|WARN|missing$" out/doctor.txt; echo '```'; } >> $GITHUB_STEP_SUMMARY
+      - name: the one-line installer parses as a buyer gets it (irm over HTTP, Windows PowerShell 5.1), Thai intact
+        if: always()
+        shell: powershell
+        run: |
+          # served like raw.githubusercontent.com: text/plain; charset=utf-8
+          Set-Content srv.py -Encoding ASCII -Value "import http.server as h`nh.SimpleHTTPRequestHandler.extensions_map['.ps1'] = 'text/plain; charset=utf-8'`nh.test(HandlerClass=h.SimpleHTTPRequestHandler, port=8765, bind='127.0.0.1')"
+          # setup's own python by path (a bare python3 can be the Store alias), then wait until it answers
+          $srv = Start-Process "$HOME\.venvs\media\Scripts\python.exe" -ArgumentList 'srv.py' -PassThru -WindowStyle Hidden -RedirectStandardError srv.err.txt
+          $s = $null; foreach ($i in 1..30) { try { $s = Invoke-RestMethod http://127.0.0.1:8765/install.ps1; break } catch { Start-Sleep 1 } }
+          if ($null -eq $s) { Get-Content srv.err.txt -ErrorAction SilentlyContinue; throw 'test server never answered' }
+          try { [scriptblock]::Create($s) | Out-Null; $p = 'parses' } catch { $p = "PARSE ERROR: $($_.Exception.Message)" }
+          $th = if ($s -match 'ติดตั้ง') { 'Thai intact' } else { 'THAI GARBLED' }
+          Stop-Process $srv
+          "## install.ps1 via irm: $p, $th" | Add-Content $env:GITHUB_STEP_SUMMARY -Encoding UTF8; "$p, $th"
+      - name: Windows calls the app makes (toast, keep-awake) work in Windows PowerShell 5.1, the one server.mjs runs
+        if: always()
+        shell: powershell
+        run: |
+          $r = @()
+          try { [Windows.UI.Notifications.ToastNotificationManager,Windows.UI.Notifications,ContentType=WindowsRuntime] | Out-Null; $r += 'toast types: ok' } catch { $r += "toast types: $($_.Exception.Message)" }
+          Add-Type -Namespace W -Name P -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'
+          $r += "SetThreadExecutionState -> $([W.P]::SetThreadExecutionState([uint32]2147483649)) (0 = failed)"
+          "## Windows calls`n" + ($r -join "`n") | Tee-Object -Variable o; $o | Add-Content $env:GITHUB_STEP_SUMMARY -Encoding UTF8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: windows-port-suite, path: out/, retention-days: 14 }
+
+  fresh-thai-user:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    defaults: { run: { shell: pwsh } }
+    steps:
+      - uses: actions/checkout@v4
+      - name: a new account สมศรี, Git hidden, the one-line installer as that user
+        shell: powershell   # Windows PowerShell 5.1, what a buyer opens (pwsh 7 would hand its module paths to the child)
+        run: |
+          New-Item -ItemType Directory -Force out | Out-Null
+          # the checkout where any user can read it (TADCLIP_SRC: install.ps1 copies it instead of cloning the public repo)
+          robocopy $PWD C:\Users\Public\tadclip-src /E /XD .git /NFL /NDL /NJH /NJS /NP | Out-Null
+          Rename-Item 'C:\Program Files\Git' 'Git.hidden'    # so install.ps1 must fetch portable Git, as on a fresh laptop
+          $name = -join [char[]](0x0E2A, 0x0E21, 0x0E28, 0x0E23, 0x0E35);   # สมศรี, built from code points: encoding-proof in 5.1
+          $pw = 'Tc!' + [guid]::NewGuid().ToString('N').Substring(0, 11)   # 14 chars: longer makes net user ask Y/N
+          net user $name $pw /add
+          if ($LASTEXITCODE) { throw "net user failed: $LASTEXITCODE" }
+          $sec = ConvertTo-SecureString $pw -AsPlainText -Force; $cred = New-Object pscredential(".\$name", $sec)
+          # the job, as the new user: a bare Windows PATH, then the same line a buyer pastes (the local copy instead of GitHub)
+          $job = @'
+          # Start-Process -Credential hands over the caller's environment: rebuild this user's own from its profile
+          $me = [Security.Principal.WindowsIdentity]::GetCurrent()
+          $prof = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($me.User.Value)").ProfileImagePath
+          $env:USERPROFILE = $prof; $env:HOMEPATH = $prof.Substring(2); $env:USERNAME = $me.Name.Split('\')[-1]; $env:HOME = $null
+          $env:PSModulePath = "$prof\Documents\WindowsPowerShell\Modules;$env:ProgramFiles\WindowsPowerShell\Modules;$env:SystemRoot\system32\WindowsPowerShell\v1.0\Modules"
+          $env:LOCALAPPDATA = "$prof\AppData\Local"; $env:APPDATA = "$prof\AppData\Roaming"; $env:TEMP = "$prof\AppData\Local\Temp"; $env:TMP = $env:TEMP
+          Set-Variable -Name HOME -Value $prof -Force -Scope Global
+          "whoami: $($me.Name)"
+          $env:Path = "$env:SystemRoot\system32;$env:SystemRoot;$env:SystemRoot\System32\Wbem;$env:SystemRoot\System32\WindowsPowerShell\v1.0"
+          $env:TADCLIP_SRC = 'C:\Users\Public\tadclip-src'; $env:TADCLIP_NO_START = '1'
+          "profile: $HOME"
+          $t = Get-Date
+          Get-Content -Raw -Encoding UTF8 C:\Users\Public\tadclip-src\install.ps1 | Invoke-Expression   # = irm | iex (GitHub serves it as UTF-8)
+          "install exit: $LASTEXITCODE, $([math]::Round(((Get-Date) - $t).TotalMinutes)) min"
+          $bash = [Environment]::GetEnvironmentVariable('CLAUDE_CODE_GIT_BASH_PATH', 'User'); "bash: $bash"
+          $env:Path = [Environment]::GetEnvironmentVariable('Path', 'User') + ';' + $env:Path
+          & $bash --noprofile --norc "$HOME/.claude/skills/tadclip/scripts/ready.sh" 2>&1
+          # the parts a Thai profile path could break: the model cache, temp folders, a project, the render
+          $env:PYTHONUTF8 = '1'; $t = Get-Date
+          & python3 "$HOME\.claude\skills\tadclip\tests\asr_fixture.py" 2>&1 | Select-Object -Last 2
+          "asr: $([math]::Round(((Get-Date) - $t).TotalSeconds)) s"; $t = Get-Date
+          & python3 "$HOME\.claude\skills\tadclip\tests\render_fixture.py" "$HOME\TadClip\render-thai-user.mp4" 2>&1 | Select-Object -Last 3
+          "render fixture: $([math]::Round(((Get-Date) - $t).TotalSeconds)) s"
+          Copy-Item "$HOME\TadClip\render-thai-user.mp4" C:\Users\Public\ -ErrorAction SilentlyContinue
+          "shortcuts: " + ((Get-ChildItem ([Environment]::GetFolderPath('Desktop')), ([Environment]::GetFolderPath('Startup')) -Filter TadClip.lnk).FullName -join ', ')
+          # the shortcut must hold the Thai path itself (stored as UTF-16), or a double-click opens nothing
+          $lnk = Join-Path ([Environment]::GetFolderPath('Desktop')) 'TadClip.lnk'
+          if (Test-Path -LiteralPath $lnk) { "shortcut holds the Thai path: " + [Text.Encoding]::Unicode.GetString([IO.File]::ReadAllBytes($lnk)).Contains($env:USERNAME) }
+          '@
+          Set-Content C:\Users\Public\fresh.ps1 $job -Encoding UTF8
+          $p = Start-Process powershell.exe -Credential $cred -LoadUserProfile -Wait -PassThru -WorkingDirectory C:\Users\Public `
+                 -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','C:\Users\Public\fresh.ps1' `
+                 -RedirectStandardOutput C:\Users\Public\fresh.out.txt -RedirectStandardError C:\Users\Public\fresh.err.txt
+          Rename-Item 'C:\Program Files\Git.hidden' 'Git'
+          Copy-Item C:\Users\Public\fresh.out.txt, C:\Users\Public\fresh.err.txt out\
+          Copy-Item C:\Users\Public\render-thai-user.mp4 out\ -ErrorAction SilentlyContinue
+          Get-ChildItem "C:\Users\$name\AppData\Local\TadClip\Logs" -ErrorAction SilentlyContinue | Copy-Item -Destination out\
+          $o = Get-Content -Raw -Encoding UTF8 out\fresh.out.txt
+          $o; Get-Content out\fresh.err.txt -ErrorAction SilentlyContinue | Select-Object -Last 20
+          "## Fresh Thai-named account: exit $($p.ExitCode)`n``````n" + (($o -split "`n") | Select-Object -Last 45 | Out-String) + "``````" | Add-Content $env:GITHUB_STEP_SUMMARY -Encoding UTF8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: windows-port-fresh, path: out/, retention-days: 14 }

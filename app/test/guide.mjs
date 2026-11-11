@@ -117,6 +117,7 @@ const ev = fs.readFileSync(path.join(DIR, ".tadclip", "events.log"), "utf8");
 for (const s of [...Object.values(EXPECT).flat(), "signin"]) if (!ev.includes(`guide ${s} shown`)) bad.push(`event log: no "guide ${s} shown"`);
 for (const a of ["guide clip next", "guide style skip", "guide all restart", "guide clip close"]) if (!ev.includes(a)) bad.push(`event log: no "${a}"`);
 
-await b.close(); srv.kill(); fs.rmSync(DIR, { recursive: true, force: true });
+await b.close(); { const gone = new Promise((r) => srv.once("exit", r)); srv.kill(); await gone; }   // Windows: the folder is locked until it exits
+fs.rmSync(DIR, { recursive: true, force: true, maxRetries: 20, retryDelay: 500 });
 console.log(bad.length ? bad.map((x) => "FAIL " + x).join("\n") : `ok   guide: ${Object.values(EXPECT).flat().length} steps × light, dark, 390 px at 125 %, counter; sign-in step signed out; keyboard, live region, skip, restart, resume, Escape, event log, brand header`);
 process.exit(bad.length ? 1 : 0);

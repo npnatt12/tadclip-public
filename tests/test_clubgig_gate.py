@@ -1,9 +1,9 @@
 """One prompt must give a whole ClubGig reel: a reel without the devices can't reach a render, and no Pexels key can't stop the stock. python3 tests/test_clubgig_gate.py"""
-import importlib.util, json, os, subprocess, sys, tempfile, types
+import importlib.util, json, os, pathlib, subprocess, sys, tempfile, types
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 JS = """import {clubgigMissing} from %r; const r = JSON.parse(process.argv[1]);
-console.log(JSON.stringify(clubgigMissing(r, r.beats, (x) => x - (r.takes?.[0]?.a ?? 0), r.speech ?? 90, r.sfx ?? 30)))""" % os.path.join(ROOT, "scripts", "lib", "clubgig_gate.mjs")
+console.log(JSON.stringify(clubgigMissing(r, r.beats, (x) => x - (r.takes?.[0]?.a ?? 0), r.speech ?? 90, r.sfx ?? 30)))""" % pathlib.Path(ROOT, "scripts", "lib", "clubgig_gate.mjs").as_uri()   # a file:// URL: Node won't import a bare Windows path
 missing = lambda reel: json.loads(subprocess.run(["node", "--input-type=module", "-e", JS, json.dumps(reel)], capture_output=True, text=True, check=True).stdout)
 
 gallery = json.load(open(os.path.join(ROOT, "examples", "gallery", "clubgig.reel.json")))

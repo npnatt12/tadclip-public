@@ -665,7 +665,7 @@ def main():
     print(f"{len(frames)} frames in {took:.0f} s; {n_err} errors, {n_warn} warnings")
     print(f"-> {out}  ({os.path.getsize(out) / 1e6:.1f} MB)")
     if a.open:
-        subprocess.run(["open", out])
+        os.startfile(out) if sys.platform == "win32" else subprocess.run(["open", out])
 
 
 if __name__ == "__main__":

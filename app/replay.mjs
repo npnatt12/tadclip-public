@@ -35,8 +35,7 @@ for (const [i, l] of lines.entries()) {
 }
 const src = path.join(fx, "preview.mp4"), out = path.join(P, "finals", final ? "TC01 - ClubGig.mp4" : "TC01 - ClubGig (preview).mp4");
 if (fs.existsSync(src)) fs.copyFileSync(src, out);
-else execFileSync("ffmpeg", ["-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0x6A2C3B:s=360x640:d=4", "-f", "lavfi", "-i", "sine=f=440:d=4",
-  "-vf", "drawtext=text='TadClip test':fontcolor=white:fontsize=36:x=(w-tw)/2:y=(h-th)/2", "-shortest", "-pix_fmt", "yuv420p", out]);
+else execFileSync("ffmpeg", ["-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0x6A2C3B:s=360x640:d=4", "-f", "lavfi", "-i", "sine=f=440:d=4", "-shortest", "-pix_fmt", "yuv420p", out]);
 // like the real 11-09 run: the preview is also copied next to the project and its summary names that copy
 const named = path.join(P, `${path.basename(P)}${final ? "" : " (preview)"}.mp4`); fs.copyFileSync(out, named);
 meter(+(process.env.TADCLIP_REPLAY_USE || 0.2));

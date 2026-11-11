@@ -61,12 +61,9 @@ def cuts(v, fps, band=None):
     return out
 
 
-def ocr(paths):
-    if sys.platform != "darwin" or not paths: return [{"lines": []} for _ in paths]
-    r = subprocess.run(["osascript", "-l", "JavaScript", os.path.join(HERE, "ocr_text.js"), *paths], capture_output=True, text=True,
-                       timeout=900, env={**os.environ, "OCR_LANGS": "th-TH,en-US"})
-    rows = [json.loads(l) for l in r.stdout.strip().splitlines() if l.startswith("{")]
-    by = {x["img"]: x for x in rows}
+def ocr(paths):   # macOS Vision or Windows OCR (scripts/ocr.py)
+    sys.path.insert(0, HERE); import ocr as _ocr
+    by = (_ocr.lines(paths, "th-TH,en-US") if paths else None) or {}
     return [by.get(p, {"lines": []}) for p in paths]
 
 

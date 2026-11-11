@@ -282,7 +282,9 @@ export function previewScreen(j) {
   </div></section>`;
 }
 // the editor's summary without file paths or code marks: a first-timer reads the words, not the plumbing
-export const plain = (s) => String(s).replace(/`[^`]*\/[^`]*`/g, "").replace(/`/g, "").replace(/อยู่ที่\s*(?=\s|$)/g, "").replace(/\s+([,.])/g, "$1");
+// file paths out of what TadClip says (the folder button shows the file): a Mac path has "/", a Windows one a backslash (11-11
+// Windows CI: C:\Users\... stayed on the page, ~12 more words and wider than a 390 px screen)
+export const plain = (s) => String(s).replace(/`[^`]*[\/\\][^`]*`/g, "").replace(/\b[A-Za-z]:\\[^\s`]*(?: \([^)]*\))?[^\s`]*/g, "").replace(/`/g, "").replace(/อยู่ที่\s*(?=\s|$)/g, "").replace(/\s+([,.])/g, "$1");
 export function finalScreen(j) {
   const w = t();
   return `<section class="pv">

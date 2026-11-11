@@ -42,3 +42,7 @@ profile.json
 # TadClip app: test tools and their last report (dev only)
 app/test/node_modules/
 app/test/last-report.json
+
+# Windows: built at install from hf_ffmpeg.cs / icon-1024.png
+scripts/hf_ffmpeg.exe
+app/icon/icon.ico

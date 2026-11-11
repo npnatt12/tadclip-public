@@ -543,19 +543,9 @@ def context_visible(ren_g, src_g, A, box):
 
 
 # ------------------------------------------------------------------ OCR
-def ocr(paths):
-    if sys.platform != "darwin" or not shutil.which("osascript"):
-        return None
-    out = {}
-    for i in range(0, len(paths), 40):
-        r = subprocess.run(["osascript", "-l", "JavaScript", os.path.join(HERE, "ocr_text.js")] + paths[i:i + 40], capture_output=True, text=True)
-        for line in r.stdout.splitlines():
-            try:
-                j = json.loads(line)
-                out[j["img"]] = j
-            except (json.JSONDecodeError, KeyError):
-                pass
-    return out
+def ocr(paths):   # macOS Vision or Windows OCR (scripts/ocr.py); None where there is none
+    sys.path.insert(0, HERE); import ocr as _ocr
+    return _ocr.lines(paths)
 
 
 def norm(s):
@@ -958,7 +948,7 @@ def analyse(video, project=None, profile="talking-head", words=None, allow_hold=
         log(f"  OCR on {len(imgs)} frames...")
         res = ocr(imgs)
         if res is None:
-            ocr_note = "OCR unavailable (needs macOS osascript): captions not checked"
+            ocr_note = "OCR unavailable (needs macOS or Windows): captions not checked"
         else:
             spoken = [(w["s"], w["e"], norm(w["w"])) for w in (words or []) if norm(w["w"])]
             cyr = sum(bool(re.search("[а-яё]", w[2])) for w in spoken) > 0.5 * max(1, len(spoken))

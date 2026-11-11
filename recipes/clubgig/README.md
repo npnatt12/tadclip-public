@@ -58,7 +58,8 @@ python3 $S/scripts/face_track.py $P/assets/talk.mp4 --out $P/build/face.json
 # normalisation makes breaths count as speech: 87 islands, 397 s, 1.9 % character errors vs 68 islands, 221 s, 1.5 %
 ffmpeg -v error -y -i <recording.mov> -vn -ac 1 -b:a 96k $P/build/voice-raw.mp3
 python3 $S/recipes/clubgig/islands.py $P/build/voice-raw.mp3 $P/build/vad.json
-~/.venvs/mlxw/bin/python $S/scripts/islands_tx.py $P/build/voice-raw.mp3 --vad $P/build/vad.json --lang th --out $P/build/islands.json
+TPY=$(bash $S/scripts/lib/plat.sh thai)   # this machine's Thai-engine python (mlx on a Mac, faster-whisper on Windows)
+"$TPY" $S/scripts/islands_tx.py $P/build/voice-raw.mp3 --vad $P/build/vad.json --lang th --out $P/build/islands.json
 ```
 **Without a Gemini key** (it's optional; `doctor.sh` says `opt GEMINI_API_KEY`), the same reel with three changes, and
 "Gemini off: the Thai text is whisper's, pictures were picked by eye" next to the preview:
@@ -70,7 +71,7 @@ python3 $S/recipes/clubgig/islands.py $P/build/voice-raw.mp3 $P/build/vad.json
 1. **Takes** (references/take-selection.md): read gemini_tx.txt against islands.json times; drop the count-in, fillers,
    asides; keep the whole argument + the CTA; cut on real pauses; total speech <= the user's limit minus the 2.2 s outro.
 2. **Captions:** copy `recipes/clubgig/cut.py` to `$P/build/cut.py`, write TAKES = (a, b, verbatim Gemini text,
-   "?" on questions) from THIS recording's transcript (it refuses the stored KG01 example), run `~/.venvs/mlxw/bin/python -I build/cut.py` -> build/words.th.json + build/takes.json.
+   "?" on questions) from THIS recording's transcript (it refuses the stored KG01 example), run `"$TPY" -I build/cut.py` (TPY as above) -> build/words.th.json + build/takes.json.
 3. **Brand:** first their own: `python3 $S/scripts/own_brand.py $P` (reads ~/TadClip/brand/: logos, a colour sheet or
    brand guide, a page screenshot, brand.txt, a font; docs/BRAND-KIT.md). Never edit what it makes, never feed it a
    folder of your own: build.mjs re-makes it from ~/TadClip/brand/ and warns. If it prints `own brand from ...`, that is the brand: build.mjs lays

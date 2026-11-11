@@ -9,6 +9,10 @@ set -u
 # of the script from the pipe
 main() {
   REPO=${TADCLIP_REPO:-npnatt12/tadclip-public}; REF=${TADCLIP_REF:-main}
+  case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*)   # Windows (Git Bash): the PowerShell installer does it the Windows way
+    echo "Windows: using install.ps1 · เครื่องนี้เป็น Windows ใช้ตัวติดตั้งของ Windows"
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/$REPO/$REF/install.ps1 | iex"; return $? ;;
+  esac
   D="$HOME/.claude/skills/tadclip"
   t0=$(date +%s)
 

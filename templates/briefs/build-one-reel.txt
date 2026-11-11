@@ -6,8 +6,8 @@ context instead of ~85 k) on the default model (Opus: this step is creative).
 Reel: {CODE} «{TITLE}» ({TITLE_EN}). Style: {STYLE} (recipe {RECIPE}, builder {BUILDER}). Tag: {TAG}.
 Project: {P}            Approved cut (do not re-cut the talk): {CUT}
 Machine: everything heavy (renders, snapshots, ffmpeg) on {MACHINE}, the machine that holds the footage.
-  S=~/.claude/skills/tadclip ; PY=~/.venvs/media/bin/python (or any python with numpy + opencv)
-  Start every Bash call with: export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH";
+  S=~/.claude/skills/tadclip ; PY=python3 (the media venv on a Mac and on Windows; or any python with numpy + opencv)
+  Start every Bash call with: export PATH="$HOME/.local/bin:$HOME/.local/share/tadclip-tools/node:/opt/homebrew/opt/node@22/bin:$PATH";
 Standing rules (the user's; edit to theirs): the speaker's face exactly as shot (no grade, no filter, nothing on it);
 frame 1 is the speaker's face with the hook; B-roll people rules ($S/people-rules.json, empty by default); every insert
 through insert_prep.py / broll_vision.py; few inserts, each matching its

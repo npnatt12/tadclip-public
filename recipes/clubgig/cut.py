@@ -1,5 +1,5 @@
 """Takes + Gemini-verified Thai text -> build/words.th.json (caption chunks spread over voiced time) + reel.json takes.
-run from the project: ~/.venvs/mlxw/bin/python -I build/cut.py  (copy this file to $P/build/cut.py, replace TAKES)
+run from the project: "$(bash $S/scripts/lib/plat.sh thai)" -I build/cut.py (the Thai venv: mlxw on a Mac, fw on Windows)  (copy this file to $P/build/cut.py, replace TAKES)
 One placeholder row shows the shape."""
 import json, re, subprocess
 from pythainlp.tokenize import word_tokenize

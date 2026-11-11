@@ -2,12 +2,13 @@
 # Check everything tadclip needs on this machine, and say how to fix what's missing.
 #   bash scripts/doctor.sh
 S="$(cd "$(dirname "$0")/.." && pwd)"
+. "$S/scripts/lib/plat.sh"   # TC_WIN, vpy (a venv's python), THAI_* (this OS's Thai speech engine)
 ok=0; bad=0
 pass() { echo "  ok    $1"; ok=$((ok+1)); }
 fail() { echo "  MISS  $1  ->  $2"; bad=$((bad+1)); }
 
 # numpy/opencv/google-genai may live in a separate venv (MEDIA_PY, or ~/.venvs/media) on machines whose python3 has none
-PY=${MEDIA_PY:-python3}; "$PY" -c "import numpy" 2>/dev/null || { [ -x "$HOME/.venvs/media/bin/python" ] && PY="$HOME/.venvs/media/bin/python"; }
+PY=${MEDIA_PY:-python3}; "$PY" -c "import numpy" 2>/dev/null || { [ -x "$(vpy "$HOME/.venvs/media")" ] && PY="$(vpy "$HOME/.venvs/media")"; }
 
 echo "tools"
 # setup.sh puts uv, whisper, node, ffmpeg and the python3 wrapper in ~/.local/bin, and that folder on PATH (.zshenv, .zprofile)
@@ -22,8 +23,8 @@ ffmpeg -hide_banner -buildconf 2>/dev/null | grep -q enable-libass && pass "ffmp
 [ -x /opt/homebrew/opt/node@22/bin/node ] && export PATH="/opt/homebrew/opt/node@22/bin:$PATH"  # same as hf.sh
 command -v node >/dev/null && [ "$(node -p 'process.versions.node.split(".")[0]')" -ge 22 ] && pass "node $(node -v)" || fail "node >= 22 (HyperFrames)" "bash $S/scripts/setup.sh"
 command -v uv >/dev/null && pass "uv (creator_study.py runs the latest yt-dlp through it)" || fail "uv (creator_study.py: an old yt-dlp gets 403 from YouTube)" "bash $S/scripts/setup.sh"
-"$HOME/.venvs/mlxw/bin/python" -c "import mlx_whisper" 2>/dev/null && pass "mlx-whisper (~/.venvs/mlxw, Thai word times)" || fail "mlx-whisper (ClubGig's Thai word times)" "bash $S/scripts/setup.sh"
-"$HOME/.venvs/mlxw/bin/python" -c "from huggingface_hub import snapshot_download as d; d('mlx-community/whisper-large-v3-turbo', local_files_only=True)" >/dev/null 2>&1 &&
+"$THAI_PY" -c "import $THAI_MOD" 2>/dev/null && pass "${THAI_MOD//_/-} (${THAI_VENV/#$HOME/~}, Thai word times)" || fail "${THAI_MOD//_/-} (ClubGig's Thai word times)" "bash $S/scripts/setup.sh"
+"$THAI_PY" -c "from huggingface_hub import snapshot_download as d; d('$THAI_REPO', local_files_only=True)" >/dev/null 2>&1 &&
   pass "whisper model downloaded (large-v3-turbo)" || fail "whisper model (the first clip would download 1.5 GB mid-run)" "bash $S/scripts/setup.sh"
 # HyperFrames is pinned in ONE place (scripts/HF_VERSION), read by hf.sh, hf_version.py and build.mjs
 hv=$(cat "$S/scripts/HF_VERSION" 2>/dev/null)
@@ -38,7 +39,9 @@ un=$(grep -rnE 'npx (-y )?hyperframes([^@]|$)|"npx", "hyperframes"' "$S" --inclu
 xt=$(cat "$S/scripts/X264_THREADS" 2>/dev/null)
 ux=$(grep -rnIE --include='*.py' --include='*.sh' --include='*.mjs' --include='*.js' -- "(-c:v|-vcodec|-codec:v)[\"', ]*(libx264|h264_videotoolbox|hevc_videotoolbox)" "$S" 2>/dev/null \
   | grep -v -e node_modules -e '/\.venv' -e '/scripts/doctor.sh:' | grep -vE -- "libx264[\"', ]*-threads.{0,60}X264_THREADS")
-hx=$(HF_REAL_FFMPEG=echo bash "$S/scripts/hf_ffmpeg.sh" -i in.mp4 -c:v libx264 -preset medium out.mp4 2>/dev/null)
+# Windows: HyperFrames runs the compiled twin, hf_ffmpeg.exe (built by setup.sh from hf_ffmpeg.cs), so that's the one checked
+if [ -n "$TC_WIN" ]; then hx=$(HF_REAL_FFMPEG="$(cygpath -w "$(type -P echo)")" "$S/scripts/hf_ffmpeg.exe" -i in.mp4 -c:v libx264 -preset medium out.mp4 2>/dev/null | tr -d '\r')
+else hx=$(HF_REAL_FFMPEG=echo bash "$S/scripts/hf_ffmpeg.sh" -i in.mp4 -c:v libx264 -preset medium out.mp4 2>/dev/null); fi
 [ -n "$xt" ] && [ -z "$ux" ] && [ "$hx" = "-i in.mp4 -c:v libx264 -threads $xt -preset medium out.mp4" ] \
   && pass "every libx264 encode uses -threads $xt (scripts/X264_THREADS), HyperFrames' too (hf_ffmpeg.sh)" \
   || { echo "  WARN  x264 threads not pinned: these encodes give different bytes on each Mac (pass -threads from scripts/X264_THREADS right after libx264; no VideoToolbox encoder):"
@@ -78,19 +81,25 @@ else echo "  opt   GEMINI_API_KEY not set: reels work without it (Thai text from
 
 if [ -n "$PEXELS_API_KEY" ] || grep -qs '^PEXELS_API_KEY=.' "$S/.env" "$S/.env.local"; then pass "PEXELS_API_KEY (ClubGig stock)"; else echo "  opt   PEXELS_API_KEY not set: stock search falls back to Mixkit, photos to Wikimedia. More choice with a free key -> $S/.env (docs/INSTALL.md, step 3)"; fi
 if [ -n "$ELEVENLABS_API_KEY" ] || grep -qs '^ELEVENLABS_API_KEY=.' "$S/.env"; then pass "ELEVENLABS_API_KEY (narrated explainers)"; else echo "  opt   ELEVENLABS_API_KEY not set: only scripts/tts_elevenlabs.py (explainer voiceover) needs it -> $S/.env"; fi
-[ -x "${DF_VENV:-$S/.venv-df}/bin/deepFilter" ] && pass "DeepFilterNet (scripts/denoise.sh)" || echo "  opt   DeepFilterNet not set up: scripts/denoise.sh installs it on first use (needs python3.11 + uv)"
+{ [ -x "${DF_VENV:-$S/.venv-df}/bin/deepFilter" ] || [ -x "${DF_VENV:-$S/.venv-df}/Scripts/deepFilter.exe" ]; } && pass "DeepFilterNet (scripts/denoise.sh)" || echo "  opt   DeepFilterNet not set up: scripts/denoise.sh installs it on first use (needs python3.11 + uv)"
 
 echo "optional tools (the core skill works without them)"
+# ฟัง on the page reads the screen aloud with a Thai voice: macOS has Kanya built in; Windows only after its Thai speech
+# pack (admin). Edge's online voices may cover it; unconfirmed (CI's headless Edge on Windows Server listed none, 11-11)
+if [ -n "$TC_WIN" ]; then
+  tv=$(powershell.exe -NoProfile -NonInteractive -Command "[void][Windows.Media.SpeechSynthesis.SpeechSynthesizer,Windows.Media,ContentType=WindowsRuntime]; ([Windows.Media.SpeechSynthesis.SpeechSynthesizer]::AllVoices | Where-Object Language -like 'th*' | Select-Object -First 1).DisplayName" 2>/dev/null | tr -d '\r')
+  [ -n "$tv" ] && pass "Thai voice for ฟัง ($tv)" || echo "  opt   no Thai voice in Windows: ฟัง (read aloud) may stay silent. Add one: Settings > Time & language > Speech > Add voices > ไทย (asks for admin; Edge may offer an online Thai voice without it)"
+fi
 [ -f "$S/templates/vendor/hf-paper.js" ] && pass "Paper Shaders bundle (templates/vendor/hf-paper.js)" || fail "templates/vendor/hf-paper.js (shader looks)" "git checkout templates/vendor, or rebuild: cd $S/tools/paper && npm install && node build-vendor.mjs"
 e=$(ls "$S"/library/emoji/*.webm 2>/dev/null | wc -l | tr -d ' ')
 [ "$e" -ge 30 ] && pass "animated emoji ($e Fluent webm)" || echo "  opt   animated emoji not fetched: emoji beats fall back to the font glyph -> python3 -I $S/scripts/emoji_fetch.py (needs ffmpeg libvpx-vp9)"
 l=$(ls "$S"/library/luts/*.cube 2>/dev/null | wc -l | tr -d ' ')
 [ "$l" -ge 6 ] && pass "film-look LUTs ($l in library/luts)" || echo "  opt   film-look LUTs not generated: only look.film needs them -> bash $S/scripts/setup_looks.sh (venv ~/.venvs/tadclip-looks)"
-[ -x "${MATTE_VENV:-$HOME/.venvs/tadclip-matte}/bin/python" ] && pass "BiRefNet matte (behind beats, cutout beats)" || echo "  opt   BiRefNet matte not set up: behind beats fall back to hyperframes remove-background (u2net), cutout beats need it -> bash $S/scripts/setup_matte.sh (~2.6 GB with weights)"
+[ -x "$(vpy "${MATTE_VENV:-$HOME/.venvs/tadclip-matte}")" ] && pass "BiRefNet matte (behind beats, cutout beats)" || echo "  opt   BiRefNet matte not set up: behind beats fall back to hyperframes remove-background (u2net), cutout beats need it -> bash $S/scripts/setup_matte.sh (~2.6 GB with weights)"
 mc="${CUTOUT_FX_CACHE:-${TADCLIP_MATTE_CACHE:-$HOME/.cache/tadclip-matte}}"
-[ -x "${MATTE_VENV:-$HOME/.venvs/tadclip-matte}/bin/python" ] && [ ! -f "$mc/hf/BiRefNet_lite/model.safetensors" ] && echo "  opt   BiRefNet_lite weights not cached: cutout beats will download them (176 MB) on first use -> bash $S/scripts/setup_matte.sh"
-[ -x "${AUDIOQA_VENV:-$HOME/.venvs/tadclip-audioqa}/bin/python" ] && pass "audio QA venv (vad_pauses, voice_enhance)" || echo "  opt   audio QA venv not set up: only autocut --vad, vad_pauses.py and voice_enhance.py need it -> bash $S/scripts/setup_audioqa.sh"
-[ -x "${CAPTIONS_VENV:-$HOME/.venvs/tadclip-captions}/bin/python" ] && pass "caption metrics venv (scripts/font_metrics.py)" || echo "  opt   caption metrics venv not set up: only needed to add a font to the caption templates -> bash $S/scripts/setup_captions.sh"
+[ -x "$(vpy "${MATTE_VENV:-$HOME/.venvs/tadclip-matte}")" ] && [ ! -f "$mc/hf/BiRefNet_lite/model.safetensors" ] && echo "  opt   BiRefNet_lite weights not cached: cutout beats will download them (176 MB) on first use -> bash $S/scripts/setup_matte.sh"
+[ -x "$(vpy "${AUDIOQA_VENV:-$HOME/.venvs/tadclip-audioqa}")" ] && pass "audio QA venv (vad_pauses, voice_enhance)" || echo "  opt   audio QA venv not set up: only autocut --vad, vad_pauses.py and voice_enhance.py need it -> bash $S/scripts/setup_audioqa.sh"
+[ -x "$(vpy "${CAPTIONS_VENV:-$HOME/.venvs/tadclip-captions}")" ] && pass "caption metrics venv (scripts/font_metrics.py)" || echo "  opt   caption metrics venv not set up: only needed to add a font to the caption templates -> bash $S/scripts/setup_captions.sh"
 
 echo "recipes"
 ls "$S"/templates/fonts/inter-tight-cyrillic.woff2 "$S"/templates/fonts/playfair-display-italic-cyrillic.woff2 >/dev/null 2>&1 && pass "Seoul list / RESULT fonts (Inter Tight, Playfair Display, OFL)" || fail "templates/fonts/inter-tight-*.woff2" "git -C $S checkout templates/fonts"

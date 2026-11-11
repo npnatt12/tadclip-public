@@ -19,6 +19,7 @@ What does not (printed as info): node, the Python minor version, google-genai, p
 import argparse, glob, json, os, re, shutil, socket, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+VPY = ("Scripts", "python.exe") if os.name == "nt" else ("bin", "python")   # a venv's python on Windows / elsewhere
 SKILL = os.path.dirname(HERE)
 DIR = os.path.join(SKILL, "library", "toolchain")
 
@@ -26,15 +27,16 @@ PYPROBE = r"""
 import json, sys
 v = {"python": sys.version.split()[0]}
 for name, mod in [("numpy", "numpy"), ("opencv", "cv2"), ("mediapipe", "mediapipe"), ("google-genai", "google.genai"),
-                  ("openai-whisper", "whisper"), ("mlx-whisper", "mlx_whisper"), ("silero-vad", "silero_vad"), ("torch", "torch")]:
+                  ("openai-whisper", "whisper"), ("mlx-whisper", "mlx_whisper"), ("faster-whisper", "faster_whisper"), ("ctranslate2", "ctranslate2"),
+                  ("silero-vad", "silero_vad"), ("torch", "torch")]:
     try:
         m = __import__(mod, fromlist=["_"])
         v[name] = getattr(m, "__version__", None) or "installed"
     except Exception:
         pass
-if v.get("mlx-whisper") == "installed" or v.get("silero-vad") == "installed":
+if "installed" in (v.get("mlx-whisper"), v.get("silero-vad"), v.get("faster-whisper")):
     from importlib.metadata import version
-    for k in ("mlx-whisper", "silero-vad"):
+    for k in ("mlx-whisper", "silero-vad", "faster-whisper"):
         try:
             if v.get(k) == "installed": v[k] = version(k)
         except Exception:
@@ -72,7 +74,7 @@ def media_py():
         return os.environ["MEDIA_PY"]
     if shutil.which("python3") and subprocess.run(["python3", "-c", "import numpy"], capture_output=True).returncode == 0:
         return shutil.which("python3")
-    p = os.path.expanduser("~/.venvs/media/bin/python")
+    p = os.path.join(os.path.expanduser("~/.venvs/media"), *VPY)
     return p if os.path.exists(p) else shutil.which("python3")
 
 
@@ -107,9 +109,11 @@ def snapshot():
                          "chrome": sorted(os.path.basename(p) for p in glob.glob(os.path.expanduser("~/.cache/hyperframes/chrome/*/*")))}
     mp = media_py()
     fp["media_python"] = {"path": mp, **(py_versions(mp) or {})}
-    mlx = os.environ.get("MLXW_PY") or os.path.expanduser("~/.venvs/mlxw/bin/python")
+    mlx = os.environ.get("MLXW_PY") or os.path.join(os.path.expanduser("~/.venvs/mlxw"), *VPY)
     fp["mlx_python"] = ({"path": mlx, **(py_versions(mlx) or {})} if os.path.exists(mlx) else None)
-    aq = os.path.join(os.environ.get("AUDIOQA_VENV") or os.path.expanduser("~/.venvs/tadclip-audioqa"), "bin", "python")
+    fw = os.environ.get("FW_PY") or os.path.join(os.path.expanduser("~/.venvs/fw"), *VPY)   # Windows' Thai engine
+    fp["fw_python"] = ({"path": fw, **(py_versions(fw) or {})} if os.path.exists(fw) else None)
+    aq = os.path.join(os.environ.get("AUDIOQA_VENV") or os.path.expanduser("~/.venvs/tadclip-audioqa"), *VPY)
     fp["audioqa_python"] = ({"path": aq, **(py_versions(aq) or {})} if os.path.exists(aq) else None)
     return fp
 
@@ -123,6 +127,9 @@ def whisper_backend(fp):
     for k in ("media_python", "mlx_python"):
         if (fp.get(k) or {}).get("mlx-whisper"):
             return "mlx-whisper " + fp[k]["mlx-whisper"]
+    for k in ("media_python", "fw_python"):   # Windows: same weights, CTranslate2 (IMG_2260: CER 1.4 % vs mlx 1.5 %)
+        if (fp.get(k) or {}).get("faster-whisper"):
+            return "faster-whisper " + fp[k]["faster-whisper"]
     w = (fp.get("media_python") or {}).get("openai-whisper")
     return f"openai-whisper {w}" if w else None
 

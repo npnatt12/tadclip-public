@@ -6,17 +6,18 @@
 set -euo pipefail
 S="$(cd "$(dirname "$0")/.." && pwd)"
 V="${AUDIOQA_VENV:-$HOME/.venvs/tadclip-audioqa}"
+case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*) VB="$V/Scripts" ;; *) VB="$V/bin" ;; esac   # a venv's programs: Scripts\ on Windows
 C="${TADCLIP_AUDIOQA_CACHE:-$HOME/.cache/tadclip-audioqa}"
 # pinned to the tested set: clearvoice's resolver otherwise picks torch 2.14 + torchaudio 2.11 (mismatched ABI)
 PKGS=("clearvoice==0.1.2" "silero-vad==6.2.3" "torch==2.8.0" "torchaudio==2.8.0" "torchvision==0.23.0" "numpy==1.26.4"
       "pyloudnorm==0.2.0" "matplotlib==3.11.2" "python_speech_features==0.6" "opencv-python==4.10.0.84" "soundfile==0.12.1")
-if [ ! -x "$V/bin/python" ]; then
+if [ ! -x "$VB/python" ]; then
   PY="${PYTHON311:-$(command -v python3.11 || uv python find 3.11 2>/dev/null || echo /opt/homebrew/bin/python3.11)}"
   if command -v uv >/dev/null; then uv venv -q -p "$PY" "$V"; else "$PY" -m venv "$V"; fi
 fi
 if command -v uv >/dev/null; then VIRTUAL_ENV="$V" uv pip install -q "${PKGS[@]}" >&2
-else "$V/bin/python" -m pip install -q "${PKGS[@]}" >&2; fi
+else "$VB/python" -m pip install -q "${PKGS[@]}" >&2; fi
 mkdir -p "$C"
-[ "${1:-}" = "--no-clearvoice" ] || TADCLIP_AUDIOQA_MODELS="$C/clearvoice" "$V/bin/python" "$S/scripts/voice_enhance.py" --fetch-only >&2
-"$V/bin/python" -c "import silero_vad, clearvoice, python_speech_features, cv2" >&2
-echo "$V/bin/python"
+[ "${1:-}" = "--no-clearvoice" ] || TADCLIP_AUDIOQA_MODELS="$C/clearvoice" "$VB/python" "$S/scripts/voice_enhance.py" --fetch-only >&2
+"$VB/python" -c "import silero_vad, clearvoice, python_speech_features, cv2" >&2
+echo "$VB/python"

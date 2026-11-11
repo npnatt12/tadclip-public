@@ -8,7 +8,8 @@ set -euo pipefail
 S="$(cd "$(dirname "$0")/.." && pwd)"
 IN="$1"; OUT="$2"; ATT="${3:-20}"
 V="${DF_VENV:-$S/.venv-df}"
-if [ ! -x "$V/bin/deepFilter" ]; then
+case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*) VB="$V/Scripts" ;; *) VB="$V/bin" ;; esac   # a venv's programs: Scripts\ on Windows
+if [ ! -x "$VB/deepFilter" ]; then
   PY=$(command -v python3.11 || uv python find 3.11 2>/dev/null || echo /opt/homebrew/bin/python3.11)
   [ -x "$PY" ] || { echo "needs python3.11 (uv python install 3.11)"; exit 1; }
   command -v uv >/dev/null || { echo "needs uv (pip install uv)"; exit 1; }
@@ -18,7 +19,7 @@ if [ ! -x "$V/bin/deepFilter" ]; then
 fi
 TMP=$(mktemp -d)
 ffmpeg -v error -y -i "$IN" -vn -ac 1 -ar 48000 "$TMP/in.wav"
-"$V/bin/deepFilter" "$TMP/in.wav" --atten-lim "$ATT" -o "$TMP/out" >/dev/null 2>&1
+"$VB/deepFilter" "$TMP/in.wav" --atten-lim "$ATT" -o "$TMP/out" >/dev/null 2>&1
 mv "$TMP"/out/*.wav "$OUT"
 rm -rf "$TMP"
 for f in "$IN" "$OUT"; do printf "%s: " "$(basename "$f")"; ffmpeg -hide_banner -nostats -i "$f" -af volumedetect -f null - 2>&1 | grep -o "mean_volume: [-0-9.]* dB"; done

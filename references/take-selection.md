@@ -56,7 +56,7 @@ These scripts make the clean raw cut that every style builds on. On Apple Silico
 (about a minute per clip); without it they fall back to CPU whisper (~27 s per island).
 Python: one with numpy, opencv and mediapipe for every step except `vad_pauses.py`, which runs in the audio QA venv
 (`scripts/setup_audioqa.sh`: `~/.venvs/tadclip-audioqa`, silero); `islands_tx.py` finds the mlx venv itself
-(`$MLXW_PY` or `~/.venvs/mlxw`).
+(`$MLXW_PY` or `~/.venvs/mlxw`; on Windows faster-whisper in `$FW_PY` or `~/.venvs/fw`).
 
 0. `rawcut_prep.sh <recording.MOV> $P`: build/full.wav (48 kHz mono: the voice every later step cuts), build/a16.wav
    (16 kHz: VAD and whisper) and build/proxy.mp4 (1080x1920, frame for frame with the recording: facescan.py's row i

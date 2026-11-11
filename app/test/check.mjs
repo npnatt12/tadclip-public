@@ -111,7 +111,11 @@ async function layout(browser, m) {   // 125 % text and a narrow window: nothing
     await page.waitForTimeout(300);
     const over = await page.evaluate(() => {
       const bad = [];
-      if (document.documentElement.scrollWidth > innerWidth + 1) bad.push(`page ${document.documentElement.scrollWidth}>${innerWidth}`);
+      if (document.documentElement.scrollWidth > innerWidth + 1) {   // and what sticks out furthest, of any tag (11-11: Windows-only, nothing named)
+        const far = [...document.querySelectorAll("body *")].map((el) => [el, el.getBoundingClientRect().right]).filter(([, r]) => r > innerWidth + 1)
+          .sort((x, y) => y[1] - x[1]).slice(0, 3).map(([el, r]) => `${el.tagName.toLowerCase()}${el.className && typeof el.className === "string" ? "." + el.className.trim().split(/\s+/).join(".") : ""}@${Math.round(r)} "${(el.textContent || "").trim().slice(0, 20)}" font=${getComputedStyle(el).fontFamily.split(",")[0]}`);
+        bad.push(`page ${document.documentElement.scrollWidth}>${innerWidth}${far.length ? " [" + far.join("; ") + "]" : ""}`);
+      }
       for (const el of document.querySelectorAll("button,a,h1,h2,p,span,b,small")) {
         const r = el.getBoundingClientRect();
         if (r.width && (r.right > innerWidth + 1 || el.scrollWidth > el.clientWidth + 2 && getComputedStyle(el).overflow === "hidden")) bad.push(el.textContent.trim().slice(0, 24));

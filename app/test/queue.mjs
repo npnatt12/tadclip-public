@@ -7,7 +7,8 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-const APP = path.join(path.dirname(new URL(import.meta.url).pathname), "..");
+import { fileURLToPath } from "node:url";
+const APP = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");   // not URL.pathname: "/D:/..." on Windows
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let port = 4900, bad = 0;
 async function scenario(name, env, fn) {
@@ -20,7 +21,8 @@ async function scenario(name, env, fn) {
   for (let i = 0; i < 50; i++) { try { await api.state(); break; } catch { await wait(200); } }
   const until = async (pred, ms) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { const s = await api.state(); if (pred(s)) return s; await wait(250); } return null; };
   try { const msg = await fn(api, until, dir, base); console.log(msg ? `FAIL ${name}: ${msg}` : `ok   ${name}`); if (msg) bad = 1; }
-  finally { srv.kill(); fs.rmSync(dir, { recursive: true, force: true }); }
+  // Windows: the folder stays locked while the server (or its replay child, cwd = the folder) is alive: wait, then retry
+  finally { const gone = new Promise((r) => srv.once("exit", r)); srv.kill(); await gone; fs.rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 500 }); }
 }
 const finals = (s) => s.done.filter((d) => d.status === "final");
 

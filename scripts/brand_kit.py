@@ -30,12 +30,13 @@ the composition's own fonts; shots go through insert_prep.py like any other pict
 import argparse, collections, colorsys, html, json, os, re, shutil, subprocess, sys, tempfile, time, urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MEDIA = os.path.expanduser("~/.venvs/media/bin/python")
+MEDIA = os.path.expanduser("~/.venvs/media/Scripts/python.exe" if os.name == "nt" else "~/.venvs/media/bin/python")
 try:
     import requests
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:                                           # PIL + google-genai may live in the media venv (~/.venvs/media)
     if os.path.exists(MEDIA) and os.path.realpath(sys.executable) != os.path.realpath(MEDIA):
+        if os.name == "nt": sys.exit(subprocess.run([MEDIA] + sys.argv).returncode)   # Windows' execv would return "done" at once
         os.execv(MEDIA, [MEDIA] + sys.argv)
     sys.exit("needs requests + pillow + google-genai (MEDIA_PY or ~/.venvs/media)")
 sys.path.insert(0, HERE)

@@ -6,6 +6,17 @@ Install a given version (to go back if a new one breaks) · ติดตั้�
 curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | TADCLIP_REF=v0.1.0 bash
 ```
 
+## v0.3.0 (2026-11-11)
+
+- **ใช้บน Windows ได้แล้ว (ทดลอง):** Windows 10 (1809 ขึ้นไป) / 11 แบบ 64 บิต ชิป Intel หรือ AMD วางบรรทัดเดียวใน PowerShell
+  ไม่ต้องใช้สิทธิ์ผู้ดูแลเครื่อง · TadClip on Windows (preview): one line in PowerShell, no admin:
+  `irm https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.ps1 | iex`
+- ทดสอบบนเครื่อง Windows ใหม่ ชื่อผู้ใช้ภาษาไทย: ติดตั้งครบใน 7-8 นาที ถอดเสียงไทยได้คำตรงกับ Mac ทุกคำ (FLEURS 40 คลิป) คลิปที่ได้ตรงกับ Mac
+  · Tested on a fresh Windows account with a Thai name: installs in 7-8 min; Thai speech word-for-word the same as the Mac
+  (FLEURS, 40 clips); renders match the Mac.
+- ยังไม่ได้ลองบนโน้ตบุ๊กจริง: เสียงแจ้งเตือน ปุ่ม ฟัง (ต้องเพิ่มเสียงภาษาไทยใน Windows) อ่านตัวอักษรไทยในรูป · Not yet tried on a real
+  laptop: the notification sound, ฟัง (needs Windows' Thai voice), reading Thai text in images.
+
 ## v0.2.0 (2026-11-12)
 
 - **คำแนะนำทีละขั้นบนหน้า TadClip:** ใช้ครั้งแรก หน้าจอจะหรี่ลงแล้วชี้ปุ่มที่ต้องกดทีละขั้น ขั้นละหนึ่งประโยค กด "ฟัง" ให้อ่านออกเสียงได้

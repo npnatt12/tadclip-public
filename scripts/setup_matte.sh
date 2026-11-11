@@ -7,12 +7,13 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 V="${MATTE_VENV:-$HOME/.venvs/tadclip-matte}"
+case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*) VB="$V/Scripts" ;; *) VB="$V/bin" ;; esac   # a venv's programs: Scripts\ on Windows
 PY="${PYTHON311:-$(command -v python3.11 || uv python find 3.11 2>/dev/null || echo /opt/homebrew/bin/python3.11)}"
-[ -x "$V/bin/python" ] || "$PY" -m venv "$V"
-"$V/bin/pip" install -q --upgrade pip
-"$V/bin/pip" install -q -r "$HERE/matte-requirements.txt"
+[ -x "$VB/python" ] || "$PY" -m venv "$V"
+"$VB/pip" install -q --upgrade pip
+"$VB/pip" install -q -r "$HERE/matte-requirements.txt"
 # warm the weights so the first build does not stall on a download
-"$V/bin/python" -c "import sys; sys.path.insert(0, '$HERE'); import matte; matte.hf_dir('ZhengPeng7/BiRefNet-portrait'); print('weights ok:', matte.CACHE)"
+"$VB/python" -c "import sys; sys.path.insert(0, '$HERE'); import matte; matte.hf_dir('ZhengPeng7/BiRefNet-portrait'); print('weights ok:', matte.CACHE)"
 # cutout beats default to BiRefNet_lite (+176 MB); the other models download on first use
-"$V/bin/python" "$HERE/cutout_fx.py" --help >/dev/null && "$V/bin/python" -c "import sys; sys.path.insert(0, '$HERE'); import cutout_fx; cutout_fx.weights_dir('lite'); print('cutout_fx weights ok')"
+"$VB/python" "$HERE/cutout_fx.py" --help >/dev/null && "$VB/python" -c "import sys; sys.path.insert(0, '$HERE'); import cutout_fx; cutout_fx.weights_dir('lite'); print('cutout_fx weights ok')"
 echo "matte venv ready: $V"

@@ -1,11 +1,11 @@
 """Style loading: old names still resolve and "extends" layers presets, the same in Python and JS. python3 tests/test_style.py"""
-import json, os, subprocess, sys, tempfile
+import json, os, pathlib, subprocess, sys, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts", "lib"))
 from reelproj import load_project, load_style
 
-JS = """import {loadStyle} from %r; try { console.log(JSON.stringify(loadStyle(process.argv[1], process.argv[2]))) } catch (e) { console.log("ERR " + e.message) }""" % os.path.join(ROOT, "scripts/lib/style.mjs")
+JS = """import {loadStyle} from %r; try { console.log(JSON.stringify(loadStyle(process.argv[1], process.argv[2]))) } catch (e) { console.log("ERR " + e.message) }""" % pathlib.Path(ROOT, "scripts/lib/style.mjs").as_uri()   # a file:// URL: Node won't import a bare Windows path
 js = lambda skill, name: subprocess.run(["node", "--input-type=module", "-e", JS, skill, name], capture_output=True, text=True).stdout.strip()
 
 assert load_style(ROOT, "icarus") == load_style(ROOT, "clubgig") and load_style(ROOT, "clubgig")["impact"]["look"] == "stair"

@@ -16,12 +16,12 @@ Progress lines (`[n/7] ไทย | English` into `$P/build/progress.log`, the ap
    `ffmpeg -v error -y -i <clip> -vn -ac 1 -b:a 96k $P/build/voice-raw.mp3` (the ORIGINAL clip's sound: same timeline as
    talk.mp4, measured 0.0 ms; prep's loudness normalisation makes breaths count as speech: 397 s vs 221 s, 1.9 % vs 1.5 % errors);
    `python3 $S/recipes/clubgig/islands.py $P/build/voice-raw.mp3 $P/build/vad.json`;
-   `~/.venvs/mlxw/bin/python $S/scripts/islands_tx.py $P/build/voice-raw.mp3 --vad $P/build/vad.json --lang th --out $P/build/islands.json`.
+   `TPY=$(bash $S/scripts/lib/plat.sh thai); "$TPY" $S/scripts/islands_tx.py $P/build/voice-raw.mp3 --vad $P/build/vad.json --lang th --out $P/build/islands.json`.
    No whole-file `transcribe.py` (it loops on long Thai clips), nothing in the background. Measured on a fresh account
    (11-09, 4:50 iPhone clip, M3): prep 154 s, face 100 s, transcript 221 s: 7.9 min with step 1.
 3. `[3/7] เลือกเทค | choose takes, ~3 min`: read islands.json; pick the best complete take of each line (references/take-selection.md),
    correct whisper's Thai against the meaning (names as profile.json spells them). Copy `$S/recipes/clubgig/cut.py` to
-   `$P/build/cut.py`, replace TAKES with `(a, b, "verbatim corrected text")`, run `~/.venvs/mlxw/bin/python -I build/cut.py`
+   `$P/build/cut.py`, replace TAKES with `(a, b, "verbatim corrected text")`, run `"$TPY" -I build/cut.py`
    -> build/words.th.json (caption chunks timed to the voice) + build/takes.json. Don't write your own splitter.
 4. `[4/7] ประกอบคลิป | reel.json + build, ~2 min`:
    `{"title": "...", "style": "clean", "source": "assets/talk.mp4", "words": "build/words.th.json", "takes": <takes.json>,

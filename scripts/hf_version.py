@@ -11,15 +11,28 @@ Importing this also points HyperFrames at scripts/hf_ffmpeg.sh (HYPERFRAMES_FFMP
 fixes the audio mix's input order so the same reel gets the same audio on every render (why: hf_mix_order.py).
 """
 import os
+import shutil
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FILE = os.path.join(HERE, "HF_VERSION")
 PINNED = open(FILE).read().strip()
 VERSION = os.environ.get("HF_VERSION") or PINNED
-os.environ.setdefault("HYPERFRAMES_FFMPEG_PATH", os.path.join(HERE, "hf_ffmpeg.sh"))
+WIN = sys.platform == "win32"
+# Windows can't run hf_ffmpeg.sh as a program: its compiled twin (setup.sh builds hf_ffmpeg.exe), else the plain ffmpeg
+os.environ.setdefault("HYPERFRAMES_FFMPEG_PATH", (os.path.join(HERE, "hf_ffmpeg.exe") if os.path.exists(os.path.join(HERE, "hf_ffmpeg.exe"))
+                      else shutil.which("ffmpeg") or "ffmpeg") if WIN else os.path.join(HERE, "hf_ffmpeg.sh"))
 if os.path.exists("/opt/homebrew/opt/node@22/bin/node"):  # HyperFrames needs Node >= 22, same as hf.sh
     os.environ["PATH"] = "/opt/homebrew/opt/node@22/bin:" + os.environ["PATH"]
 
 
+def npx():
+    """npx as a program list: Windows' npx is npx.cmd, which a list-form subprocess can't start, so node runs npm's own
+    npx-cli.js (next to node.exe in the official Windows build)"""
+    if not WIN: return ["npx"]
+    node = shutil.which("node"); cli = os.path.join(os.path.dirname(node), "node_modules", "npm", "bin", "npx-cli.js") if node else ""
+    return [node, cli] if os.path.exists(cli) else ["npx.cmd"]
+
+
 def hf(*args):
-    return ["npx", "-y", f"hyperframes@{VERSION}", *args]
+    return [*npx(), "-y", f"hyperframes@{VERSION}", *args]

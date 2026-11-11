@@ -57,4 +57,7 @@ try:
     b = ordered(args)
 except Exception:
     b = None
+if os.name == "nt":   # Windows' execv starts ffmpeg and exits 0 at once: HyperFrames would probe the mix before it exists
+    import subprocess
+    sys.exit(subprocess.run([real] + (b or args)).returncode)
 os.execv(real, [real] + (b or args))

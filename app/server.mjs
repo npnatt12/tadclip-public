@@ -18,7 +18,29 @@ const STATE = path.join(DIR, ".tadclip");
 const REPLAY = process.env.TADCLIP_REPLAY ? path.resolve(process.env.TADCLIP_REPLAY) : "";   // resolved: the replay runs with cwd = the clip folder
 let testSignedIn = true;   // test mode only: replay is always signed in, so /api/test can sign it out to check the sign-in step
 const TEST = process.env.TADCLIP_TEST === "1";   // lets the checks force any error screen
-const PATHX = [`${HOME}/.local/bin`, "/opt/homebrew/opt/node@22/bin", "/opt/homebrew/bin", "/usr/local/bin", process.env.PATH].join(":");
+const WIN = process.platform === "win32";
+// the tools setup.sh installs come first; Windows joins PATH with ";" (a ":" would split every "C:\...")
+const PATHX = (WIN ? [path.join(HOME, ".local", "bin"), path.join(HOME, ".local", "share", "tadclip-tools", "node"), process.env.PATH]
+  : [`${HOME}/.local/bin`, "/opt/homebrew/opt/node@22/bin", "/opt/homebrew/bin", "/usr/local/bin", process.env.PATH]).join(path.delimiter);
+// what the Mac does with open / osascript / caffeinate / Terminal, done the Windows way. PowerShell gets its script as
+// -EncodedCommand (UTF-16LE base64): no quoting of Thai text or paths
+const ps = (script) => spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")], { windowsHide: true }).on("error", () => {});
+const sh = {
+  open: (t) => (WIN ? spawn("explorer.exe", [t]) : spawn("open", [t])).on("error", () => {}),
+  reveal: (f) => (WIN ? spawn("explorer.exe", [`/select,"${f}"`], { windowsVerbatimArguments: true }) : spawn("open", ["-R", f])).on("error", () => {}),
+  page: (u) => (WIN ? spawn("cmd.exe", ["/c", "start", "", u], { windowsHide: true }) : spawn("open", [u])).on("error", () => {}),
+  // a notification with a sound (the Mac's "Glass"); Windows: a toast under PowerShell's own app id, plus the system sound
+  notify: (text) => WIN ? ps(`[Windows.UI.Notifications.ToastNotificationManager,Windows.UI.Notifications,ContentType=WindowsRuntime]|Out-Null
+$c=[Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
+$n=$c.GetElementsByTagName('text'); $n.Item(0).AppendChild($c.CreateTextNode('TadClip'))|Out-Null; $n.Item(1).AppendChild($c.CreateTextNode('${text.replace(/'/g, "''")}'))|Out-Null
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe').Show([Windows.UI.Notifications.ToastNotification]::new($c))
+[System.Media.SystemSounds]::Asterisk.Play(); Start-Sleep 2`)
+    : spawn("osascript", ["-e", `display notification "${text}" with title "TadClip" sound name "Glass"`]).on("error", () => {}),
+  // no idle sleep while the edit runs (pid): caffeinate -w on the Mac; SetThreadExecutionState(CONTINUOUS|SYSTEM_REQUIRED) held until it exits
+  awake: (pid) => WIN ? ps(`Add-Type -Namespace W -Name P -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'
+[W.P]::SetThreadExecutionState([uint32]2147483649)|Out-Null   # 0x80000001: PowerShell would read the hex as a negative Int32; Wait-Process -Id ${pid} -ErrorAction SilentlyContinue`)
+    : spawn("caffeinate", ["-i", "-w", String(pid)]).on("error", () => {}),
+};
 const VIDEO = /\.(mov|mp4|m4v|avi|mkv|mts|3gp|hevc|webm)$/i, AUDIO = /\.(mp3|m4a|wav|aac|aif|aiff|flac|ogg)$/i;
 const TOOLS = "Bash,Read,Write,Edit,Glob,Grep,Agent,Skill,TodoWrite";
 fs.mkdirSync(STATE, { recursive: true });
@@ -71,6 +93,10 @@ const run = (cmd, args, ms = 15000) => new Promise((ok) =>
 
 // the claude binary: the CLI if installed, else the one the Claude desktop app keeps for its Code tab
 function claudeBin() {
+  // Windows: the native installer's %USERPROFILE%\.local\bin\claude.exe, else a claude.exe on PATH (an npm claude.cmd
+  // can't be spawned without a shell)
+  if (WIN) return [process.env.TADCLIP_CLAUDE, path.join(HOME, ".local", "bin", "claude.exe"), ...(process.env.PATH || "").split(";").map((d) => d && path.join(d, "claude.exe"))]
+    .find((p) => p && fs.existsSync(p)) || "";
   const c = [process.env.TADCLIP_CLAUDE, `${HOME}/.local/bin/claude`, "/opt/homebrew/bin/claude", "/usr/local/bin/claude"];
   const app = path.join(HOME, "Library/Application Support/Claude/claude-code");
   try {
@@ -192,7 +218,7 @@ async function turn(text, resume) {
   if (resume) args.push("--resume", job.session);
   child = REPLAY ? spawn(process.execPath, [path.join(APP, "replay.mjs"), REPLAY, DIR, job.files.find((f) => VIDEO.test(f)), text], { cwd: DIR })
     : spawn(bin, args, { cwd: DIR, env: { ...process.env, PATH: PATHX } });
-  spawn("caffeinate", ["-i", "-w", String(child.pid)]).on("error", () => {});   // no idle sleep while it works
+  sh.awake(child.pid);   // no idle sleep while it works
   let buf = "";
   // Claude that prints nothing in its first 2 min never started (seen 11-09: a user hook stalls it under launchd)
   const quiet = setTimeout(() => { if (child && job.status === "running") { job.error = "stuck"; log("watchdog", `job=${job.id}`, "no output in the first minutes"); child.kill(); } }, +(process.env.TADCLIP_START_MS || 120000));
@@ -235,7 +261,7 @@ async function turn(text, resume) {
   });
 }
 function fail(code) { job.status = "error"; job.error = code; save(); log("error", `job=${job?.id}`, code); }
-function notify(text) { spawn("osascript", ["-e", `display notification "${text}" with title "TadClip" sound name "Glass"`]).on("error", () => {}); }
+const notify = (text) => sh.notify(text);
 
 // the Mac slept if a 5 s tick took over a minute: the run carries on after wake, the page says so once
 let tick = Date.now();
@@ -363,10 +389,16 @@ const server = http.createServer(async (req, res) => {
   // so a Terminal window runs it; the waiting job starts by itself once auth status says yes
   if (req.method === "POST" && p === "/api/signin") {
     const bin = claudeBin(); if (!bin) return send(res, 200, { error: "no_claude" });
-    const cmd = path.join(STATE, "signin.command"), q = (x) => `'${x.replace(/'/g, `'\\''`)}'`;
-    fs.writeFileSync(cmd, `#!/bin/bash\nclear\necho "เข้าสู่ระบบ Claude ให้ TadClip (ครั้งเดียว) · Sign in to Claude for TadClip (once)"\necho\n${q(bin)} auth login\n` +
-      `echo; echo "เสร็จแล้ว ปิดหน้าต่างนี้ได้ TadClip จะเริ่มตัดต่อเอง · Done: close this window, TadClip starts by itself"\n`, { mode: 0o755 });
-    spawn("open", ["-a", "Terminal", cmd]); log("signin", "opened Terminal");
+    const hi = "เข้าสู่ระบบ Claude ให้ TadClip (ครั้งเดียว) · Sign in to Claude for TadClip (once)", bye = "เสร็จแล้ว ปิดหน้าต่างนี้ได้ TadClip จะเริ่มตัดต่อเอง · Done: close this window, TadClip starts by itself";
+    if (WIN) {   // a console window (chcp 65001: the Thai lines in UTF-8)
+      const cmd = path.join(STATE, "signin.cmd");
+      fs.writeFileSync(cmd, `@echo off\r\nchcp 65001 >nul\r\necho ${hi}\r\necho.\r\n"${bin}" auth login\r\necho.\r\necho ${bye}\r\npause\r\n`);
+      spawn("cmd.exe", ["/c", `start "TadClip" "${cmd}"`], { windowsVerbatimArguments: true, windowsHide: true }).on("error", () => {}); log("signin", "opened a console window");
+    } else {
+      const cmd = path.join(STATE, "signin.command"), q = (x) => `'${x.replace(/'/g, `'\\''`)}'`;
+      fs.writeFileSync(cmd, `#!/bin/bash\nclear\necho "${hi}"\necho\n${q(bin)} auth login\necho; echo "${bye}"\n`, { mode: 0o755 });
+      spawn("open", ["-a", "Terminal", cmd]); log("signin", "opened Terminal");
+    }
     const t0 = Date.now(), wait = setInterval(async () => {
       if (Date.now() - t0 > 15 * 60000) return clearInterval(wait);
       if (!(await signedIn(bin))) return;
@@ -380,8 +412,8 @@ const server = http.createServer(async (req, res) => {
     const lib = k?.font && path.join(APP, "..", "library", "fonts", "thai", `${k.font.toLowerCase().replace(/ /g, "-")}-thai.woff2`);
     return own ? file(req, res, path.join(BRAND, own)) : lib && fs.existsSync(lib) ? file(req, res, lib) : send(res, 404, {});
   }
-  if (req.method === "POST" && p === "/api/open" && url.searchParams.get("what") === "brand") { spawn("open", [BRAND]); log("open", "brand folder"); return send(res, 200, {}); }
-  if (req.method === "POST" && p === "/api/open") { spawn("open", [url.searchParams.get("what") === "final" && job?.final ? "-R" : "", job?.final || DIR].filter(Boolean)); return send(res, 200, {}); }
+  if (req.method === "POST" && p === "/api/open" && url.searchParams.get("what") === "brand") { sh.open(BRAND); log("open", "brand folder"); return send(res, 200, {}); }
+  if (req.method === "POST" && p === "/api/open") { url.searchParams.get("what") === "final" && job?.final ? sh.reveal(job.final) : sh.open(job?.final || DIR); return send(res, 200, {}); }
   if (req.method === "POST" && p === "/api/brandtxt") {   // the page's brand fields -> brand/brand.txt (the loader reads it as before)
     const b = await body(req), lines = TXT.map(([k, th]) => [th, String(b[k] ?? "").replace(/[\r\n]+/g, " ").trim().slice(0, 120)]).filter(([, v]) => v);
     fs.mkdirSync(BRAND, { recursive: true });
@@ -432,11 +464,11 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.on("error", (e) => {   // already running (the icon was clicked twice): just open the page
-  if (e.code === "EADDRINUSE") { if (process.argv.includes("--open")) spawn("open", [`http://127.0.0.1:${PORT}/`]); process.exit(0); }
+  if (e.code === "EADDRINUSE") { if (process.argv.includes("--open")) sh.page(`http://127.0.0.1:${PORT}/`); process.exit(0); }
   throw e;
 });
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`TadClip app: http://127.0.0.1:${PORT}/  folder ${DIR}${REPLAY ? "  (replay)" : ""}`);
   log("server", `port=${PORT}`, `node=${process.version}`, `claude=${claudeBin() || "none"}`, REPLAY ? "replay" : "", process.argv.includes("--open") ? "opened-page" : "");
-  if (process.argv.includes("--open")) spawn("open", [`http://127.0.0.1:${PORT}/`]);
+  if (process.argv.includes("--open")) sh.page(`http://127.0.0.1:${PORT}/`);
 });

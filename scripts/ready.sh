@@ -7,17 +7,16 @@
 # copy of someone else's. It proves nothing more; the class still sees the reel.
 set -u
 S="$(cd "$(dirname "$0")/.." && pwd)"
-export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
+. "$S/scripts/lib/plat.sh"   # machine (this computer: Mac or Windows), TC_WIN
+export PATH="$HOME/.local/bin:$HOME/.local/share/tadclip-tools/node:/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
 fix=(); good=()
 no() { fix+=("$1"); echo "  ✗ $1"; }
 yes() { good+=("$1"); echo "  ✓ $1"; }
 
 echo "TadClip: เช็กความพร้อมก่อนเรียน · readiness check"
-mac=$(sw_vers -productVersion 2>/dev/null); chip=$(sysctl -n machdep.cpu.brand_string 2>/dev/null | sed 's/Apple //')
-ram=$(( $(sysctl -n hw.memsize 2>/dev/null || echo 0) / 1073741824 )); free=$(df -k "$HOME" | awk 'NR==2{print int($4/1048576)}')
-if [ "$(uname -sm)" = "Darwin arm64" ] && [ "${mac%%.*}" -ge 14 ] 2>/dev/null; then yes "Mac: $chip, macOS $mac, RAM $ram GB"
-else no "เครื่องนี้ใช้ TadClip ไม่ได้ (ต้องเป็น Mac ชิป Apple + macOS 14 ขึ้นไป): $(uname -m), macOS ${mac:-?}"; fi
-# ponytail: 8 GB Macs are untested (every test ran on 16 GB); a note, not a failure, until one is measured
+machine; ram=$TC_RAM; free=$(freegb)
+if [ -n "$TC_OK" ]; then yes "$([ -n "$TC_WIN" ] && echo Windows || echo Mac): $TC_DESC"; else no "$TC_WHY_TH"; fi
+# ponytail: 8 GB machines are untested (every test ran on 16 GB); a note, not a failure, until one is measured
 [ "$ram" -lt 16 ] && echo "    หมายเหตุ: RAM $ram GB ยังไม่เคยทดสอบ อาจช้ากว่าปกติ"
 # a reel's working files: ~1-2 GB per clip (project folder, renders)
 [ "$free" -ge 5 ] && yes "พื้นที่ว่าง $free GB" || no "พื้นที่ว่างเหลือ $free GB: ลบไฟล์ที่ไม่ใช้ให้ว่างอย่างน้อย 5 GB"
@@ -27,10 +26,10 @@ d=$(bash "$S/scripts/doctor.sh" 2>&1 | tail -1); m=$(echo "$d" | sed -n 's/.*, \
 [ "${m:-1}" = 0 ] && yes "ติดตั้งครบ ($d)" || no "ติดตั้งยังไม่ครบ ($d): วางบรรทัดติดตั้งอีกครั้ง หรือบอก Claude ว่า \"ติดตั้ง TadClip ต่อ\""
 
 # Claude: the same places the TadClip app looks (CLI, else the desktop app's own copy)
-bin=""; for c in "$HOME/.local/bin/claude" /opt/homebrew/bin/claude /usr/local/bin/claude \
+bin=""; for c in "$HOME/.local/bin/claude" "$HOME/.local/bin/claude.exe" /opt/homebrew/bin/claude /usr/local/bin/claude \
   "$HOME"/Library/Application\ Support/Claude/claude-code/*/*/claude.app/Contents/MacOS/claude; do [ -x "$c" ] && { bin=$c; break; }; done
 plan="-"
-if [ -z "$bin" ]; then no "ยังไม่มี Claude ในเครื่อง: ติดตั้งแอป Claude จาก claude.ai/download"
+if [ -z "$bin" ]; then no "ยังไม่มี Claude ในเครื่อง: $([ -n "$TC_WIN" ] && echo "วางบรรทัดติดตั้ง TadClip อีกครั้ง (ติดตั้ง Claude ให้เอง)" || echo "ติดตั้งแอป Claude จาก claude.ai/download")"
 else
   a=$("$bin" auth status 2>/dev/null)
   plan=$(echo "$a" | python3 -c 'import json,sys
@@ -65,10 +64,10 @@ else no "ทดลองทำวิดีโอไม่สำเร็จ: บ
 ver=$(sed -n 's/^## \(v[0-9.]*\).*/\1/p' "$S/CHANGELOG.md" 2>/dev/null | head -1)
 c=$(cat "$S/.tadclip-commit" 2>/dev/null | cut -c1-7); [ -n "$c" ] || c=$(git -C "$S" rev-parse --short HEAD 2>/dev/null)
 ver="${ver:-}${ver:+${c:+ }}${c:-}"; [ -n "$ver" ] || ver="?"
-line="${chip:-?} ${ram}GB · macOS ${mac:-?} · ${free}GB free · Claude ${plan} · build $ver · $(date +%Y-%m-%d)"
+line="$TC_DESC · ${free}GB free · Claude ${plan} · build $ver · $(date +%Y-%m-%d)"
 echo
 if [ ${#fix[@]} = 0 ]; then
-  code=$(printf '%s' "$line" | shasum -a 256 | cut -c1-6 | tr a-f A-F)
+  code=$(printf '%s' "$line" | { command -v sha256sum >/dev/null && sha256sum || shasum -a 256; } | cut -c1-6 | tr a-f A-F)
   out="TADCLIP READY ✓ $code · $line"
   echo "พร้อมเรียนแล้ว! คัดลอกบรรทัดล่างนี้ไปวางในกลุ่ม LINE ของคลาส:"
 else

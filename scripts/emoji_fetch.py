@@ -26,6 +26,7 @@ Usage:
 Stdlib only; needs ffmpeg with libvpx-vp9 on PATH.
 """
 import argparse, hashlib, json, math, os, re, shutil, subprocess, sys, tempfile, time, urllib.parse, urllib.request
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")   # run with -I, which ignores PYTHONUTF8: Windows' cp1252 console died on 🔥
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 EMOJI = os.path.join(HERE, "..", "library", "emoji")

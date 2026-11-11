@@ -5,8 +5,8 @@ Fill the {fields}; give a FRESH helper (subagent_type "reel-helper", default mod
 Reel: {CODE} «{TITLE}», {STYLE} (recipe {RECIPE}, builder {BUILDER}).
 Previous build: {OLD_P} (reel.py = its generator, build/plan.txt = its plan; read them with sed -n, once).
 New cut: {CUT}     New project: {P}     Machine: {MACHINE}, the machine that holds the footage.
-  S=~/.claude/skills/tadclip ; PY=~/.venvs/media/bin/python (or any python with numpy + opencv)
-  Start every Bash call with: export PATH="$HOME/.local/bin:/opt/homebrew/opt/node@22/bin:$PATH";
+  S=~/.claude/skills/tadclip ; PY=python3 (the media venv on a Mac and on Windows; or any python with numpy + opencv)
+  Start every Bash call with: export PATH="$HOME/.local/bin:$HOME/.local/share/tadclip-tools/node:/opt/homebrew/opt/node@22/bin:$PATH";
 Progress: before each step, append one line to {P}/build/progress.log: `date +%H:%M` + "[n/N] <plain Thai> | <English>",
 e.g. `02:10 [1/3] ทำไฟล์จริงความละเอียดเต็ม | final render, ~2 min`. The TadClip app shows the Thai half to the user.
 The user's notes, verbatim: {USER_WORDS}

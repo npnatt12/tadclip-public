@@ -1,0 +1,41 @@
+# What of TadClip runs on Windows as it is (no port yet): the unit tests, the app server's queue test, and Thai
+# speech-to-text with faster-whisper on a 4-core runner. Manual / branch push only; read the job summary.
+name: windows-probe
+on: { workflow_dispatch: {}, push: { branches: [windows-probe] } }
+jobs:
+  probe:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env: { PYTHONUTF8: "1", PYTHONIOENCODING: utf-8 }   # what a Windows port sets: Windows' default code page isn't UTF-8
+    defaults: { run: { shell: "bash --noprofile --norc {0}" } }   # no -e: a failing test is a result, not a stop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: tools
+        run: |
+          choco install ffmpeg -y --no-progress > /dev/null
+          python -m pip install -q numpy pillow opencv-python-headless faster-whisper
+          ffmpeg -version | head -1; python --version; node --version; nproc
+      - name: unit tests as they are
+        run: |
+          echo "## Unit tests on Windows, unported" >> $GITHUB_STEP_SUMMARY
+          echo "| test | result | last line |" >> $GITHUB_STEP_SUMMARY; echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          for t in tests/test_*.py; do
+            out=$(timeout 600 python "$t" 2>&1); rc=$?
+            last=$(echo "$out" | tail -1 | tr '|' '/' | cut -c1-120)
+            echo "| $t | $([ $rc = 0 ] && echo pass || echo "FAIL ($rc)") | $last |" >> $GITHUB_STEP_SUMMARY
+            echo "=== $t rc=$rc"; echo "$out" | tail -15
+          done
+      - name: app server queue test
+        if: always()
+        run: |
+          out=$(timeout 600 node app/test/queue.mjs 2>&1); rc=$?
+          echo "$out"; { echo "## App queue test (node app/test/queue.mjs): rc=$rc"; echo '```'; echo "$out" | tail -8; echo '```'; } >> $GITHUB_STEP_SUMMARY
+      - name: Thai speech-to-text (faster-whisper, CPU)
+        if: always()
+        run: |
+          python tools/winprobe/asr_probe.py large-v3-turbo int8 2>&1 | tee asr.txt
+          { echo "## Thai ASR"; echo '```'; tail -10 asr.txt; echo '```'; } >> $GITHUB_STEP_SUMMARY

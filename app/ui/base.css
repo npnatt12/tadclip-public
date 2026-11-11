@@ -109,3 +109,8 @@ header.top { gap: 12px; flex-wrap: wrap; }
 .wishbox .eg { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; } .wishbox .eg .chip { min-height: 44px; font-size: .95rem; }
 .brand .own { height: 34px; max-width: 140px; object-fit: contain; } .brand .ownname { font: 700 1.1rem "Kanit"; }
 .brand.mine .tc { font: 600 .8rem "Kanit"; color: var(--muted); }
+/* what TadClip said can hold a file path: a Windows one (C:\Users\...\...) has no break point and ran off a 390 px screen */
+details.said p, .q blockquote { overflow-wrap: anywhere; }
+/* narrow screens: the header never forces the page wider (11-11 Windows CI, model A at 390 px / 125 %: 418 px; Windows' fonts
+   draw the tool buttons a little wider than macOS'), less side padding and the tool buttons may wrap */
+@media (max-width: 480px) { header.top { padding-left: 14px; padding-right: 14px; } .tools { flex-wrap: wrap; justify-content: flex-end; } }
