@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# Before a class: is this Mac ready to cut a reel? Checks the Mac, the install, Claude (signed in, a paid plan) and makes
+# Before a class: is this computer ready to cut a reel? Checks the Mac or PC, the install, Claude (signed in, a paid plan) and makes
 # a real 2-second Thai render through the same renderer a reel uses. Ends with one line to paste in the class's LINE
 # group: "TADCLIP READY ..." with a short code, or "TADCLIP NOT READY" and, above it, what to fix in Thai.
 #   bash ~/.claude/skills/tadclip/scripts/ready.sh        (or tell Claude: "เช็กความพร้อม TadClip")
+# Windows, in PowerShell (UTF-8 for the Thai; Git Bash is where install.ps1 recorded it; CI runs this line from the sheet):
+#   [Console]::OutputEncoding=[Text.Encoding]::UTF8; & $env:CLAUDE_CODE_GIT_BASH_PATH "$HOME/.claude/skills/tadclip/scripts/ready.sh"
 # The code is a checksum of this Mac's line and the date: it tells the organiser the line came from a run today, not a
 # copy of someone else's. It proves nothing more; the class still sees the reel.
 set -u

@@ -187,7 +187,14 @@ jobs:
           $fail = @(); if ("$installRc" -ne '0') { $fail += "install.ps1 exit $installRc" }
           $bash = [Environment]::GetEnvironmentVariable('CLAUDE_CODE_GIT_BASH_PATH', 'User'); "bash: $bash"
           $env:Path = [Environment]::GetEnvironmentVariable('Path', 'User') + ';' + $env:Path
-          & $bash --noprofile --norc "$HOME/.claude/skills/tadclip/scripts/ready.sh" 2>&1
+          # the ready check exactly as docs/BEFORE-CLASS.th.md tells a Windows buyer to paste it. A fresh account isn't
+          # signed in to Claude, so the right verdict is NOT READY for that one reason; ASCII-only here (5.1 may read this as ANSI)
+          $rl = Get-Content -Encoding UTF8 C:\Users\Public\tadclip-src\docs\BEFORE-CLASS.th.md | Where-Object { $_.StartsWith('[Console]::OutputEncoding') } | Select-Object -First 1
+          $ro = @(if ($rl) { Invoke-Expression $rl 2>&1 | ForEach-Object { "$_" } }); $ro
+          $last = $ro | Where-Object { $_ -like 'TADCLIP *' } | Select-Object -Last 1; "ready: $last"
+          if (-not $rl) { $fail += 'ready: no Windows line in BEFORE-CLASS.th.md' }
+          elseif (-not ($ro -join "`n").Contains((-join [char[]](0x0E40, 0x0E0A, 0x0E47, 0x0E01)))) { $fail += 'ready: Thai garbled or no output' }
+          elseif (-not ($last -like 'TADCLIP NOT READY * 1 *' -and ($ro -join "`n").Contains([string][char]0x2717 + ' Claude'))) { $fail += "ready: want NOT READY for sign-in only, got: $last" }
           # the parts a Thai profile path could break: the model cache, temp folders, a project, the render
           $env:PYTHONUTF8 = '1'; $t = Get-Date
           & python3 "$HOME\.claude\skills\tadclip\tests\asr_fixture.py" 2>&1 | Select-Object -Last 2; if ($LASTEXITCODE) { $fail += "asr fixture exit $LASTEXITCODE" }

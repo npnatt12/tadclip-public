@@ -6,6 +6,15 @@ Install a given version (to go back if a new one breaks) · ติดตั้�
 curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | TADCLIP_REF=v0.1.0 bash
 ```
 
+## v0.4.1 (2026-11-12)
+
+- **เช็กความพร้อมบน Windows ได้แล้ว:** เอกสารก่อนเรียน ([docs/BEFORE-CLASS.th.md](docs/BEFORE-CLASS.th.md)) มีบรรทัดสำหรับ PowerShell
+  ได้บรรทัด TADCLIP READY ✓ ไว้ส่งในกลุ่ม LINE เหมือน Mac · Windows ready check: one PowerShell line in the pre-class sheet.
+- **เอกสารก่อนเรียนครบทั้ง Mac และ Windows:** วิธีเช็กเครื่อง ส่งคลิปเข้าคอมฯ โดยไม่ใช้ AirDrop และในคลาสต้องดับเบิลคลิกอะไร
+  · The pre-class sheet covers Mac and Windows: the machine check, getting clips onto a PC, what to double-click.
+- **ติดตั้งเร็วขึ้น:** เพลงดาวน์โหลดจากชุด music-v1 ของ TadClip เอง (ส่วนเสียง เพลง อีโมจิ ใช้ 2 นาที จากเดิม 13 นาที)
+  · Faster install: music comes from TadClip's own music-v1 release (the sounds, music and emoji step: 2 min, was 13).
+
 ## v0.4.0 (2026-11-12)
 
 - **เสียงและเพลงเป็นของ TadClip เอง ใช้ในงานขายได้:** เสียงประกอบ 48 เสียง TadClip สร้างเองด้วยโค้ด อีก 30 เสียงและเพลง 23 เพลงเป็น
