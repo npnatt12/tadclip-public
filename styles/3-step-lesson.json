@@ -1,0 +1,21 @@
+{
+  "_about": "A lesson in three numbered steps over a flowing colour field, then back to the speaker for each explanation.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#E8402B",
+    "accentDark": "#87203F",
+    "ink": "#FFFFFF"
+  },
+  "music": {
+    "id": "happy-times",
+    "db": -20
+  },
+  "scenes": {
+    "card": {
+      "bg": {
+        "shader": "warp",
+        "preset": "Passion"
+      }
+    }
+  }
+}

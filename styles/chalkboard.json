@@ -1,0 +1,22 @@
+{
+  "_about": "A green chalkboard: lines appear as if written in chalk, one idea per board; the speaker returns between boards.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#F2D16B",
+    "accentDark": "#C9A93E",
+    "ink": "#F3F3EA",
+    "font": "Sriracha"
+  },
+  "music": {
+    "id": "classical-7",
+    "db": -20
+  },
+  "scenes": {
+    "sentence": {
+      "bg": "#1F3A2C"
+    },
+    "card": {
+      "bg": "#1F3A2C"
+    }
+  }
+}

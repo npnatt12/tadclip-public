@@ -55,7 +55,7 @@ The tree is drawn live as SVG strokes: branches grow up, roots grow down, both o
 
 - Voice: ElevenLabs, a wise elder narrator (see the options), slow, with pauses written into the script
 - Music: cinematic piano/drone bed (library: `silent-descent` or `vastness`), ducked under the voice, swelling at the breakthrough (beat 5)
-- SFX (Mixkit, licensed): soil crunch/creak on the root push, a deep boom under "Resistance. Pressure. Dirt.", a riser into the breakthrough, soft wind on the seasons
+- SFX (library, licensed): soil crunch/creak on the root push, a deep boom under "Resistance. Pressure. Dirt.", a riser into the breakthrough, soft wind on the seasons
 
 ## Build
 

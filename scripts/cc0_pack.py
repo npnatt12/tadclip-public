@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The CC0 meme-sound pack: reaction sounds from Freesound that the uploader recorded or made
 themselves and released as CC0 1.0 (public domain: commercial use, no credit, redistribution OK).
-Unlike the Mixkit kit (fetched at setup, never shipped) and the YouTube rips (private only),
+Like TadClip's own synthesized kit (sfx_synth.py) and unlike the YouTube rips (private only),
 these files ship in the repo as library/sfx/cc0-<id>.wav.
 
     cc0_pack.py list                 # the pack, with sources
@@ -27,6 +27,10 @@ PREVIEW = "https://cdn.freesound.org/previews/{a}/{id}_{uid}-hq.mp3"
 # id, freesound id, uploader, uploader id, title, role, tags, max seconds, fade-out seconds, what it is
 PACK = [
     ("deep-boom", 539968, "Za-Games", 12029332, "Deep Boom", "meme", ["punchline", "claim", "reveal", "sus"], 2.5, 0.6, "deep explosion boom"),
+    # 11-12: the three voice reactions of the old Mixkit kit, recorded by the uploaders (pages checked: CC0, own recording)
+    ("reaction-crowd-laugh", 752711, "Nox_Sound", 9250976, "Voice_Crowd_Small_Expression_Laugh_Stereo", "meme", ["punchline", "roast", "dumb"], 3.0, 0.5, "small crowd laughing (Sony PCM-D100 field recording)"),
+    ("reaction-crowd-boo", 752707, "Nox_Sound", 9250976, "Voice_Crowd_Small_Expression_Boo_Stereo", "meme", ["bad-take", "myth", "wrong"], 2.5, 0.4, "small crowd booing (Sony PCM-D100 field recording)"),
+    ("reaction-gasp", 635110, "RadioCounseling", 13862996, "Crowd gasp.wav", "meme", ["shock", "disbelief", "claim"], 1.6, 0.2, "14 voices gasping, all the uploader's own"),
     ("vinyl-scratch", 71853, "ludvique", 1062668, "record_scratch.wav", "meme", ["wait", "freeze-frame", "twist"], 0.6, 0.05, "cartridge scratched over a vinyl record"),
     ("error-beep", 478191, "JonnyRuss01", 10233023, "Beep_Error_1.wav", "meme", ["wrong", "myth", "fail"], 0.5, 0.05, "soft error beep made from a metal bowl"),
     ("metal-clang", 125404, "jasonLON", 2279655, "Metallic Clang.aif", "meme", ["fail", "sudden", "absurd"], 1.8, 0.4, "baking pan hit with a bass-drum mallet, layered"),

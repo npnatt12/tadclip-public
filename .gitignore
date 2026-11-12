@@ -1,6 +1,7 @@
 # media is rebuilt by scripts/library_restore.py; the repo keeps manifests and meta only
 library/sfx/*.wav
 !library/sfx/cc0-*.wav
+!library/sfx/own-*.wav
 library/memes/*/clip.webm
 library/memes/*/image.png
 library/memes/*/preview.png
@@ -46,3 +47,4 @@ app/test/last-report.json
 # Windows: built at install from hf_ffmpeg.cs / icon-1024.png
 scripts/hf_ffmpeg.exe
 app/icon/icon.ico
+library/sfx/audition-synth.html

@@ -30,4 +30,4 @@ Reel material (none ships with the recipe)
   - A reel's footage and voice are its own.
   - A document beat shows the real source the speaker names (a cover, a page); it belongs to its owner and is shown at
     <= 1:1 of its file.
-  - SFX from the skill library (Mixkit free licence; CC0 pack), licensed sounds only.
+  - SFX from the skill library (TadClip's own sounds, CC0; CC0 pack), licensed sounds only.

@@ -1,0 +1,18 @@
+{
+  "_about": "One white card in the middle of a light grey screen: a small setup line, then the key word in red.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#D9283A",
+    "accentDark": "#A81C2C",
+    "ink": "#111111"
+  },
+  "music": {
+    "id": "lo-fi-02",
+    "db": -21
+  },
+  "scenes": {
+    "card": {
+      "bg": "#F2F2F2"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "_about": "The idea written out like a dark notes app, word by word in time with the voice; the speaker in a small round bubble.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#E0B341",
+    "accentDark": "#B88C1E",
+    "ink": "#FFFFFF"
+  },
+  "music": {
+    "id": "lo-fi-02",
+    "db": -20
+  },
+  "scenes": {
+    "kinetic": {
+      "bg": "#151515"
+    }
+  }
+}

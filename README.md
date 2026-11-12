@@ -64,7 +64,9 @@ irm https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.ps1 |
 
 **ข้อมูลไปไหน** ตัดต่อและเรนเดอร์บนเครื่องคุณ ข้อความและภาพบางส่วนส่งให้ Claude / Codex คิดงาน และส่งให้ Google ถ้าใส่คีย์ Gemini
 
-**Windows ยังไม่ได้อะไร** ปุ่ม ฟัง ต้องเพิ่มเสียงภาษาไทยก่อน (Settings > Time & language > Speech > Add voices > ไทย) อ่านตัวอักษรไทยในรูปโลโก้ต้องเพิ่มภาษาไทยใน Windows และยังใช้โลโก้ SVG ไม่ได้ (ใช้ PNG แทน)
+**เสียงและเพลงในชุด** TadClip สร้างเอง หรือเป็น CC0 ใช้ในงานที่ขายได้ ไม่ต้องให้เครดิต
+
+**Windows ยังไม่ได้อะไร** ปุ่ม ฟัง ต้องเพิ่มเสียงภาษาไทยก่อน (Settings > Time & language > Speech > Add voices > ไทย) อ่านตัวอักษรไทยในรูปโลโก้ต้องเพิ่มภาษาไทยใน Windows
 
 สำหรับนักพัฒนา: [ทำงานยังไง](docs/HOW-IT-WORKS.md) · [สูตร ClubGig](recipes/clubgig/README.md) · [SKILL.md](SKILL.md) · [สัญญาอนุญาต](docs/THIRD_PARTY/README.md)
 </details>

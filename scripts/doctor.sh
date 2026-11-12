@@ -31,7 +31,7 @@ hv=$(cat "$S/scripts/HF_VERSION" 2>/dev/null)
 v=$(bash "$S/scripts/hf.sh" --version 2>/dev/null | tail -1)
 [ -n "$v" ] && [ "$v" = "${HF_VERSION:-$hv}" ] && pass "hyperframes $v (pinned in scripts/HF_VERSION)" || fail "hyperframes $hv (scripts/HF_VERSION)" "bash $S/scripts/hf.sh --version (needs network once)"
 [ -n "$HF_VERSION" ] && [ "$HF_VERSION" != "$hv" ] && echo "  WARN  HF_VERSION=$HF_VERSION overrides scripts/HF_VERSION ($hv): renders here differ from the other machine; unset it after the test"
-un=$(grep -rnE 'npx (-y )?hyperframes([^@]|$)|"npx", "hyperframes"' "$S" --include='*.md' --include='*.py' --include='*.sh' --include='*.mjs' --include='*.js' 2>/dev/null | grep -v -e '/public/' -e node_modules | grep -iv -e unpinned -e 'instead of')
+un=$(grep -rnE 'npx (-y )?hyperframes([^@]|$)|"npx", "hyperframes"' "$S" --include='*.md' --include='*.py' --include='*.sh' --include='*.mjs' --include='*.js' 2>/dev/null | grep -v -e '/public/' -e node_modules -e '/docs/HANDOFF-' | grep -iv -e unpinned -e 'instead of')
 [ -z "$un" ] && pass "no unpinned hyperframes calls in the skill" || { echo "  WARN  unpinned hyperframes calls (use \$S/scripts/hf.sh, or hf() from scripts/hf_version.py):"; echo "$un" | sed 's/^/          /'; }
 # x264's thread count is pinned in ONE place (scripts/X264_THREADS): on automatic threads it follows the core count and
 # each Mac writes different bytes. Every libx264 encode passes it right after libx264; HyperFrames' get it from hf_ffmpeg.sh.
@@ -79,7 +79,7 @@ PYEOF
     *) r=${r##*$'\n'}; fail "GEMINI_API_KEY is set but the test call failed: ${r:0:140}" "check the key at aistudio.google.com/apikey (env or $S/.env)";; esac
 else echo "  opt   GEMINI_API_KEY not set: reels work without it (Thai text from whisper, pictures picked by eye, no B-roll vision check). More tailored with a free key -> $S/.env (docs/INSTALL.md, step 3)"; fi
 
-if [ -n "$PEXELS_API_KEY" ] || grep -qs '^PEXELS_API_KEY=.' "$S/.env" "$S/.env.local"; then pass "PEXELS_API_KEY (ClubGig stock)"; else echo "  opt   PEXELS_API_KEY not set: stock search falls back to Mixkit, photos to Wikimedia. More choice with a free key -> $S/.env (docs/INSTALL.md, step 3)"; fi
+if [ -n "$PEXELS_API_KEY" ] || grep -qs '^PEXELS_API_KEY=.' "$S/.env" "$S/.env.local"; then pass "PEXELS_API_KEY (ClubGig stock)"; else echo "  opt   PEXELS_API_KEY not set: stock search falls back to Wikimedia Commons (fewer, smaller clips), photos too. More choice with a free key -> $S/.env (docs/INSTALL.md, step 3)"; fi
 if [ -n "$ELEVENLABS_API_KEY" ] || grep -qs '^ELEVENLABS_API_KEY=.' "$S/.env"; then pass "ELEVENLABS_API_KEY (narrated explainers)"; else echo "  opt   ELEVENLABS_API_KEY not set: only scripts/tts_elevenlabs.py (explainer voiceover) needs it -> $S/.env"; fi
 { [ -x "${DF_VENV:-$S/.venv-df}/bin/deepFilter" ] || [ -x "${DF_VENV:-$S/.venv-df}/Scripts/deepFilter.exe" ]; } && pass "DeepFilterNet (scripts/denoise.sh)" || echo "  opt   DeepFilterNet not set up: scripts/denoise.sh installs it on first use (needs python3.11 + uv)"
 

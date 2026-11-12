@@ -42,7 +42,7 @@ block red #C53E2B (question) / maroon #7A1F35 (labels), CTA orange, LINE green, 
    build/words.cut.json for the onsets.
 2. Write the plan as a docstring at the top of $P/tools/build.py: the question, the points with their onset times, the
    keywords, the CTA start. Points land on the onset of the sentence that names them.
-3. Fetch B-roll per point (`broll_fetch.py`, Pexels / Mixkit; stock is ALLOWED in this style, the owner 2026-10-31), run
+3. Fetch B-roll per point (`broll_fetch.py`, Pexels / Wikimedia Commons; stock is ALLOWED in this style, the owner 2026-10-31), run
    `broll_vision.py picks` and WAIT for the user's yes; people checks apply.
 4. `snaps` at every take change (1.0 <-> 1.1).
 5. Run build.py (it refuses chest-band overlaps and lines below the minimum size), `hf.sh lint` (0 errors; the

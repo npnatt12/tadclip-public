@@ -1,0 +1,19 @@
+{
+  "_about": "Clean white screens of bold words that move in line by line, one keyword in a soft blue.",
+  "extends": "clean",
+  "brand": {
+    "accent": "#8FB8E8",
+    "accentDark": "#5E8FC9",
+    "ink": "#111111",
+    "font": "Kanit"
+  },
+  "music": {
+    "id": "digital-clouds",
+    "db": -20
+  },
+  "scenes": {
+    "kinetic": {
+      "bg": "#FFFFFF"
+    }
+  }
+}

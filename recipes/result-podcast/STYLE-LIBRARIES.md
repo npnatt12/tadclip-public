@@ -107,7 +107,7 @@ If you'd rather have real scanned film:
 | Source | What | Licence | Note |
 |---|---|---|---|
 | Pixabay video search "film dust", "old film" https://pixabay.com/videos/search/film%20dust/ | Various overlay clips | Pixabay Content License (free commercial use, no attribution; can't be redistributed as a stand-alone asset) | Pick ≥1080p, check each clip |
-| Mixkit (clips offered in 2160p are under the commercial free licence) https://mixkit.co/free-stock-video/ | Search "old film", "dust" | Mixkit Free licence | Same sourcing workflow as the B-roll |
+| Wikimedia Commons (no key; CC0 / public domain / CC BY only, `broll_fetch.py search`) | https://commons.wikimedia.org |
 | Kestfilms 16mm Film Matte (FREE) https://kestfilms.gumroad.com/l/freefilmmatte | 4K dust, 16mm grain, burn | **Not stated**, so ask or avoid | 2 GB |
 | Snowman Digital old film grain https://snowmandigital.gumroad.com/l/NfyiE | Grain/dust | "CC licence", credit requested | Pay-what-you-want |
 | Enchanted Media dust & scratches https://enchantedmediauk.gumroad.com/l/free-dust-and-scratches-overlay-video | 1080p loop | Not stated | HD only |

@@ -1,0 +1,8 @@
+{
+  "_about": "A whiteboard drawing in a framed panel while the speaker stays on screen: the board explains, the face keeps trust.",
+  "extends": "clubgig",
+  "music": {
+    "id": "forest-mist-whispers",
+    "db": -20
+  }
+}

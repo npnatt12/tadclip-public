@@ -33,4 +33,4 @@ NOT COPIED
 OTHER MATERIAL
   - None ships with the recipe. A reel uses the speaker's own footage and voice, and a real picture only of a thing
     the speaker names (e.g. a book cover, shown in greyscale), supplied by the user.
-  - SFX from library/sfx (Mixkit kit + the CC0 pack); no music.
+  - SFX from library/sfx (TadClip's own synthesized kit + the CC0 pack); no music.

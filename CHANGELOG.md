@@ -6,6 +6,20 @@ Install a given version (to go back if a new one breaks) · ติดตั้�
 curl -fsSL https://raw.githubusercontent.com/npnatt12/tadclip-public/main/install.sh | TADCLIP_REF=v0.1.0 bash
 ```
 
+## v0.4.0 (2026-11-12)
+
+- **เสียงและเพลงเป็นของ TadClip เอง ใช้ในงานขายได้:** เสียงประกอบ 48 เสียง TadClip สร้างเองด้วยโค้ด อีก 30 เสียงและเพลง 23 เพลงเป็น
+  CC0 (สาธารณสมบัติ) ไม่ต้องให้เครดิต · Sounds and music are now TadClip's own (48 synthesized SFX) or CC0 (30 recorded SFX,
+  23 FreePD music beds): fine in paid work, no credit needed. Install downloads less (the SFX come with the code).
+- **สไตล์ใหม่ 15 แบบ สั่งชื่อได้เลย:** Paper collage, Vox, New background, Animated film, Chalkboard, Life in weeks,
+  Notes + bubble, Cinematic doc, Split demo, 3-step lesson, Screen callouts, Paper explainer, Motion light, Boxed UI,
+  Board + face · 15 new named styles.
+- **ไม่มีคีย์ Pexels ก็ยังได้ภาพประกอบ** จาก Wikimedia Commons (เฉพาะที่ใช้ได้เชิงพาณิชย์) · Without a Pexels key, stock
+  comes from Wikimedia Commons (CC0 / public domain / CC BY only).
+- **โลโก้ SVG ใช้ได้แล้ว** ทั้ง Mac และ Windows พื้นใสเหมือนไฟล์ · SVG logos work on Mac and Windows, transparent.
+- **Windows ชื่อผู้ใช้ภาษาไทย:** ไอคอนบนเดสก์ท็อปเปิด TadClip ได้ อีโมจิเคลื่อนไหวดาวน์โหลดครบ · Windows with a Thai user
+  name: the Desktop icon opens TadClip; all animated emoji download.
+
 ## v0.3.0 (2026-11-11)
 
 - **ใช้บน Windows ได้แล้ว (ทดลอง):** Windows 10 (1809 ขึ้นไป) / 11 แบบ 64 บิต ชิป Intel หรือ AMD วางบรรทัดเดียวใน PowerShell

@@ -28,7 +28,7 @@ FONTS (SIL Open Font License 1.1, from the skill's templates/fonts, licences the
   JetBrains Mono (JetBrains; stands in for IBM Plex Mono)
 
 SOUND
-  library/sfx (Mixkit kit + the CC0 pack): paper-flip, paper-riffle (cc0), pencil-write, wood-hit, tick-1. No music.
+  library/sfx (TadClip's own synthesized kit + the CC0 pack): paper-flip, paper-riffle (cc0), pencil-write, wood-hit, tick-1. No music.
 
 DATA IN THE EXAMPLE (datastory.py docstring)
   - U.S. Food and Drug Administration, Consumer Update "Spilling the Beans: How Much Caffeine is Too Much?",

@@ -1,0 +1,348 @@
+{
+ "paper-collage": {
+  "name": "Paper collage",
+  "th": "คอลลาจกระดาษ",
+  "beats": [
+   {
+    "type": "polaroid",
+    "src": "assets/ins/photo1.jpg",
+    "caption": "ต้นทุนความรัก",
+    "at": 0.8,
+    "to": 4.0
+   },
+   {
+    "type": "impact",
+    "look": "stack",
+    "at": 4.6,
+    "to": 7.0,
+    "text": "ความลุ้น|{ความรอคอย}",
+    "role": "topic"
+   },
+   {
+    "type": "scene",
+    "kind": "card",
+    "at": 7.6,
+    "to": 10.6,
+    "lines": [
+     {
+      "text": "อย่ารีบ",
+      "at": 7.8,
+      "size": 120,
+      "color": "#111111"
+     }
+    ],
+    "pill": {
+     "text": "ทีละนิด",
+     "at": 8.6
+    }
+   }
+  ],
+  "needs_matte": false
+ },
+ "vox": {
+  "name": "Vox",
+  "th": "ภาพแกะลาย + เลนส์",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "image",
+    "src": "assets/ins/photo2.jpg",
+    "at": 0.8,
+    "to": 4.2,
+    "zoom": [
+     1.0,
+     1.12
+    ]
+   },
+   {
+    "type": "impact",
+    "look": "seoul",
+    "at": 4.8,
+    "to": 7.4,
+    "text": "คนที่รู้วิธี",
+    "role": "note"
+   }
+  ],
+  "needs_matte": false
+ },
+ "new-background": {
+  "name": "New background",
+  "th": "เปลี่ยนฉากหลัง",
+  "beats": [
+   {
+    "type": "cutout",
+    "fx": "bg-swap",
+    "at": 1.0,
+    "to": 4.0,
+    "bg": "#1b2a4a,#d9a05b"
+   },
+   {
+    "type": "impact",
+    "at": 4.8,
+    "to": 7.0,
+    "text": "ลองนึกภาพ|ทริปแรกของเรา",
+    "role": "topic"
+   }
+  ],
+  "needs_matte": true
+ },
+ "animated-film": {
+  "name": "Animated film",
+  "th": "ฉากหนังแอนิเมชัน",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "image",
+    "src": "assets/ins/photo1.jpg",
+    "at": 0.6,
+    "to": 6.0,
+    "zoom": [
+     1.15,
+     1.0
+    ],
+    "captions": true
+   }
+  ],
+  "needs_matte": false
+ },
+ "chalkboard": {
+  "name": "Chalkboard",
+  "th": "เขียนชอล์ก",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "sentence",
+    "at": 0.8,
+    "to": 6.4,
+    "lines": [
+     "อย่ารีบ",
+     "build มันขึ้นมา"
+    ],
+    "hero": {
+     "text": "ทีละนิด",
+     "at": 4.8,
+     "color": "#F2D16B"
+    }
+   }
+  ],
+  "needs_matte": false
+ },
+ "life-in-weeks": {
+  "name": "Life in weeks",
+  "th": "ชีวิตเป็นสัปดาห์",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "weeks",
+    "at": 0.8,
+    "to": 6.0,
+    "title": "อยู่ด้วยกัน 80 ปี",
+    "sub": "4,160 สัปดาห์ · หนึ่งจุด = หนึ่งสัปดาห์",
+    "filled": 1300,
+    "fillAt": 1.6
+   }
+  ],
+  "needs_matte": false
+ },
+ "notes-bubble": {
+  "name": "Notes + bubble",
+  "th": "โน้ต + วงหน้า",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "kinetic",
+    "at": 0.8,
+    "to": 6.8,
+    "text": "อย่ารีบ build มันขึ้นมา *ทีละนิด* ให้เค้าลุ้นไปเรื่อยๆ",
+    "pip": true
+   }
+  ],
+  "needs_matte": false
+ },
+ "cinematic-doc": {
+  "name": "Cinematic doc",
+  "th": "สารคดีภาพยนตร์",
+  "beats": [
+   {
+    "type": "impact",
+    "look": "seoul",
+    "at": 0.8,
+    "to": 3.2,
+    "text": "ความลุ้น",
+    "role": "note"
+   },
+   {
+    "type": "scene",
+    "kind": "sentence",
+    "at": 4.0,
+    "to": 8.6,
+    "lines": [
+     "ความรอคอย",
+     "สะสมเป็น"
+    ],
+    "hero": {
+     "text": "โดพามีน",
+     "at": 6.8
+    }
+   }
+  ],
+  "needs_matte": false
+ },
+ "split-demo": {
+  "name": "Split demo",
+  "th": "จอบน หน้าล่าง",
+  "beats": [
+   {
+    "type": "broll",
+    "src": "assets/broll/m1.mp4",
+    "at": 0.6,
+    "to": 5.4,
+    "mode": "split",
+    "h": 900,
+    "shift": 380,
+    "label": [
+     "ขั้นที่ 1",
+     "ทักมาได้เลยครับ"
+    ]
+   }
+  ],
+  "needs_matte": false
+ },
+ "3-step-lesson": {
+  "name": "3-step lesson",
+  "th": "บทเรียน 3 ขั้น",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "card",
+    "at": 0.6,
+    "to": 6.0,
+    "y": 640,
+    "lines": [
+     {
+      "text": "1 ยืดระยะเวลา",
+      "at": 1.0,
+      "size": 84,
+      "color": "#FFFFFF"
+     },
+     {
+      "text": "2 ให้เค้าลุ้น",
+      "at": 2.4,
+      "size": 84,
+      "color": "#FFFFFF"
+     },
+     {
+      "text": "3 ฉากที่ไม่มีวันลืม",
+      "at": 3.8,
+      "size": 84,
+      "color": "#FFFFFF"
+     }
+    ]
+   }
+  ],
+  "needs_matte": false
+ },
+ "screen-callouts": {
+  "name": "Screen callouts",
+  "th": "ชี้จุดบนหน้าจอ",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "device",
+    "at": 0.6,
+    "to": 6.0,
+    "label": "LINE",
+    "lines": [
+     {
+      "text": "สนใจคอร์สออนไลน์ครับ",
+      "at": 1.0,
+      "me": true
+     },
+     {
+      "text": "ปรึกษาปัญหาความรัก ทักมาได้เลยครับ",
+      "at": 2.2
+     }
+    ]
+   }
+  ],
+  "needs_matte": false
+ },
+ "paper-explainer": {
+  "name": "Paper explainer",
+  "th": "ค้นหา + เผยคำตอบ",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "word",
+    "at": 0.8,
+    "to": 4.0,
+    "text": "หาคนที่ใช่",
+    "ink": "#222222"
+   }
+  ],
+  "needs_matte": false
+ },
+ "motion-light": {
+  "name": "Motion light",
+  "th": "ตัวอักษรขาวสว่าง",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "kinetic",
+    "at": 0.8,
+    "to": 6.4,
+    "text": "อย่ารีบ *build* มันขึ้นมาทีละนิด"
+   }
+  ],
+  "needs_matte": false
+ },
+ "boxed-ui": {
+  "name": "Boxed UI",
+  "th": "การ์ดกลางจอ",
+  "beats": [
+   {
+    "type": "scene",
+    "kind": "card",
+    "at": 0.8,
+    "to": 4.4,
+    "lines": [
+     {
+      "text": "จีบกันมาสองเดือน แล้วค่อยไป",
+      "at": 1.0,
+      "size": 64,
+      "color": "#777777"
+     }
+    ],
+    "pill": {
+     "text": "เดตแรก",
+     "at": 2.0
+    },
+    "cursor": {
+     "clickAt": 2.8
+    }
+   }
+  ],
+  "needs_matte": false
+ },
+ "board-face": {
+  "name": "Board + face",
+  "th": "หน้าบน กระดานล่าง",
+  "beats": [
+   {
+    "type": "broll",
+    "src": "assets/broll/board.mp4",
+    "at": 0.8,
+    "to": 5.6,
+    "mode": "panel"
+   },
+   {
+    "type": "impact",
+    "at": 6.2,
+    "to": 8.4,
+    "text": "คนที่รู้วิธี",
+    "role": "note"
+   }
+  ],
+  "needs_matte": false
+ }
+}

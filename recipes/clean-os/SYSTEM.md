@@ -132,7 +132,7 @@ the base blur-resolve.
    - **Budget:** at most 3 inserts per minute and <= 25 % full-screen B-roll. The rest are framed on the phone stage (a
      PiP window, a Photos card, a viewfinder) so the speaker's face stays on screen. Full screen is for the turn.
    - **Not for covers:** B-roll is NOT a cover tool here. Real look-aways are rare; small glances stay.
-   - 4K only (Pexels vertical/landscape ≥ 2160 short side; Mixkit only where 2160p is offered).
+   - 4K only (Pexels vertical/landscape ≥ 2160 short side).
 4. **Recurring motif + callback:** an image from act 1 returns in act 4 in the cold grade ("the whole day was busy"), and
    the reel ends on the resolution image (e.g. the finished table) holding ~1.4 s after the last word.
 5. **Music arc:** pick a track with a measurable build (2 s RMS curve), play its quiet part under act 1 and jump into

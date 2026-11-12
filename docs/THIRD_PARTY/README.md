@@ -15,7 +15,7 @@ Model weights are downloaded at setup into `~/.cache`, never committed.
 | workflow | [workflow.md](workflow.md) | own code; ideas only (OpenMontage is AGPL) |
 | fonts | [fonts.md](fonts.md) | 8 OFL families; Playfair Display (Reserved Font Name) ships unmodified |
 | models | [models.md](models.md) | MediaPipe Face Landmarker bundled (Apache-2.0); YuNet (MIT) and SFace (Apache-2.0) downloaded |
-| sound effects + music | [audio.md](audio.md) | Mixkit, downloaded on your machine, never shipped; their licence limits |
+| sound effects + music | [audio.md](audio.md) | TadClip's own synthesized sounds + CC0 recordings (in the repo) and CC0 FreePD music (downloaded, checksummed) |
 | runtime tools + services | [runtime.md](runtime.md) | HyperFrames, GSAP, whisper, Gemini, ElevenLabs, macOS Vision |
 | Seoul list recipe | `recipes/seoul-list/` | own code; Inter Tight + Playfair Display woff2 (SIL OFL 1.1, `templates/fonts/LICENSE-*.txt`; Playfair ships unmodified, see [fonts.md](fonts.md)); Fluent emoji (MIT); `send-swoosh` = Mixkit #166 (Mixkit free SFX licence); no brand logos or the reference's cartoon gloves are bundled |
 

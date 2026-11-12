@@ -1,0 +1,14 @@
+{
+  "_about": "A documentary grade on the speaker (cool shadows, warm skin, grain, vignette), serif italic words stacked one by one.",
+  "extends": "cinematic",
+  "brand": {
+    "font": "Taviraj"
+  },
+  "impact": {
+    "look": "seoul"
+  },
+  "music": {
+    "id": "silent-descent",
+    "db": -19
+  }
+}

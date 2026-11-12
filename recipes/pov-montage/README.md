@@ -27,8 +27,8 @@ First made for a first-person scooter ride across a city (smart-glasses footage,
 6. **Music** (life-is-a-dream for a sunny ride) with `music.duck` windows on every spoken line.
 
 **Public edition note:** the reaction meme and the record-scratch sound in step 5 come from a private meme kit that is not
-redistributed. Add your own clip with `scripts/meme_add.py` (only media you have the rights to) and use a Mixkit sound such as
-`impact-1` or `whoosh-cine` for the freeze. The worked example does that: `impact-1` on the freeze and a Mixkit reaction sound
+redistributed. Add your own clip with `scripts/meme_add.py` (only media you have the rights to) and use a library sound such as
+`impact-1` or `whoosh-cine` for the freeze. The worked example does that: `impact-1` on the freeze and a library reaction sound
 (`reaction-fail-trombone`) where the meme would go.
 
 ## Formats (worked example in example/: edl.json, assemble.py, gen_words.py, reel.json, script.txt)
@@ -66,7 +66,7 @@ $S/scripts/hf.sh render -o build/reel.mp4 && python3 $S/scripts/qa.py $P build/r
 
 ## Checks that caught real problems
 
-- Mixkit's San Francisco clips are 720p and personal-use only: rejected. Your own 4K frames make better B-roll.
+- 720p stock is rejected. Your own 4K frames make better B-roll.
 - The QA SFX stem used to include the music bed, so loud music read as loud effects (fixed in qa.py).
 - Two meme sounds 5 s apart break the 8 s guideline; keep both only when they are the joke, and say so.
 - The person cut-out (matte) is cached: after any re-cut delete it, or old cut-outs float over new footage.

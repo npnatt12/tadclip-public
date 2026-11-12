@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Rebuild the media the repo does not track (it keeps only manifests):
-music beds from library/music/manifest.json (each entry's Mixkit "url"),
-every SFX in sfx_fetch.KIT, every meme from its meta.json source + args, and the
+music beds from library/music/manifest.json (FreePD CC0 tracks: "url", else "mirror"/"mirror2", checked against "sha256"),
+the private build's rip SFX (sfx_fetch.KIT; TadClip's own and the CC0 sounds are committed), every meme from its meta.json source + args, and the
 animated Fluent emoji (library/emoji/set.json, MIT, via emoji_fetch.py).
 Existing files are kept.
 
     library_restore.py [--memes-only | --sfx-only | --music-only | --emoji-only] [--licensed-only]
 
---licensed-only is the public build: music + Mixkit SFX + Fluent emoji only, no
+--licensed-only is the public build: CC0 music + Fluent emoji only (the SFX are in git), no
 YouTube meme-sound rips and no meme clips. Film LUTs (library/luts) are generated,
 not downloaded: bash scripts/setup_looks.sh.
 """
@@ -20,6 +20,15 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LIB = os.path.join(HERE, "..", "library")
+
+
+def sha256(p):
+    import hashlib
+    h = hashlib.sha256()
+    with open(p, "rb") as f:
+        for b in iter(lambda: f.read(1 << 20), b""):
+            h.update(b)
+    return h.hexdigest()
 
 
 def main():
@@ -47,24 +56,28 @@ def main():
             dst = os.path.join(LIB, "music", m["file"])
             if os.path.exists(dst):
                 continue
-            url = m.get("url") or next(iter(re.findall(r"https://assets\.mixkit\.co/\S+\.mp3", m.get("source", ""))), None)
-            if not url:
+            urls = [u for u in (m.get("url"), m.get("mirror"), m.get("mirror2")) if u]
+            if not urls:
                 print(f"FAIL music {mid}: no download url in the manifest")
                 bad += 1
                 continue
-            r = subprocess.run(["curl", "-sfL", "--retry", "5", "--retry-all-errors", "--retry-delay", "3", "-A", "Mozilla/5.0", "-o", dst, url])
-            ok = r.returncode == 0 and os.path.exists(dst) and os.path.getsize(dst) > 100_000
-            if not ok and os.path.exists(dst):
-                os.remove(dst)  # never leave an error page posing as an mp3
+            ok = False
+            for url in urls:   # our own release, then archive.org's FreePD copy, then the archived freepd.com file
+                r = subprocess.run(["curl", "-sfL", "--retry", "3", "--retry-all-errors", "--retry-delay", "3", "-A", "Mozilla/5.0", "-o", dst, url])
+                ok = r.returncode == 0 and os.path.exists(dst) and (not m.get("sha256") or sha256(dst) == m["sha256"])
+                if ok:
+                    break
+                if os.path.exists(dst):
+                    os.remove(dst)  # never keep an error page or a changed file posing as the track
             print(("ok   " if ok else "FAIL ") + "music " + mid)
             bad += not ok
     if a.music_only:
         sys.exit(1 if bad else 0)
     if not a.memes_only:
-        # no --force: entries whose wav exists are kept; missing ones are fetched,
-        # Mixkit ones by the id pinned in the manifest
-        cmd = [sys.executable, os.path.join(HERE, "sfx_fetch.py")] + (["--licensed-only"] if a.licensed_only else [])
-        bad += subprocess.run(cmd).returncode != 0
+        if a.licensed_only:
+            print("ok   sfx (TadClip's own + CC0, in git: nothing to download)")
+        else:   # the private build's rips
+            bad += subprocess.run([sys.executable, os.path.join(HERE, "sfx_fetch.py")]).returncode != 0
     if a.licensed_only:
         print("skip memes (--licensed-only: meme clips are unlicensed rips)")
     elif not a.sfx_only:

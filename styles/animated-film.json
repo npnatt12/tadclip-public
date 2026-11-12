@@ -1,0 +1,32 @@
+{
+  "_about": "Saturated, painterly stills like an animated film's backgrounds, a slow camera drift, warm serif subtitles low on screen.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#FFE9A8",
+    "accentDark": "#E0C068",
+    "ink": "#2A1E10",
+    "font": "Pridi"
+  },
+  "captions": {
+    "style": "mini",
+    "font": "Pridi",
+    "size": 48,
+    "weight": 600,
+    "stroke": 3,
+    "group": 3,
+    "y": 1500
+  },
+  "music": {
+    "id": "vastness",
+    "db": -18
+  },
+  "look": {
+    "grade": "saturate(1.3) contrast(1.08)",
+    "vignette": 0.35
+  },
+  "scenes": {
+    "image": {
+      "grade": "saturate(1.6) contrast(1.15) sepia(0.2)"
+    }
+  }
+}

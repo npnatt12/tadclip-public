@@ -1,6 +1,6 @@
 {
   "whoosh-1": {
-    "file": "whoosh-1.wav",
+    "file": "own-whoosh-1.wav",
     "role": "whoosh",
     "tags": [
       "zoom",
@@ -9,13 +9,13 @@
     ],
     "duration": 0.9,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/whoosh/ #2350 Magic sparkle whoosh",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: airy noise sweep, left to right",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2350"
+    "synth": true
   },
   "whoosh-2": {
-    "file": "whoosh-2.wav",
+    "file": "own-whoosh-2.wav",
     "role": "whoosh",
     "tags": [
       "zoom",
@@ -24,13 +24,13 @@
     ],
     "duration": 0.9,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/whoosh/ #1492 Cinematic whoosh fast transition",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: deep cinematic sweep with a low tone",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1492"
+    "synth": true
   },
   "whoosh-3": {
-    "file": "whoosh-3.wav",
+    "file": "own-whoosh-3.wav",
     "role": "whoosh",
     "tags": [
       "zoom",
@@ -39,13 +39,13 @@
     ],
     "duration": 0.9,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/whoosh/ #1714 Fast rocket whoosh",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: fast sweep, quick attack",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1714"
+    "synth": true
   },
   "whoosh-cine": {
-    "file": "whoosh-cine.wav",
+    "file": "own-whoosh-cine.wav",
     "role": "whoosh",
     "tags": [
       "text-slam",
@@ -53,28 +53,28 @@
     ],
     "duration": 0.313,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/whoosh/ #1491 Arrow whoosh",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: short arrow pass",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1491"
+    "synth": true
   },
   "pop-1": {
-    "file": "pop-1.wav",
+    "file": "own-pop-1.wav",
     "role": "ui",
     "tags": [
       "chip",
       "emoji",
       "list-item"
     ],
-    "duration": 0.219,
+    "duration": 0.2,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/pop/ #2925 Soap bubble sound",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: bubble pop",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2925"
+    "synth": true
   },
   "pop-3": {
-    "file": "pop-3.wav",
+    "file": "own-pop-3.wav",
     "role": "ui",
     "tags": [
       "chip",
@@ -83,13 +83,13 @@
     ],
     "duration": 0.14,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/pop/ #2364 Hard pop click",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: hard pop click",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2364"
+    "synth": true
   },
   "click-1": {
-    "file": "click-1.wav",
+    "file": "own-click-1.wav",
     "role": "ui",
     "tags": [
       "ui",
@@ -97,26 +97,26 @@
     ],
     "duration": 0.25,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/click/ #900 Sci fi click",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: soft UI click",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "900"
+    "synth": true
   },
   "tick-1": {
-    "file": "tick-1.wav",
+    "file": "own-tick-1.wav",
     "role": "ui",
     "tags": [
       "typing"
     ],
     "duration": 0.2,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/typing/ #2531 Typing on a laptop keyboard",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: single key tick",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2531"
+    "synth": true
   },
   "typing-1": {
-    "file": "typing-1.wav",
+    "file": "own-typing-1.wav",
     "role": "ui",
     "tags": [
       "typing",
@@ -124,13 +124,13 @@
     ],
     "duration": 2.5,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/typing/ #2532 Slow typing on a keyboard",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: slow typing",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2532"
+    "synth": true
   },
   "impact-1": {
-    "file": "impact-1.wav",
+    "file": "own-impact-1.wav",
     "role": "impact",
     "tags": [
       "text-slam",
@@ -139,13 +139,13 @@
     ],
     "duration": 1.6,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/impact/ #2908 Movie trailer epic impact",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: trailer boom with a tail",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2908"
+    "synth": true
   },
   "impact-2": {
-    "file": "impact-2.wav",
+    "file": "own-impact-2.wav",
     "role": "impact",
     "tags": [
       "text-slam",
@@ -154,26 +154,26 @@
     ],
     "duration": 1.2,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/impact/ #788 Big cinematic impact",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: big hit, brighter",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "788"
+    "synth": true
   },
   "riser-1": {
-    "file": "riser-1.wav",
+    "file": "own-riser-1.wav",
     "role": "whoosh",
     "tags": [
       "build-up"
     ],
     "duration": 1.705,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/cinematic/ #790 Cinematic trailer riser",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: noise and saw riser",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "790"
+    "synth": true
   },
   "ding-1": {
-    "file": "ding-1.wav",
+    "file": "own-ding-1.wav",
     "role": "ui",
     "tags": [
       "win",
@@ -181,13 +181,13 @@
     ],
     "duration": 0.885,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/notification/ #2870 Correct answer tone",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: bell ding",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2870"
+    "synth": true
   },
   "buzzer-1": {
-    "file": "buzzer-1.wav",
+    "file": "own-buzzer-1.wav",
     "role": "meme",
     "tags": [
       "wrong",
@@ -196,13 +196,13 @@
     ],
     "duration": 1.2,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/game-show/ #948 Wrong answer bass buzzer",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: game-show wrong buzzer",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "948"
+    "synth": true
   },
   "kaching-1": {
-    "file": "kaching-1.wav",
+    "file": "own-kaching-1.wav",
     "role": "impact",
     "tags": [
       "money",
@@ -211,13 +211,13 @@
     ],
     "duration": 0.726,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/cash/ #1993 Clinking coins",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: register click, bell and coins",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1993"
+    "synth": true
   },
   "shutter-1": {
-    "file": "shutter-1.wav",
+    "file": "own-shutter-1.wav",
     "role": "ui",
     "tags": [
       "screenshot",
@@ -226,28 +226,28 @@
     ],
     "duration": 0.444,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/camera/ #1430 Camera shutter hard click",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: camera shutter",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1430"
+    "synth": true
   },
   "pop-2": {
-    "file": "pop-2.wav",
+    "file": "own-pop-2.wav",
     "role": "ui",
     "tags": [
       "chip",
       "emoji",
       "list-item"
     ],
-    "duration": 0.049,
+    "duration": 0.05,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/pop/ #2354 Message pop alert",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: tiny message pop",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2354"
+    "synth": true
   },
   "reaction-boing": {
-    "file": "reaction-boing.wav",
+    "file": "own-reaction-boing.wav",
     "role": "meme",
     "tags": [
       "absurd",
@@ -256,13 +256,13 @@
     ],
     "duration": 0.487,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/cartoon/ #2894 Boing hit sound",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: spring boing",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2894"
+    "synth": true
   },
   "reaction-rimshot": {
-    "file": "reaction-rimshot.wav",
+    "file": "own-reaction-rimshot.wav",
     "role": "meme",
     "tags": [
       "punchline",
@@ -270,13 +270,13 @@
     ],
     "duration": 1.841,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/drum/ #579 Drum joke accent",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: ba-dum-tss",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "579"
+    "synth": true
   },
   "reaction-fail-trombone": {
-    "file": "reaction-fail-trombone.wav",
+    "file": "own-reaction-fail-trombone.wav",
     "role": "meme",
     "tags": [
       "fail",
@@ -285,13 +285,13 @@
     ],
     "duration": 3.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/funny/ #471 Sad game over trombone",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: wah wah wah waaah",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "471"
+    "synth": true
   },
   "reaction-drum-roll": {
-    "file": "reaction-drum-roll.wav",
+    "file": "own-reaction-drum-roll.wav",
     "role": "meme",
     "tags": [
       "build-up",
@@ -300,13 +300,13 @@
     ],
     "duration": 3.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/drum/ #566 Drum Roll",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: snare roll to a hit",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "566"
+    "synth": true
   },
   "reaction-crowd-laugh": {
-    "file": "reaction-crowd-laugh.wav",
+    "file": "cc0-reaction-crowd-laugh.wav",
     "role": "meme",
     "tags": [
       "punchline",
@@ -315,28 +315,40 @@
     ],
     "duration": 3.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/crowd/ #424 Crowd laugh",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "https://freesound.org/people/Nox_Sound/sounds/752711/ \"Voice_Crowd_Small_Expression_Laugh_Stereo\" by Nox_Sound (HQ preview, cdn.freesound.org/previews)",
+    "licence": "CC0 1.0 public domain (Freesound; commercial OK, no credit, redistribution OK)",
+    "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
     "licensed": true,
-    "mixkit_id": "424"
+    "freesound_id": "752711",
+    "what": "small crowd laughing (Sony PCM-D100 field recording)",
+    "edit": "silence trimmed, max 3.0 s, 0.5 s fade-out, 48 kHz stereo, peak -1 dBFS",
+    "added": "2026-11-11",
+    "pack": "cc0",
+    "licence_checked": "2026-10-29 (sound page shows Creative Commons 0; uploader's own recording or synth)"
   },
   "reaction-crowd-boo": {
-    "file": "reaction-crowd-boo.wav",
+    "file": "cc0-reaction-crowd-boo.wav",
     "role": "meme",
     "tags": [
       "bad-take",
       "myth",
       "wrong"
     ],
-    "duration": 2.5,
+    "duration": 1.994,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/crowd/ #463 Crowd disappointment long boo",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "https://freesound.org/people/Nox_Sound/sounds/752707/ \"Voice_Crowd_Small_Expression_Boo_Stereo\" by Nox_Sound (HQ preview, cdn.freesound.org/previews)",
+    "licence": "CC0 1.0 public domain (Freesound; commercial OK, no credit, redistribution OK)",
+    "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
     "licensed": true,
-    "mixkit_id": "463"
+    "freesound_id": "752707",
+    "what": "small crowd booing (Sony PCM-D100 field recording)",
+    "edit": "silence trimmed, max 2.5 s, 0.4 s fade-out, 48 kHz stereo, peak -1 dBFS",
+    "added": "2026-11-11",
+    "pack": "cc0",
+    "licence_checked": "2026-10-29 (sound page shows Creative Commons 0; uploader's own recording or synth)"
   },
   "reaction-applause-short": {
-    "file": "reaction-applause-short.wav",
+    "file": "own-reaction-applause-short.wav",
     "role": "meme",
     "tags": [
       "win",
@@ -345,13 +357,13 @@
     ],
     "duration": 3.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/applause/ #475 Small group clapping",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: small group applause",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "475"
+    "synth": true
   },
   "reaction-tape-rewind": {
-    "file": "reaction-tape-rewind.wav",
+    "file": "own-reaction-tape-rewind.wav",
     "role": "meme",
     "tags": [
       "wait",
@@ -360,13 +372,13 @@
     ],
     "duration": 1.5,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/cinematic/ #1088 Tape rewind cinematic transition",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: tape rewind squeal",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1088"
+    "synth": true
   },
   "reaction-cartoon-pop": {
-    "file": "reaction-cartoon-pop.wav",
+    "file": "own-reaction-cartoon-pop.wav",
     "role": "meme",
     "tags": [
       "emoji",
@@ -375,13 +387,13 @@
     ],
     "duration": 0.6,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/cartoon/ #729 Cartoon bubbles pop",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: pop with a sparkle",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "729"
+    "synth": true
   },
   "reaction-slide-whistle": {
-    "file": "reaction-slide-whistle.wav",
+    "file": "own-reaction-slide-whistle.wav",
     "role": "meme",
     "tags": [
       "fail",
@@ -390,28 +402,34 @@
     ],
     "duration": 2.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/cartoon/ #395 Cartoon falling whistle",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: slide whistle down",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "395"
+    "synth": true
   },
   "reaction-gasp": {
-    "file": "reaction-gasp.wav",
+    "file": "cc0-reaction-gasp.wav",
     "role": "meme",
     "tags": [
       "shock",
       "disbelief",
       "claim"
     ],
-    "duration": 0.623,
+    "duration": 1.56,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/gasp/ #966 Male astonished gasp",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "https://freesound.org/people/RadioCounseling/sounds/635110/ \"Crowd gasp.wav\" by RadioCounseling (HQ preview, cdn.freesound.org/previews)",
+    "licence": "CC0 1.0 public domain (Freesound; commercial OK, no credit, redistribution OK)",
+    "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
     "licensed": true,
-    "mixkit_id": "966"
+    "freesound_id": "635110",
+    "what": "14 voices gasping, all the uploader's own",
+    "edit": "silence trimmed, max 1.6 s, 0.2 s fade-out, 48 kHz stereo, peak -1 dBFS",
+    "added": "2026-11-11",
+    "pack": "cc0",
+    "licence_checked": "2026-10-29 (sound page shows Creative Commons 0; uploader's own recording or synth)"
   },
   "reaction-ding-ding": {
-    "file": "reaction-ding-ding.wav",
+    "file": "own-reaction-ding-ding.wav",
     "role": "meme",
     "tags": [
       "correct",
@@ -420,13 +438,13 @@
     ],
     "duration": 0.875,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/bell/ #588 Service bell double ding",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: service bell, twice",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "588"
+    "synth": true
   },
   "cinematic-deep-boom": {
-    "file": "cinematic-deep-boom.wav",
+    "file": "own-cinematic-deep-boom.wav",
     "role": "impact",
     "tags": [
       "text-slam",
@@ -435,13 +453,13 @@
     ],
     "duration": 2.5,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/drum/ #553 Blockbuster trailer bass drum",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: deep boom, long tail",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "553"
+    "synth": true
   },
   "cinematic-rumble-riser": {
-    "file": "cinematic-rumble-riser.wav",
+    "file": "own-cinematic-rumble-riser.wav",
     "role": "whoosh",
     "tags": [
       "build-up",
@@ -449,13 +467,13 @@
     ],
     "duration": 3.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/riser/ #632 Cinematic drama riser",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: low rumble rising",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "632"
+    "synth": true
   },
   "cinematic-drone-swell": {
-    "file": "cinematic-drone-swell.wav",
+    "file": "own-cinematic-drone-swell.wav",
     "role": "whoosh",
     "tags": [
       "tension",
@@ -464,13 +482,13 @@
     ],
     "duration": 4.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/cinematic/ #678 Trailer cinematic suspense swell",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: detuned drone that opens and swells",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "678"
+    "synth": true
   },
   "cinematic-heartbeat": {
-    "file": "cinematic-heartbeat.wav",
+    "file": "own-cinematic-heartbeat.wav",
     "role": "impact",
     "tags": [
       "tension",
@@ -479,13 +497,13 @@
     ],
     "duration": 0.455,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/boom/ #490 Human single heart beat",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: one heartbeat (lub-dub)",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "490"
+    "synth": true
   },
   "cinematic-film-flash": {
-    "file": "cinematic-film-flash.wav",
+    "file": "own-cinematic-film-flash.wav",
     "role": "whoosh",
     "tags": [
       "flash",
@@ -494,13 +512,13 @@
     ],
     "duration": 1.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/impact/ #3131 Short impact static",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: reverse swell into a short hit",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "3131"
+    "synth": true
   },
   "tech-glitch-1": {
-    "file": "tech-glitch-1.wav",
+    "file": "own-tech-glitch-1.wav",
     "role": "ui",
     "tags": [
       "glitch",
@@ -509,13 +527,13 @@
     ],
     "duration": 0.688,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/glitch/ #1031 Glitch short",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: digital stutter",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1031"
+    "synth": true
   },
   "tech-glitch-2": {
-    "file": "tech-glitch-2.wav",
+    "file": "own-tech-glitch-2.wav",
     "role": "whoosh",
     "tags": [
       "glitch",
@@ -523,13 +541,13 @@
     ],
     "duration": 0.585,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/glitch/ #2951 Digital glitch break",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: glitch that sweeps up",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2951"
+    "synth": true
   },
   "tech-digital-whoosh": {
-    "file": "tech-digital-whoosh.wav",
+    "file": "own-tech-digital-whoosh.wav",
     "role": "whoosh",
     "tags": [
       "zoom",
@@ -538,13 +556,13 @@
     ],
     "duration": 1.2,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/whoosh/ #2596 Electric whoosh",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: bit-crushed sweep with a saw",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2596"
+    "synth": true
   },
   "tech-ui-confirm": {
-    "file": "tech-ui-confirm.wav",
+    "file": "own-tech-ui-confirm.wav",
     "role": "ui",
     "tags": [
       "check",
@@ -553,13 +571,13 @@
     ],
     "duration": 1.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/notification/ #2865 Success software tone",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: two-note confirm chime",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2865"
+    "synth": true
   },
   "tech-ui-error": {
-    "file": "tech-ui-error.wav",
+    "file": "own-tech-ui-error.wav",
     "role": "ui",
     "tags": [
       "wrong",
@@ -568,13 +586,13 @@
     ],
     "duration": 0.358,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/interface/ #1110 Click error",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: two falling square blips",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1110"
+    "synth": true
   },
   "tech-keyboard-burst": {
-    "file": "tech-keyboard-burst.wav",
+    "file": "own-tech-keyboard-burst.wav",
     "role": "ui",
     "tags": [
       "typing",
@@ -583,13 +601,13 @@
     ],
     "duration": 2.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/typing/ #1387 Fast keyboard typing",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: fast keyboard burst",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1387"
+    "synth": true
   },
   "tech-notification-2": {
-    "file": "tech-notification-2.wav",
+    "file": "own-tech-notification-2.wav",
     "role": "ui",
     "tags": [
       "notification",
@@ -598,13 +616,13 @@
     ],
     "duration": 0.405,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/technology/ #2519 High tech notification bleep",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: high double blip",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2519"
+    "synth": true
   },
   "tech-camera-flash": {
-    "file": "tech-camera-flash.wav",
+    "file": "own-tech-camera-flash.wav",
     "role": "ui",
     "tags": [
       "screenshot",
@@ -613,13 +631,13 @@
     ],
     "duration": 0.347,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/camera/ #1432 Camera digital shutter",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: shutter with a flash whine",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "1432"
+    "synth": true
   },
   "cinematic-cine-hit": {
-    "file": "cinematic-cine-hit.wav",
+    "file": "own-cinematic-cine-hit.wav",
     "role": "impact",
     "tags": [
       "title",
@@ -628,13 +646,13 @@
     ],
     "duration": 2.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/impact/ #2901 Epic movie impact",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: layered metallic trailer hit",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2901"
+    "synth": true
   },
   "wood-saw": {
-    "file": "wood-saw.wav",
+    "file": "own-wood-saw.wav",
     "role": "foley",
     "tags": [
       "craft",
@@ -643,13 +661,13 @@
     ],
     "duration": 1.2,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/wood/ #827 Hand saw tool on wood",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: hand saw strokes",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "827"
+    "synth": true
   },
   "wood-hit": {
-    "file": "wood-hit.wav",
+    "file": "own-wood-hit.wav",
     "role": "impact",
     "tags": [
       "craft",
@@ -659,13 +677,13 @@
     ],
     "duration": 0.235,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/wood/ #2182 Wood hard hit",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: wood knock",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2182"
+    "synth": true
   },
   "wood-ambience": {
-    "file": "wood-ambience.wav",
+    "file": "own-wood-ambience.wav",
     "role": "ambience",
     "tags": [
       "craft",
@@ -674,13 +692,13 @@
     ],
     "duration": 14.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/wood/ #797 Wooden construction assembly ambience",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: workshop room tone, a few knocks",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "797"
+    "synth": true
   },
   "wood-sanding": {
-    "file": "wood-sanding.wav",
+    "file": "own-wood-sanding.wav",
     "role": "foley",
     "tags": [
       "craft",
@@ -689,13 +707,13 @@
     ],
     "duration": 4.0,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/wood/ #850 Wood polishing electrical tool",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: sanding strokes",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "850"
+    "synth": true
   },
   "marker-scribble": {
-    "file": "marker-scribble.wav",
+    "file": "own-marker-scribble.wav",
     "role": "foley",
     "tags": [
       "whiteboard",
@@ -705,13 +723,13 @@
     ],
     "duration": 0.543,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/paper/ #2369 Writing scribble on paper",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: felt marker strokes",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "2369"
+    "synth": true
   },
   "pencil-write": {
-    "file": "pencil-write.wav",
+    "file": "own-pencil-write.wav",
     "role": "foley",
     "tags": [
       "whiteboard",
@@ -720,13 +738,13 @@
     ],
     "duration": 1.866,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/paper/ #3194 Writing pencil",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: pencil on paper",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "3194"
+    "synth": true
   },
   "send-swoosh": {
-    "file": "send-swoosh.wav",
+    "file": "own-send-swoosh.wav",
     "role": "ui",
     "tags": [
       "send",
@@ -736,10 +754,10 @@
     ],
     "duration": 0.639,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/transition/ #166 Fast small sweep transition",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: bright upward swoosh",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "166"
+    "synth": true
   },
   "paper-flip": {
     "file": "cc0-paper-flip.wav",
@@ -848,7 +866,7 @@
     "pack": "cc0"
   },
   "alarm-bell": {
-    "file": "alarm-bell.wav",
+    "file": "own-alarm-bell.wav",
     "role": "foley",
     "tags": [
       "alarm",
@@ -858,10 +876,10 @@
     ],
     "duration": 3.5,
     "peak_db": -1.0,
-    "source": "https://mixkit.co/free-sound-effects/alarm/ #995 Classic alarm",
-    "licence": "Mixkit Free SFX licence (commercial OK, no redistribution as-is)",
+    "source": "scripts/sfx_synth.py: twin-bell alarm clock",
+    "licence": "TadClip original: synthesized by scripts/sfx_synth.py, CC0 1.0 (no recording, no third-party source)",
     "licensed": true,
-    "mixkit_id": "995"
+    "synth": true
   },
   "deep-boom": {
     "file": "cc0-deep-boom.wav",

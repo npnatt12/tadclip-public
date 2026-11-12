@@ -1,42 +1,56 @@
 {
   "deep-techno-ambience": {
     "file": "deep-techno-ambience.mp3",
+    "title": "Arpent",
+    "composer": "Kevin MacLeod",
     "mood": [
       "tense",
       "tech",
       "ambient",
       "minimal"
     ],
-    "source": "https://mixkit.co/free-stock-music/techno/ #134 Deep Techno Ambience, Alejandro Maga\u00f1a (A. M.)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/134/134.mp3",
     "styles": [
       "editorial"
     ],
-    "lufs_i": -7.3,
-    "duration": 122.5
+    "source": "FreePD.com, electronic page (archived 2024-05-28 and later on web.archive.org): \"Arpent\" by Kevin MacLeod",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/deep-techno-ambience.mp3",
+    "mirror": "https://archive.org/download/freepd/electronic/Arpent.mp3",
+    "sha256": "ef06d8b524c196a31954dfb1f3261e7d37459e43f4afd9df31ee2965c6094a56",
+    "lufs_i": -13.5,
+    "duration": 162.1,
+    "replaces": "https://mixkit.co/free-stock-music/techno/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Arpent.mp3"
   },
   "cyberpunk-city": {
     "file": "cyberpunk-city.mp3",
+    "title": "3 am West End",
+    "composer": "statusq",
     "mood": [
       "tech",
       "night",
       "driving",
       "electronic"
     ],
-    "source": "https://mixkit.co/free-stock-music/ambient/ #140 Cyberpunk City, Alejandro Maga\u00f1a (A. M.)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/140/140.mp3",
     "styles": [
       "editorial",
       "launch",
       "product-launch"
     ],
-    "lufs_i": -10.8,
-    "duration": 99.7
+    "source": "FreePD.com, electronic page (archived 2024-05-28 and later on web.archive.org): \"3 am West End\" by statusq",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/cyberpunk-city.mp3",
+    "mirror": "https://archive.org/download/freepd/electronic/3%20am%20West%20End.mp3",
+    "sha256": "590bb9833cfb0d6610a6ac00093f9b3d062d604863d6e44bdac61d526d33cab8",
+    "lufs_i": -19.6,
+    "duration": 291.1,
+    "replaces": "https://mixkit.co/free-stock-music/ambient/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/3%20am%20West%20End.mp3"
   },
   "lo-fi-02": {
     "file": "lo-fi-02.mp3",
+    "title": "Meditating Beat",
+    "composer": "Kevin MacLeod",
     "mood": [
       "chill",
       "lo-fi",
@@ -46,14 +60,20 @@
     "styles": [
       "clean"
     ],
-    "source": "https://mixkit.co/free-stock-music/quirky/ #764 Lo-Fi 02, Lily J (Chillout)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/764/764.mp3",
-    "lufs_i": -11.2,
-    "duration": 98.2
+    "source": "FreePD.com, electronic page (archived 2024-05-28 and later on web.archive.org): \"Meditating Beat\" by Kevin MacLeod",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/lo-fi-02.mp3",
+    "mirror": "https://archive.org/download/freepd/electronic/Meditating%20Beat.mp3",
+    "sha256": "e498c2015a413e6cba5ab8dbef2a60cdebf7c4d4a97f9edd84851752ff49d3b6",
+    "lufs_i": -17.6,
+    "duration": 157.2,
+    "replaces": "https://mixkit.co/free-stock-music/quirky/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Meditating%20Beat.mp3"
   },
   "digital-clouds": {
     "file": "digital-clouds.mp3",
+    "title": "Screen Saver",
+    "composer": "Kevin MacLeod",
     "mood": [
       "chill",
       "soft",
@@ -63,14 +83,20 @@
     "styles": [
       "clean"
     ],
-    "source": "https://mixkit.co/free-stock-music/electronic/ #175 Digital Clouds, Alejandro Maga\u00f1a (A. M.) (Chillout)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/175/175.mp3",
-    "lufs_i": -13.1,
-    "duration": 101.0
+    "source": "FreePD.com, upbeat page (archived 2024-05-28 and later on web.archive.org): \"Screen Saver\" by Kevin MacLeod",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/digital-clouds.mp3",
+    "mirror": "https://archive.org/download/freepd/upbeat/Screen%20Saver.mp3",
+    "sha256": "b37bded5c858af6220ed513fdd0d6bba476d71c3a2aacc9746433f51354d33f7",
+    "lufs_i": -17.6,
+    "duration": 182.1,
+    "replaces": "https://mixkit.co/free-stock-music/electronic/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Screen%20Saver.mp3"
   },
   "comical": {
     "file": "comical.mp3",
+    "title": "Going Bananas",
+    "composer": "Bryan Teoh",
     "mood": [
       "quirky",
       "fun",
@@ -80,14 +106,20 @@
     "styles": [
       "meme"
     ],
-    "source": "https://mixkit.co/free-stock-music/quirky/ #2 Comical, Ahjay Stelino (Children)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/2/2.mp3",
-    "lufs_i": -11.3,
-    "duration": 114.4
+    "source": "FreePD.com, comedy page (archived 2024-05-28 and later on web.archive.org): \"Going Bananas\" by Bryan Teoh",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/comical.mp3",
+    "mirror": "https://archive.org/download/freepd/comedy/Going%20Bananas.mp3",
+    "sha256": "7bc328be13de6d0c275f5344529c14aff6f5bde3d1fb1e9f64503343e1fdaeb0",
+    "lufs_i": -9.2,
+    "duration": 140.6,
+    "replaces": "https://mixkit.co/free-stock-music/quirky/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Going%20Bananas.mp3"
   },
   "keeping-fit": {
     "file": "keeping-fit.mp3",
+    "title": "Bit Bit Loop",
+    "composer": "Kevin MacLeod",
     "mood": [
       "quirky",
       "chiptune",
@@ -97,14 +129,20 @@
     "styles": [
       "meme"
     ],
-    "source": "https://mixkit.co/free-stock-music/quirky/ #82 Keeping Fit, Ahjay Stelino (Chiptune)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/82/82.mp3",
-    "lufs_i": -11.6,
-    "duration": 98.8
+    "source": "FreePD.com, electronic page (archived 2024-05-28 and later on web.archive.org): \"Bit Bit Loop\" by Kevin MacLeod",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/keeping-fit.mp3",
+    "mirror": "https://archive.org/download/freepd/electronic/Bit%20Bit%20Loop.mp3",
+    "sha256": "9316e9f2a0180411f1ee2cbb79c8d3352fef1088a9e35fd05ba0ba4c4e1f6869",
+    "lufs_i": -5.8,
+    "duration": 76.9,
+    "replaces": "https://mixkit.co/free-stock-music/quirky/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Bit%20Bit%20Loop.mp3"
   },
   "silent-descent": {
     "file": "silent-descent.mp3",
+    "title": "Nostalgic Piano",
+    "composer": "FreePD.com contributor",
     "mood": [
       "piano",
       "cinematic",
@@ -115,14 +153,20 @@
       "cinematic",
       "cinematic-doc"
     ],
-    "source": "https://mixkit.co/free-stock-music/tag/cinematic/ #614 Silent Descent, Eugenio Mininni (Film Score)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/614/614.mp3",
-    "lufs_i": -13.3,
-    "duration": 160.4
+    "source": "FreePD.com, romantic page (archived 2024-05-28 and later on web.archive.org): \"Nostalgic Piano\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/silent-descent.mp3",
+    "mirror": "https://archive.org/download/freepd/romantic/Nostalgic%20Piano.mp3",
+    "sha256": "5d932737a07dc1f0fadc713d188a059964bc156371e1569f5a6267dc39547865",
+    "lufs_i": -21.7,
+    "duration": 196.3,
+    "replaces": "https://mixkit.co/free-stock-music/tag/cinematic/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Nostalgic%20Piano.mp3"
   },
   "vastness": {
     "file": "vastness.mp3",
+    "title": "Lonely Mountain",
+    "composer": "FreePD.com contributor",
     "mood": [
       "ambient",
       "cinematic",
@@ -133,14 +177,20 @@
       "cinematic",
       "cinematic-doc"
     ],
-    "source": "https://mixkit.co/free-stock-music/ambient/ #184 Vastness, Andrew Ev (Ambient)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/184/184.mp3",
-    "lufs_i": -13.5,
-    "duration": 229.8
+    "source": "FreePD.com, epic page (archived 2024-05-28 and later on web.archive.org): \"Lonely Mountain\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/vastness.mp3",
+    "mirror": "https://archive.org/download/freepd/epic/Lonely%20Mountain.mp3",
+    "sha256": "244917570f96506dd103bb34ab3b26c01ac007f1ba5b04f38e7c2493b41d060b",
+    "lufs_i": -15.1,
+    "duration": 190.4,
+    "replaces": "https://mixkit.co/free-stock-music/ambient/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Lonely%20Mountain.mp3"
   },
   "infinity": {
     "file": "infinity.mp3",
+    "title": "Inspiration",
+    "composer": "FreePD.com contributor",
     "mood": [
       "upbeat",
       "tech",
@@ -151,14 +201,20 @@
       "launch",
       "product-launch"
     ],
-    "source": "https://mixkit.co/free-stock-music/electronic/ #440 Infinity, Arulo (Corporate Music)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/440/440.mp3",
-    "lufs_i": -12.2,
-    "duration": 102.9
+    "source": "FreePD.com, upbeat page (archived 2024-05-28 and later on web.archive.org): \"Inspiration\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/infinity.mp3",
+    "mirror": "https://archive.org/download/freepd/upbeat/Inspiration.mp3",
+    "sha256": "a254227da398809c79a0c753073a3a92c7341672abc92bb0166b6326e126f0b4",
+    "lufs_i": -11.1,
+    "duration": 138.3,
+    "replaces": "https://mixkit.co/free-stock-music/electronic/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Inspiration.mp3"
   },
   "brainiac": {
     "file": "brainiac.mp3",
+    "title": "Driving Concern",
+    "composer": "Kevin MacLeod",
     "mood": [
       "tech",
       "electronic",
@@ -169,14 +225,20 @@
       "launch",
       "product-launch"
     ],
-    "source": "https://mixkit.co/free-stock-music/electronic/ #167 Brainiac, Alejandro Maga\u00f1a (A. M.) (Electronica)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/167/167.mp3",
-    "lufs_i": -10.6,
-    "duration": 106.4
+    "source": "FreePD.com, scoring page (archived 2024-05-28 and later on web.archive.org): \"Driving Concern\" by Kevin MacLeod",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/brainiac.mp3",
+    "mirror": "https://archive.org/download/freepd/scoring/Driving%20Concern.mp3",
+    "sha256": "35407f04ab4e982883a62b5bf559cace11404d979e3ebe59e404aef4e988832f",
+    "lufs_i": -14.3,
+    "duration": 200.4,
+    "replaces": "https://mixkit.co/free-stock-music/electronic/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Driving%20Concern.mp3"
   },
   "vocal-percussions": {
     "file": "vocal-percussions.mp3",
+    "title": "Beat One",
+    "composer": "Kevin MacLeod",
     "mood": [
       "percussive",
       "minimal",
@@ -187,14 +249,20 @@
       "kinetic",
       "kinetic-type"
     ],
-    "source": "https://mixkit.co/free-stock-music/quirky/ #527 Vocal Percussions, Diego Nava (Rhythmic Underscore)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/527/527.mp3",
-    "lufs_i": -13.8,
-    "duration": 104.8
+    "source": "FreePD.com, electronic page (archived 2024-05-28 and later on web.archive.org): \"Beat One\" by Kevin MacLeod",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/vocal-percussions.mp3",
+    "mirror": "https://archive.org/download/freepd/electronic/Beat%20One.mp3",
+    "sha256": "930dd4c6c88a2abb153f52e56a7c74bd041008f5afa4835602469dba3676aed8",
+    "lufs_i": -14.8,
+    "duration": 180.1,
+    "replaces": "https://mixkit.co/free-stock-music/quirky/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Beat%20One.mp3"
   },
   "happy-times": {
     "file": "happy-times.mp3",
+    "title": "Funshine",
+    "composer": "Kevin MacLeod",
     "mood": [
       "upbeat",
       "pop",
@@ -205,14 +273,20 @@
       "pop",
       "pop-magazine"
     ],
-    "source": "https://mixkit.co/free-stock-music/pop/ #158 Happy Times, Alejandro Maga\u00f1a (A. M.) (Pop)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/158/158.mp3",
-    "lufs_i": -9.7,
-    "duration": 100.1
+    "source": "FreePD.com, upbeat page (archived 2024-05-28 and later on web.archive.org): \"Funshine\" by Kevin MacLeod",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/happy-times.mp3",
+    "mirror": "https://archive.org/download/freepd/upbeat/Funshine.mp3",
+    "sha256": "b98b226927367a977377fe4f75d1cf59e4366ca2f444c2c7d23d13e7f506f532",
+    "lufs_i": -10.8,
+    "duration": 165.1,
+    "replaces": "https://mixkit.co/free-stock-music/pop/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Funshine.mp3"
   },
   "life-is-a-dream": {
     "file": "life-is-a-dream.mp3",
+    "title": "Groovin",
+    "composer": "Brian Boyko",
     "mood": [
       "upbeat",
       "disco",
@@ -223,123 +297,217 @@
       "pop",
       "pop-magazine"
     ],
-    "source": "https://mixkit.co/free-stock-music/pop/ #837 Life is a Dream, Michael Ramir C. (Disco)",
-    "licence": "Mixkit Free Music licence (commercial OK, no attribution)",
-    "url": "https://assets.mixkit.co/music/837/837.mp3",
-    "lufs_i": -11.6,
-    "duration": 99.1
+    "source": "FreePD.com, misc page (archived 2024-05-28 and later on web.archive.org): \"Groovin\" by Brian Boyko",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/life-is-a-dream.mp3",
+    "mirror": "https://archive.org/download/freepd/misc/Groovin.mp3",
+    "sha256": "d96d17e3646175c6f2be0ffdbf57b928f8c020660f4e4e861ffdfcd919eb9a11",
+    "lufs_i": -15.7,
+    "duration": 240.1,
+    "replaces": "https://mixkit.co/free-stock-music/pop/",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Groovin.mp3"
   },
   "the-long-road": {
     "file": "the-long-road.mp3",
+    "title": "Travelers Notebook",
+    "composer": "FreePD.com contributor",
     "mood": [
       "melancholic",
       "acoustic",
       "drama"
     ],
-    "source": "https://assets.mixkit.co/music/52/52.mp3 (Mixkit #52)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, scoring page (archived 2024-05-28 and later on web.archive.org): \"Travelers Notebook\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/the-long-road.mp3",
+    "mirror": "https://archive.org/download/freepd/scoring/Travelers%20Notebook.mp3",
+    "sha256": "1435dc65a285242e5012ae9e853a9db2a5e303bfdec243cfe67340e67284b7b1",
+    "lufs_i": -17.1,
+    "duration": 123.1,
+    "replaces": "https://assets.mixkit.co/music/52/52.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Travelers%20Notebook.mp3"
   },
   "miss-you": {
     "file": "miss-you.mp3",
+    "title": "Romantic Inspiration",
+    "composer": "FreePD.com contributor",
     "mood": [
       "hopeful",
       "cello",
       "piano",
       "arthouse"
     ],
-    "source": "https://assets.mixkit.co/music/592/592.mp3 (Mixkit #592)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, romantic page (archived 2024-05-28 and later on web.archive.org): \"Romantic Inspiration\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/miss-you.mp3",
+    "mirror": "https://archive.org/download/freepd/romantic/Romantic%20Inspiration.mp3",
+    "sha256": "5d96bd468d1edde0370c2a1d18e9fc5f6b8f208668a772537b7f145ddff8c445",
+    "lufs_i": -15.6,
+    "duration": 149.7,
+    "replaces": "https://assets.mixkit.co/music/592/592.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Romantic%20Inspiration.mp3"
   },
   "a-new-life": {
     "file": "a-new-life.mp3",
+    "title": "Slice of Life",
+    "composer": "Bryan Teoh",
     "mood": [
       "hopeful",
       "strings",
       "documentary"
     ],
-    "source": "https://assets.mixkit.co/music/543/543.mp3 (Mixkit #543)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, scoring page (archived 2024-05-28 and later on web.archive.org): \"Slice of Life\" by Bryan Teoh",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/a-new-life.mp3",
+    "mirror": "https://archive.org/download/freepd/scoring/Slice%20of%20Life.mp3",
+    "sha256": "39e0543fbeb06ced8a5f023daf7375385235238ea9063677f3ff71ab15bc04dc",
+    "lufs_i": -10.3,
+    "duration": 140.8,
+    "replaces": "https://assets.mixkit.co/music/543/543.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Slice%20of%20Life.mp3"
   },
   "forest-mist-whispers": {
     "file": "forest-mist-whispers.mp3",
+    "title": "Piano Magic Motive",
+    "composer": "Kevin MacLeod",
     "mood": [
       "hopeful",
       "atmospheric",
       "piano",
       "documentary"
     ],
-    "source": "https://assets.mixkit.co/music/148/148.mp3 (Mixkit #148)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, romantic page (archived 2024-05-28 and later on web.archive.org): \"Piano Magic Motive\" by Kevin MacLeod",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/forest-mist-whispers.mp3",
+    "mirror": "https://archive.org/download/freepd/romantic/Piano%20Magic%20Motive.mp3",
+    "sha256": "2ccf89173ff9a8bd057d200c5b9e81728556dbb06ac5f64546c262f0e438698b",
+    "lufs_i": -19.5,
+    "duration": 78.0,
+    "replaces": "https://assets.mixkit.co/music/148/148.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Piano%20Magic%20Motive.mp3"
   },
   "staring-at-the-night-sky": {
     "file": "staring-at-the-night-sky.mp3",
+    "title": "Shining Stars",
+    "composer": "FreePD.com contributor",
     "mood": [
       "mysterious",
       "atmospheric",
       "cello",
       "piano"
     ],
-    "source": "https://assets.mixkit.co/music/168/168.mp3 (Mixkit #168)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, romantic page (archived 2024-05-28 and later on web.archive.org): \"Shining Stars\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/staring-at-the-night-sky.mp3",
+    "mirror": "https://archive.org/download/freepd/romantic/Shining%20Stars.mp3",
+    "sha256": "751697ea7b30ae698b9dfcf2540d777e2acd01cf4480a98fa3366f246da24d38",
+    "lufs_i": -21.2,
+    "duration": 140.1,
+    "replaces": "https://assets.mixkit.co/music/168/168.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Shining%20Stars.mp3"
   },
   "drawing-the-sky": {
     "file": "drawing-the-sky.mp3",
+    "title": "The Drama",
+    "composer": "Rafael Krux",
     "mood": [
       "dramatic",
       "cinematic"
     ],
-    "source": "https://assets.mixkit.co/music/606/606.mp3 (Mixkit #606)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, scoring page (archived 2024-05-28 and later on web.archive.org): \"The Drama\" by Rafael Krux",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/drawing-the-sky.mp3",
+    "mirror": "https://archive.org/download/freepd/scoring/The%20Drama.mp3",
+    "sha256": "ea747a7c490ac82f4396eaf709ba5eba03c9cc2929f48ddabd974c56a851b26b",
+    "lufs_i": -14.3,
+    "duration": 97.1,
+    "replaces": "https://assets.mixkit.co/music/606/606.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/The%20Drama.mp3"
   },
   "sleepy-cat": {
     "file": "sleepy-cat.mp3",
+    "title": "Martini Sunset",
+    "composer": "FreePD.com contributor",
     "mood": [
       "atmospheric",
       "city",
       "night"
     ],
-    "source": "https://assets.mixkit.co/music/135/135.mp3 (Mixkit #135)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, misc page (archived 2024-05-28 and later on web.archive.org): \"Martini Sunset\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/sleepy-cat.mp3",
+    "mirror": "https://archive.org/download/freepd/misc/Martini%20Sunset.mp3",
+    "sha256": "b9d12b5d59c187e07316cab61e82ccbea0f48f2f64a3e8062abbf1861acc7add",
+    "lufs_i": -17.0,
+    "duration": 174.1,
+    "replaces": "https://assets.mixkit.co/music/135/135.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Martini%20Sunset.mp3"
   },
   "classical-7": {
     "file": "classical-7.mp3",
+    "title": "Lovely Piano Song",
+    "composer": "FreePD.com contributor",
     "mood": [
       "melancholic",
       "piano",
       "soft"
     ],
-    "source": "https://assets.mixkit.co/music/714/714.mp3 (Mixkit #714)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, romantic page (archived 2024-05-28 and later on web.archive.org): \"Lovely Piano Song\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/classical-7.mp3",
+    "mirror": "https://archive.org/download/freepd/romantic/Lovely%20Piano%20Song.mp3",
+    "sha256": "4c8e8fbda8f2e6cbfa22db6689faa4eb0fd1bb7f3163ade72aff37fdd0fb9388",
+    "lufs_i": -18.1,
+    "duration": 95.8,
+    "replaces": "https://assets.mixkit.co/music/714/714.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Lovely%20Piano%20Song.mp3"
   },
   "a-baby-story": {
     "file": "a-baby-story.mp3",
+    "title": "Happy Whistling Ukulele",
+    "composer": "FreePD.com contributor",
     "mood": [
       "hopeful",
       "relaxed",
       "acoustic",
       "lifestyle"
     ],
-    "source": "https://assets.mixkit.co/music/530/530.mp3 (Mixkit #530)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, upbeat page (archived 2024-05-28 and later on web.archive.org): \"Happy Whistling Ukulele\"",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/a-baby-story.mp3",
+    "mirror": "https://archive.org/download/freepd/upbeat/Happy%20Whistling%20Ukulele.mp3",
+    "sha256": "ed4059c8fba8673d657e85175ff54eaa32cef9e43f688f164bef585e6e65cf15",
+    "lufs_i": -17.8,
+    "duration": 123.2,
+    "replaces": "https://assets.mixkit.co/music/530/530.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/Happy%20Whistling%20Ukulele.mp3"
   },
   "chillax": {
     "file": "chillax.mp3",
+    "title": "River Meditation",
+    "composer": "Jason Shaw",
     "mood": [
       "meditative",
       "acoustic",
       "relaxed"
     ],
-    "source": "https://assets.mixkit.co/music/655/655.mp3 (Mixkit #655)",
-    "licence": "Mixkit Free Music licence (free for commercial social use; not Content ID)",
-    "added": "2026-10-13"
+    "styles": [],
+    "source": "FreePD.com, misc page (archived 2024-05-28 and later on web.archive.org): \"River Meditation\" by Jason Shaw",
+    "licence": "CC0 1.0 Universal (FreePD.com: \"Can I include this music in an app that generates movies for users? YES!\")",
+    "url": "https://github.com/npnatt12/tadclip-public/releases/download/music-v1/chillax.mp3",
+    "mirror": "https://archive.org/download/freepd/misc/River%20Meditation.mp3",
+    "sha256": "de0dc7fc73e83312bc5d3ef13f197f0900cedd904ed46b50cc2ee74b4db3dc3f",
+    "lufs_i": -14.5,
+    "duration": 167.1,
+    "replaces": "https://assets.mixkit.co/music/655/655.mp3 (Mixkit",
+    "mirror2": "https://web.archive.org/web/2024id_/https://freepd.com/music/River%20Meditation.mp3"
   }
 }

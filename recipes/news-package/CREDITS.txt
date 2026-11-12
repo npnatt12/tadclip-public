@@ -35,7 +35,7 @@ FONTS (SIL Open Font License 1.1; woff2 subsets from Google Fonts in fonts/, ful
     copies and serves as is; no subset of it is distributed.
 
 SOUNDS
-  From the skill's library/sfx (manifest.json): Mixkit kit sounds and the CC0 pack (cc0-paper-flip, cc0-whoosh-reverse);
+  From the skill's library/sfx (manifest.json): TadClip's own sounds and the CC0 pack (cc0-paper-flip, cc0-whoosh-reverse);
   the builder refuses any sound marked "licensed": false.
 
 PICTURES

@@ -46,7 +46,7 @@ Here:
 
 ## Kit (library/sfx)
 
-Editing layer (Mixkit free licence, commercial OK): whoosh-1/2/3, whoosh-cine,
+Editing layer (TadClip's own synthesized sounds, CC0; scripts/sfx_synth.py): whoosh-1/2/3, whoosh-cine,
 pop-1/2/3, click-1, tick-1, typing-1, impact-1/2, riser-1, ding-1, buzzer-1,
 kaching-1, shutter-1.
 

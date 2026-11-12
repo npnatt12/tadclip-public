@@ -139,7 +139,7 @@ design, so the first three rows don't apply there. Sourcing, grade, motion, face
    the name; logos are fine here, they ARE the subject). When a line names an OBJECT doing something (an alarm that
    rings), cut the object out (matte.py's Matter, birefnet-general-lite, tadclip-matte venv) as a die-cut sticker, make
    it DO the thing (the clock shakes on twos with white ring marks) and give it its real sound (library sfx
-   `alarm-bell`, Mixkit #995). A plain photo print on the ground is the fallback, not the default.
+   `alarm-bell`, TadClip's own synthesized sound). A plain photo print on the ground is the fallback, not the default.
    **A reel about a named tool, app or company: pull its brand kit first**: `scripts/brand_kit.py pull <its URL> --dir
    $P/brand` takes the logo the site itself uses (Gemini picks it among every candidate; the simple-icons mark when the
    page has no wordmark), one-colour versions for white and dark grounds, the app icon, the brand colour (simple-icons
@@ -174,7 +174,7 @@ design, so the first three rows don't apply there. Sourcing, grade, motion, face
 |---|---|---|
 | an object, place or idea as a still, one look for the reel | `broll_gen.py` (Gemini image) or stock images | framed (polaroid, card, collage); people only where the idea needs one, inside the people rules |
 | a real action or scene that moves, many options, one creator's series | Pexels: web-search `site:pexels.com/video <what the line shows>`, then `broll_fetch.py get <urls> --dir $P/broll --beat <line>` | originals by the public download link, often 4K; no key needed; Pexels License. Look at each clip's three frames, then `broll_fetch.py note <id> --desc ... --in --out` |
-| a common scene (office, city, nature, hands), quick | Mixkit: `broll_fetch.py search <tag>`, then `get mixkit:<id>` | only clips with a 2160p file are free for commercial use; `get` refuses the rest |
+| a common scene (office, city, nature, hands), quick | Pexels (`search --pexels`), or keyless Wikimedia Commons: `broll_fetch.py search <words>`, then `get commons:<id>` | Commons: only CC0 / public domain / CC BY files; CC BY rows carry a credit line for the post caption |
 | an archival / historical picture (old places, maps, manuscripts, 19th-c. photos) | `wikimedia_fetch.py search <1-3 words> --other "<ru>" --dir $P/broll --beat <line>`, or `category` / `get "File:..."` | public domain / CC; may go bigger than a print; licence + author in the row |
 | a picture Commons misses | `google_images.py search <words> --other "<ru>" --n 8 --take 4 --dir $P/broll --beat <line>` | Apify, billed per result; free-licence hosts first; the rest framed only |
 | a specific shot no stock has, moving | an AI video model (e.g. MiniMax on Runpod), costs money | last; ask first |

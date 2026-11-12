@@ -45,9 +45,11 @@ try {
   foreach ($l in $Links.Keys) {
     $t = Join-Path $tmp 'TadClip.lnk'; $k = $sh.CreateShortcut($t)
     $k.TargetPath = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-    $k.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$Start`""
-    $k.WorkingDirectory = $Dir; $k.WindowStyle = 7; $k.Description = 'TadClip: ตัดต่อคลิป'
-    if (Test-Path -LiteralPath $Ico) { $k.IconLocation = "$Ico,0" }
+    # ASCII only: under a Thai user name the shortcut's stored arguments lost the path (CI 11-11: "holds the Thai path:
+    # False"), so the launcher is found through %USERPROFILE% when PowerShell runs, not written into the shortcut
+    $k.Arguments = if ($Start.StartsWith($env:USERPROFILE + '\')) { "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command `"& (Join-Path `$env:USERPROFILE '$($Start.Substring($env:USERPROFILE.Length + 1))')`"" } else { "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$Start`"" }
+    $k.WindowStyle = 7; $k.Description = 'TadClip'
+    if (Test-Path -LiteralPath $Ico) { $k.IconLocation = $(if ($Ico.StartsWith($env:USERPROFILE + '\')) { '%USERPROFILE%' + $Ico.Substring($env:USERPROFILE.Length) } else { $Ico }) + ',0' }
     $k.Save(); Move-Item -Force -LiteralPath $t -Destination $l
   }
 } finally { Remove-Item -Recurse -Force -LiteralPath $tmp -ErrorAction SilentlyContinue }

@@ -1,0 +1,26 @@
+{
+  "_about": "Cut-paper collage on a warm paper board: tilted photo cut-outs with tape, headline strips in a slab serif, grain.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#E8402B",
+    "accentDark": "#B52E1C",
+    "ink": "#111111",
+    "font": "Chonburi"
+  },
+  "impact": {
+    "look": "stack"
+  },
+  "music": {
+    "id": "a-baby-story",
+    "db": -18
+  },
+  "look": {
+    "grain": 0.06,
+    "grade": "sepia(0.12) contrast(1.05)"
+  },
+  "scenes": {
+    "card": {
+      "bg": "#E8DCC6"
+    }
+  }
+}

@@ -73,7 +73,7 @@ It writes a contact sheet, full-resolution frames and a second-by-second edit lo
 ## Licences
 
 - Code: MIT.
-- Sound effects and music: [Mixkit](https://mixkit.co/license/) (free, commercial use, no attribution; the music may not go to TV, radio or games or be registered with Content ID). `library_restore.py` downloads them on your machine; none are stored in this repo ([docs/THIRD_PARTY/audio.md](THIRD_PARTY/audio.md)).
+- Sound effects and music: TadClip's own synthesized sounds and CC0 recordings ship in the repo; the music is CC0 from FreePD, downloaded and checksummed by `library_restore.py` ([audio.md](THIRD_PARTY/audio.md)).
 - Fonts: SIL OFL ([fonts.md](THIRD_PARTY/fonts.md)).
 - Face models: MediaPipe Face Landmarker (Apache-2.0, bundled), YuNet (MIT) and SFace (Apache-2.0), downloaded ([models.md](THIRD_PARTY/models.md)).
 - Bundled third-party code: Paper Shaders (Apache-2.0), xfade-easing (MIT, with two BSD transition ports). Everything else: [docs/THIRD_PARTY](THIRD_PARTY/README.md).

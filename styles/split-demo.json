@@ -1,0 +1,8 @@
+{
+  "_about": "A demo: the screen (or the thing being shown) fills the top half, the speaker the bottom half, a label between.",
+  "extends": "clubgig",
+  "music": {
+    "id": "infinity",
+    "db": -21
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "_about": "A span of time as a grid of dots, one per week; the part already lived (or the part that matters) fills in.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#F2C230",
+    "accentDark": "#C99A12",
+    "ink": "#FFFFFF"
+  },
+  "music": {
+    "id": "silent-descent",
+    "db": -19
+  },
+  "scenes": {
+    "weeks": {
+      "bg": "#0E0E10"
+    }
+  }
+}

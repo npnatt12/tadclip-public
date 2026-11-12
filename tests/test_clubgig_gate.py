@@ -1,4 +1,5 @@
 """One prompt must give a whole ClubGig reel: a reel without the devices can't reach a render, and no Pexels key can't stop the stock. python3 tests/test_clubgig_gate.py"""
+import io
 import importlib.util, json, os, pathlib, subprocess, sys, tempfile, types
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,15 +37,17 @@ with tempfile.TemporaryDirectory() as d:
     F.preview(r)
     assert len(calls) == 2
 
-# no key: the stock search moves to Mixkit instead of stopping
+# no key: the stock search moves to Wikimedia Commons instead of stopping, and only shows allowed licences
 spec = importlib.util.spec_from_file_location("broll_fetch", os.path.join(ROOT, "scripts", "broll_fetch.py"))
 B = importlib.util.module_from_spec(spec); spec.loader.exec_module(B)
 def no_key(name):
     raise SystemExit("no key")
 B.env_key = no_key
-B.http = lambda url: types.SimpleNamespace(read=lambda: b'<a href="/free-stock-video/cup-of-coffee-236/">')
+_commons = {"query": {"pages": {"236": {"index": 1, "title": "File:Cup of coffee.webm", "imageinfo": [{"width": 1920, "height": 1080, "extmetadata": {"LicenseShortName": {"value": "CC0"}}}]},
+                               "237": {"index": 2, "title": "File:Latte.webm", "imageinfo": [{"width": 1920, "height": 1080, "extmetadata": {"LicenseShortName": {"value": "CC BY-SA 4.0"}}}]}}}}
+B.http = lambda url: io.BytesIO(json.dumps(_commons).encode())
 out = []
 B.print = lambda *a, **k: out.append(" ".join(map(str, a)))
 B.cmd_search(types.SimpleNamespace(pexels=True, words=["coffee"], n=3, any=False))
-assert any("mixkit:236" in o for o in out), out
+assert any("commons:236" in o for o in out) and not any("commons:237" in o for o in out), out   # CC BY-SA refused
 print("ok")

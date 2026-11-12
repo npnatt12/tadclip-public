@@ -332,6 +332,25 @@ export function buildScene(b, id, t0, t1, ctx) {
     body = wordSceneBody(b, sid, t0, ctx, shaderBg);
   }
 
+  else if (b.kind === "weeks") {
+    // a span of time as dots, one per week ("Life in weeks"): the filled part inks in row by row. Two CSS dot patterns
+    // and one clip tween (not thousands of elements), so every frame seeks cheaply
+    const cols = b.cols ?? 52, total = b.total ?? 4160, rows = Math.ceil(total / cols);
+    const W = 960, cell = W / cols, H = rows * cell, top = b.y ?? 380;
+    const frac = Math.max(0, Math.min(1, (b.filled ?? total) / total));
+    const at = b.fillAt !== undefined ? E(b.fillAt, "weeks fill") : r3(t0 + 0.5), dur = b.fillDur ?? 1.8;
+    const ink = b.ink ?? "#fff", font = `'${brand.font ?? "Kanit"}', 'Kanit', sans-serif`;
+    const dots = (c) => `background:radial-gradient(circle, ${c} 0 ${r3(cell * 0.33)}px, transparent ${r3(cell * 0.37)}px);background-size:${r3(cell)}px ${r3(cell)}px`;
+    body = (b.title ? `<div id="${id}-t" style="position:absolute;left:60px;right:60px;top:${top - 250}px;font:800 84px ${font};color:${ink}">${esc(b.title)}</div>` : "")
+      + (b.sub ? `<div id="${id}-s" style="position:absolute;left:60px;right:60px;top:${top - 130}px;font:400 40px ${font};color:${ink};opacity:.6">${esc(b.sub)}</div>` : "")
+      + `<div style="position:absolute;left:60px;top:${top}px;width:${W}px;height:${r3(H)}px;${dots(b.empty ?? "rgba(255,255,255,.18)")}"></div>`
+      + `<div id="${id}-f" style="position:absolute;left:60px;top:${top}px;width:${W}px;height:${r3(H)}px;${dots(b.color ?? brand.accent)}"></div>`;
+    if (b.title) tl.push(`ft("#${id}-t", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power3.out" }, ${r3(t0 + 0.1)});`);
+    if (b.sub) tl.push(`ft("#${id}-s", { autoAlpha: 0 }, { autoAlpha: 0.6, duration: 0.35 }, ${r3(t0 + 0.3)});`);
+    tl.push(`ft("#${id}-f", { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% ${r3((1 - frac) * 100)}% 0%)", duration: ${dur}, ease: "none" }, ${at});`);
+    addSfx(at, "riser-1", "weeks fill");
+  }
+
   else throw new Error(`unknown scene kind '${b.kind}'`);
 
   transIn(ctx, `#${sid}`, inKind, t0);

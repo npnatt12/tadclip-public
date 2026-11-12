@@ -28,4 +28,4 @@ FONTS (OFL 1.1)
   - JetBrains Mono, JetBrains (copied from the skill's templates/fonts; fonts/LICENSE-JetBrainsMono.txt)
 
 SOUND
-  - Library SFX only (library/sfx/manifest.json, licensed: true; Mixkit kit + the CC0 pack). No music bed or score.
+  - Library SFX only (library/sfx/manifest.json, licensed: true; TadClip's own synthesized kit + the CC0 pack). No music bed or score.

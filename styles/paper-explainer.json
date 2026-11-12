@@ -1,0 +1,21 @@
+{
+  "_about": "Words resolve on warm paper, one idea per screen, like a hand-made explainer.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#B5452F",
+    "accentDark": "#8A2F1E",
+    "ink": "#222222",
+    "font": "Taviraj"
+  },
+  "music": {
+    "id": "forest-mist-whispers",
+    "db": -20
+  },
+  "scenes": {
+    "word": {
+      "bg": {
+        "look": "mesh-calm"
+      }
+    }
+  }
+}

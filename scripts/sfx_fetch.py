@@ -108,6 +108,10 @@ KIT = [
     # Seoul list: the iMessage-style "send" on the outro bubble (a short rising swoosh; chosen by envelope, confirm by ear)
     ("send-swoosh", "ui", r"mixkit:transition:^Fast small sweep transition$", 0.8, ["send", "message", "imessage", "swoosh"], "mixkit"),
 ]
+# 11-12: the Mixkit kit is retired. Its User Terms (cl. 9) forbid collating Items and fetching them by script, which is
+# what this did for every buyer. Each Mixkit id now has TadClip's own sound under the same slug (scripts/sfx_synth.py,
+# committed as library/sfx/own-*.wav) or a hand-checked CC0 recording (scripts/cc0_pack.py). Only the private rips remain.
+KIT = [k for k in KIT if k[5] != "mixkit"]
 
 LICENSED = {e[0] for e in KIT if e[5] == "mixkit"}  # public build: safe to ship
 RIPS = {e[0] for e in KIT if e[5] == "rip"}  # private build only

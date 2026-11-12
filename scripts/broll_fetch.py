@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Fetch stock B-roll originals (Pexels, Mixkit) into a project's broll/ folder with a manifest the edit reads.
+"""Fetch stock B-roll originals (Pexels, Wikimedia Commons) into a project's broll/ folder with a manifest the edit reads.
 
-    broll_fetch.py search <words> [--n 12]                      Mixkit ids for a tag (keyless; mixkit.co search pages)
+    broll_fetch.py search <words> [--n 12]                      Wikimedia Commons video ids (keyless; CC0 / PD / CC BY only)
     broll_fetch.py search <words> --pexels [--n 12] [--any]     Pexels video ids from the API (portrait first; needs PEXELS_API_KEY)
     broll_fetch.py photos <words> --dir $P/broll [--n 4] [--any] [--beat NAME]
                                                                 Pexels photos (portrait, original size) + manifest rows "kind": "photo"
@@ -12,17 +12,16 @@
     broll_fetch.py list --dir $P/broll                          the manifest as a table; rows still missing desc/in/out
 
 Sources (`get` needs no API key for either; `search --pexels` reads PEXELS_API_KEY from the environment or the skill's
-.env / .env.local, free at pexels.com/api, and searches Mixkit when there is no key):
+.env / .env.local, free at pexels.com/api, and searches Wikimedia Commons when there is no key):
 - Pexels: a video page URL (https://www.pexels.com/video/<slug>-<id>/), its id, or "pexels:<id>". The original comes from
   the public download link https://www.pexels.com/download/video/<id>/ (a redirect to the uploaded file, often 4K).
   Pexels search pages and the API need a browser or a key, so find clips with a web search for
   "site:pexels.com/video <what the line shows>" and pass the result URLs here. Pexels License: free, no attribution.
-- Mixkit: a page URL (https://mixkit.co/free-stock-video/<slug>-<id>/), or "mixkit:<id>". Only clips offered in 2160p
-  are under the Mixkit Stock Video Free License (commercial use OK); a clip without a 2160p file is personal-use only
-  and is refused. mixkit.co pages rate-limit (HTTP 429) after ~20 quick requests; the asset CDN does not.
+- Wikimedia Commons: "commons:<pageid>" from `search`. Only files whose own page shows CC0, public domain or CC BY are
+  fetched (CC BY rows carry a "credit" line for the post caption); CC BY-SA and the rest are refused.
 
 Manifest: <dir>/manifest.json, a list of rows (one per clip; `get` on an existing id refreshes the probe, keeps the notes):
-  {"id": "p5852479", "source": "pexels", "page": "<page url>", "pexels_url" | "mixkit_url": "<page url>",
+  {"id": "p5852479", "source": "pexels", "page": "<page url>", "pexels_url" | "commons_url": "<page url>",
    "file": "broll/p5852479.mp4",              # relative to the project (the parent of --dir)
    "w": 2160, "h": 4096, "fps": 25.0, "duration": 5.08, "hdr": false,
    "full_screen_ok": true,                    # a 9:16 crop is at least 1080 px wide (no upscaling at 1080x1920)
@@ -36,7 +35,13 @@ talking-head styles (references/broll.md 3): own footage first, then stills, the
 import argparse, datetime, json, os, re, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
 
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
-LICENCE = {"pexels": "Pexels License", "mixkit": "Mixkit Stock Video Free License"}
+LICENCE = {"pexels": "Pexels License"}
+# Keyless fallback (11-12): Wikimedia Commons videos whose own file page says CC0, public domain or CC BY (credit kept in the
+# manifest row for the post caption). CC BY-SA is refused: share-alike could reach the buyer's whole reel. Mixkit is gone: its
+# User Terms forbid fetching Items by script, which a sold TadClip can't do.
+COMMONS_OK = re.compile(r"^(cc0|cc-zero|public domain|pd|pd-[a-z0-9-]+|cc by [0-9.]+|cc-by-[0-9.]+)$", re.I)
+COMMONS_API = "https://commons.wikimedia.org/w/api.php"
+X264_THREADS = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "X264_THREADS")).read().strip()   # pinned like every encode (doctor.sh)
 
 
 def http(url, method="GET"):
@@ -44,9 +49,9 @@ def http(url, method="GET"):
 
 
 def parse(ref):
-    """url | id | pexels:<id> | mixkit:<id> -> (source, numeric id, page url or None)"""
+    """url | id | pexels:<id> | commons:<pageid> -> (source, numeric id, page url or None)"""
     ref = ref.strip()
-    m = re.match(r"(pexels|mixkit):(\d+)$", ref)
+    m = re.match(r"(pexels|commons):(\d+)$", ref)
     if m:
         return m.group(1), m.group(2), None
     if re.match(r"\d+$", ref):
@@ -54,25 +59,27 @@ def parse(ref):
     m = re.search(r"pexels\.com/(?:[a-z-]+/)?video/(?:[^/]*?-)?(\d+)/?", ref) or re.search(r"videos\.pexels\.com/video-files/(\d+)/", ref)
     if m:
         return "pexels", m.group(1), ref if "/video/" in ref and "video-files" not in ref else None
-    m = re.search(r"mixkit\.co/free-stock-video/[^/]*?-(\d+)/?", ref) or re.search(r"assets\.mixkit\.co/videos/(\d+)/", ref)
-    if m:
-        return "mixkit", m.group(1), ref if "free-stock-video" in ref else None
-    sys.exit(f"not a Pexels or Mixkit clip: {ref}")
+    if "mixkit" in ref:
+        sys.exit(f"{ref}: Mixkit clips are no longer fetched (its User Terms forbid scripted downloads). Use Pexels or commons:<id>")
+    sys.exit(f"not a Pexels or Wikimedia Commons clip: {ref}")
+
+
+def commons_info(pageid):
+    q = urllib.parse.urlencode({"action": "query", "pageids": pageid, "prop": "imageinfo", "iiprop": "url|size|mediatype|extmetadata", "format": "json"})
+    page = json.load(http(f"{COMMONS_API}?{q}"))["query"]["pages"][str(pageid)]
+    ii = page["imageinfo"][0]; md = ii.get("extmetadata", {})
+    val = lambda k: re.sub(r"<[^>]+>", "", (md.get(k) or {}).get("value", "")).strip()
+    return {"title": page["title"], "url": ii["url"], "page": ii.get("descriptionurl"), "w": ii.get("width"), "h": ii.get("height"),
+            "licence": val("LicenseShortName"), "artist": val("Artist"), "credit": val("Credit"), "attribution": val("AttributionRequired")}
 
 
 def original_url(src, vid):
-    """the largest original file; Mixkit: the 2160p asset or nothing (no free licence below it)"""
+    """the largest original file; Commons: the original, only when its file page shows an allowed licence"""
     if src == "pexels":
         r = http(f"https://www.pexels.com/download/video/{vid}/", "HEAD")
         return r.geturl()
-    url = f"https://assets.mixkit.co/videos/{vid}/{vid}-2160.mp4"
-    try:
-        http(url, "HEAD")
-        return url
-    except urllib.error.HTTPError as e:
-        if e.code in (403, 404):
-            return None
-        raise
+    info = commons_info(vid)
+    return info["url"] if COMMONS_OK.match(info["licence"]) else None
 
 
 def download(url, dest):
@@ -161,14 +168,21 @@ def cmd_get(A):
     rows = load(d); bad = 0
     for ref in A.refs:
         src, vid, page = parse(ref)
-        rid = ("p" if src == "pexels" else "m") + vid
+        rid = ("p" if src == "pexels" else "c") + vid
         f = os.path.join(d, rid + ".mp4")
         try:
             url = original_url(src, vid)
             if not url:
-                print(f"{rid}: no 2160p file on Mixkit, so no free licence (personal use only): skipped"); bad += 1; continue
-            size, fresh = fetch(url, f)
-        except OSError as e:  # one bad clip must not end the batch
+                print(f"{rid}: its Commons licence is not CC0, public domain or CC BY: skipped"); bad += 1; continue
+            if src == "commons":   # Commons keeps Ogg Theora/WebM: H.264 so the renderer's Chrome can play it (it dropped Theora)
+                raw = f + ".src"; size, fresh = fetch(url, raw)
+                if fresh or not os.path.exists(f):
+                    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-an", "-c:v", "libx264", "-threads", X264_THREADS, "-crf", "16", "-preset", "medium",
+                                    "-pix_fmt", "yuv420p", "-r", "30", "-movflags", "+faststart", f], check=True)
+                    os.remove(raw)
+            else:
+                size, fresh = fetch(url, f)
+        except (OSError, subprocess.CalledProcessError) as e:  # one bad clip must not end the batch
             print(f"{rid}: download failed ({e}): skipped"); bad += 1; continue
         info = probe(f)
         if min(info["w"], info["h"]) < A.min:
@@ -180,9 +194,14 @@ def cmd_get(A):
             rows.append(row)
         elif A.beat:
             row["beat"] = A.beat
-        page = page or row.get("page") or (f"https://www.pexels.com/video/{vid}/" if src == "pexels" else f"https://mixkit.co/free-stock-video/{vid}/")
+        lic = LICENCE.get(src)
+        if src == "commons":
+            ci = commons_info(vid); page = page or ci["page"]; lic = f"{ci['licence']} (Wikimedia Commons)"
+            if re.match(r"cc[ -]by", ci["licence"], re.I):   # CC BY: the credit goes in the post caption
+                row["credit"] = f"{ci['title'].removeprefix('File:')} by {ci['artist'] or ci['credit'] or 'see page'}, {ci['licence']}, via Wikimedia Commons"
+        page = page or row.get("page") or f"https://www.pexels.com/video/{vid}/"
         row.update({"source": src, "page": page, f"{src}_url": page, "original": url, "file": rel(f), **info,
-                    "frames": [rel(x) for x in frames], "licence": LICENCE[src], "fetched": datetime.date.today().isoformat()})
+                    "frames": [rel(x) for x in frames], "licence": lic, "fetched": datetime.date.today().isoformat()})
         save(d, rows)
         note = "" if info["full_screen_ok"] else "  (a 9:16 crop is under 1080 wide: framed inserts only)"
         print(f"{rid}: {info['w']}x{info['h']} {info['fps']:g} fps {info['duration']:.1f} s{' HDR' if info['hdr'] else ''}, "
@@ -229,7 +248,7 @@ def cmd_search_pexels(A):
     try:
         key = env_key("PEXELS_API_KEY")
     except SystemExit:
-        print("no PEXELS_API_KEY: searching Mixkit, which needs no key")
+        print("no PEXELS_API_KEY: searching Wikimedia Commons, which needs no key")
         A.pexels = False
         return cmd_search(A)
     q = urllib.parse.urlencode({"query": " ".join(A.words), "per_page": A.n, "size": "large", **({} if A.any else {"orientation": "portrait"})})
@@ -259,39 +278,26 @@ def cmd_photos(A):
 def cmd_search(A):
     if A.pexels:
         return cmd_search_pexels(A)
-    tag = re.sub(r"[^a-z0-9]+", "-", " ".join(A.words).lower()).strip("-")
-    try:
-        html = http(f"https://mixkit.co/free-stock-video/{tag}/").read().decode("utf-8", "replace")
-    except urllib.error.HTTPError as e:
-        sys.exit(f"mixkit.co/free-stock-video/{tag}/: HTTP {e.code}" + (" (rate limit: wait a minute)" if e.code == 429 else
-                 " (no such tag: try one word, e.g. 'office', 'sleep', 'city')" if e.code == 404 else ""))
-    seen = []
-    for slug, vid in re.findall(r'href="/free-stock-video/([a-z0-9-]+?)-(\d+)/"', html):
-        if vid not in [v for v, _ in seen]:
-            seen.append((vid, slug))
-    # only clips with a 2160p file carry the free commercial licence: check here (one HEAD each), not after download
-    shown, skipped = 0, 0
-    for vid, slug in seen:
-        if shown >= A.n:
-            break
-        try:
-            ok = original_url("mixkit", vid) is not None
-        except Exception:  # noqa: BLE001  (network blip: show it, `get` checks again)
-            ok = True
-        if not ok:
-            skipped += 1
-            continue
-        print(f"mixkit:{vid:<7} https://mixkit.co/free-stock-video/{slug}-{vid}/")
-        shown += 1
-    print(f"{len(seen)} clips on mixkit.co/free-stock-video/{tag}/; shown {shown} with a 2160p file (free licence), {skipped} without skipped")
+    q = urllib.parse.urlencode({"action": "query", "generator": "search", "gsrsearch": "filetype:video " + " ".join(A.words), "gsrnamespace": 6,
+                                "gsrlimit": min(50, A.n * 4), "prop": "imageinfo", "iiprop": "size|extmetadata", "format": "json"})
+    pages = (json.load(http(f"{COMMONS_API}?{q}")).get("query") or {}).get("pages", {})
+    shown = skipped = 0
+    for pid, pg in sorted(pages.items(), key=lambda kv: kv[1].get("index", 0)):
+        ii = (pg.get("imageinfo") or [{}])[0]; lic = re.sub(r"<[^>]+>", "", (ii.get("extmetadata", {}).get("LicenseShortName") or {}).get("value", "")).strip()
+        if not COMMONS_OK.match(lic):
+            skipped += 1; continue
+        if shown < A.n:
+            print(f"commons:{pid:<9} {ii.get('width')}x{ii.get('height'):<5} {lic:<14} {pg['title'][5:][:70]}"); shown += 1
+    print(f"{len(pages)} Commons videos for {' '.join(A.words)!r}: shown {shown} with CC0 / public domain / CC BY, {skipped} other licences skipped."
+          " Fewer and smaller than Pexels: a free PEXELS_API_KEY in .env gives far more.")
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0], formatter_class=argparse.RawDescriptionHelpFormatter,
                                  epilog=__doc__.split("\n\n", 1)[1])
     sub = ap.add_subparsers(dest="cmd", required=True)
-    s = sub.add_parser("search", help="Mixkit ids for a tag"); s.add_argument("words", nargs="+"); s.add_argument("--n", type=int, default=12)
-    s.add_argument("--pexels", action="store_true", help="search the Pexels API instead of Mixkit"); s.add_argument("--any", action="store_true", help="Pexels: any orientation")
+    s = sub.add_parser("search", help="Commons video ids (keyless) or Pexels ids (--pexels)"); s.add_argument("words", nargs="+"); s.add_argument("--n", type=int, default=12)
+    s.add_argument("--pexels", action="store_true", help="search the Pexels API instead of Wikimedia Commons"); s.add_argument("--any", action="store_true", help="Pexels: any orientation")
     g = sub.add_parser("get", help="download originals + manifest rows"); g.add_argument("refs", nargs="+"); g.add_argument("--dir", required=True)
     g.add_argument("--beat"); g.add_argument("--min", type=int, default=1080, help="smallest short side kept (px; default 1080, no 720p)")
     n = sub.add_parser("note", help="desc and best window after looking"); n.add_argument("ref"); n.add_argument("--dir", required=True)

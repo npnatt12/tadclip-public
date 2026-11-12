@@ -1,0 +1,28 @@
+{
+  "_about": "Explainer-documentary look: engraved/halftone stills, a lens circle that isolates a detail, serif italic captions.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#F2C14E",
+    "accentDark": "#C99A2E",
+    "ink": "#111111",
+    "font": "Taviraj"
+  },
+  "impact": {
+    "look": "seoul"
+  },
+  "music": {
+    "id": "drawing-the-sky",
+    "db": -19
+  },
+  "look": {
+    "shader": [
+      "halftone"
+    ],
+    "grade": "sepia(0.3) contrast(1.1)"
+  },
+  "scenes": {
+    "image": {
+      "grade": "grayscale(1) sepia(0.45) contrast(1.25)"
+    }
+  }
+}

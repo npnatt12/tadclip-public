@@ -1,0 +1,13 @@
+{
+  "_about": "A phone screen (chat, app, post) rises in; the part that matters is circled and labelled.",
+  "extends": "clubgig",
+  "brand": {
+    "accent": "#06C755",
+    "accentDark": "#04994A",
+    "ink": "#111111"
+  },
+  "music": {
+    "id": "digital-clouds",
+    "db": -20
+  }
+}

@@ -1217,7 +1217,7 @@ def analyse(video, project=None, profile="talking-head", words=None, allow_hold=
             if min(G.shown_size(oi)) < 1080:
                 lowres.append(f"{l['id']}: {os.path.basename(o)} is {oi['w']}x{oi['h']}")
         C.append(chk("resolution", "B-roll 1080p or better", "fail" if lowres else "pass", f"{len(lowres)} low-res insert(s)", "short side >= 1080",
-                     lowres[:8], "Use a 2160p/1080p source (no 720p B-roll; Mixkit only where 2160p is offered)." if lowres else None))
+                     lowres[:8], "Use a 2160p/1080p source (no 720p B-roll)." if lowres else None))
         # the people rules (people-rules.json) and every B-roll shot shows what its line says. Gemini on the window each
         # layer uses (broll_vision.py, cached).
         if vl and use_vision:

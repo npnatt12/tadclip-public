@@ -60,3 +60,4 @@ urllib3==2.8.0
 websockets==16.1.1
 pillow-heif==1.8.1 ; sys_platform == "win32"   # HEIC logos on Windows (own_brand.py; the Mac uses sips)
 pypdfium2==5.15.2 ; sys_platform == "win32"     # PDF brand guides on Windows (own_brand.py; the Mac uses sips)
+resvg-py==0.5.0                                  # SVG logos, transparent, Mac and Windows (own_brand.py; MIT, resvg Apache-2.0)

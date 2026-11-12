@@ -83,7 +83,7 @@ TPY=$(bash $S/scripts/lib/plat.sh thai)   # this machine's Thai-engine python (m
    this reel's topic (Clubgig's "ปรึกษาปัญหาความรัก" doesn't belong on an AI reel); at least one stays.
    Another brand named: ask once for its logo (white wordmark + dark lockup PNGs), tagline, LINE handle and bubble lines.
 4. **Stock:** `python3 $S/scripts/broll_fetch.py search <words> --pexels` (videos) / `photos <words> --dir $P/broll`
-   (photos); no Pexels key: `search` falls back to Mixkit, photos come from `wikimedia_fetch.py`. Faceless or distant
+   (photos); no Pexels key: `search` falls back to Wikimedia Commons (CC0 / PD / CC BY), photos come from `wikimedia_fetch.py`. Faceless or distant
    people first; look at the frames; conform every one:
    `insert_prep.py SRC $P/assets/ins/<name>.mp4 --in S --dur D --ref $P/assets/talk.mp4 --size 1080x1920 --kind stock`
    (`720x864` for a polaroid clip, the hook's included).
@@ -109,4 +109,4 @@ TPY=$(bash $S/scripts/lib/plat.sh thai)   # this machine's Thai-engine python (m
 - Thai line widths come from `library/fonts/thai/metrics.json`; a 2-line impact at 116 px fits ~13 glyphs a line.
 - Gemini: `gemini-flash-latest` (free tier) allows only **20 requests a day** (429 RESOURCE_EXHAUSTED after that; it resets
   daily). Do the transcript call first; insert_prep / broll_vision people checks spend the same quota. Pro has no free quota.
-- The Pexels key is per machine (`.env` or `.env.local`, never in git). Without one, stock comes from Mixkit.
+- The Pexels key is per machine (`.env` or `.env.local`, never in git). Without one, stock comes from Wikimedia Commons (fewer clips).

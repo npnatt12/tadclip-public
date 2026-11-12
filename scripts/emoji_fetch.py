@@ -122,13 +122,13 @@ def main():
     if "libvpx-vp9" not in enc:
         sys.exit("ffmpeg lacks libvpx-vp9 (needed for alpha webm)")
 
-    items = json.load(open(a.set))["emoji"]
+    items = json.load(open(a.set, encoding="utf-8"))["emoji"]
     only = {s.strip() for s in a.only.split(",") if s.strip()}
     if only:
         items = [e for e in items if e["slug"] in only]
     os.makedirs(a.out, exist_ok=True)
     man_path = os.path.join(a.out, "manifest.json")
-    manifest = json.load(open(man_path)) if os.path.exists(man_path) else {"source": REPOS, "licence": "MIT (Microsoft Fluent Emoji)", "items": {}}
+    manifest = json.load(open(man_path, encoding="utf-8")) if os.path.exists(man_path) else {"source": REPOS, "licence": "MIT (Microsoft Fluent Emoji)", "items": {}}
 
     for kind, repo in REPOS.items():
         lic = os.path.join(a.out, f"LICENSE-{repo.split('/')[1]}.txt")
@@ -197,7 +197,7 @@ def main():
             manifest["items"][slug] = {"slug": slug, "glyph": meta.get("glyph", ""), "cldr": meta.get("cldr", folder.lower()),
                                        "kind": kind, "folder": folder, "use": e.get("use", ""), "files": files, "sha256": sha,
                                        "source": src, "repo": f"https://github.com/{repo}", "licence": "MIT", **extra}
-            with open(man_path + ".tmp", "w") as f:
+            with open(man_path + ".tmp", "w", encoding="utf-8") as f:   # run with -I (PYTHONUTF8 ignored): cp1252 on Windows died on the 🔥 glyph
                 json.dump(manifest, f, ensure_ascii=False, indent=1)
             os.replace(man_path + ".tmp", man_path)
             ok += 1

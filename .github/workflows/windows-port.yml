@@ -3,9 +3,10 @@
 #                    whole test suite, the render fixture and Thai speech-to-text; outputs uploaded for the Mac comparison
 #   fresh-thai-user  a new Windows account named สมศรี (a Thai profile path), Git for Windows hidden, a bare PATH: the
 #                    one-line installer (install.ps1) as that user, then ready.sh. The closest CI gets to a buyer's laptop
-# Read the job summaries; artifacts: windows-port-suite, windows-port-fresh.
+# Every check that fails adds a line to out/failures.txt; the last step fails the job if there is one (11-12: before,
+# both jobs reported success whatever the checks said). Artifacts: windows-port-suite, windows-port-fresh.
 name: windows-port
-on: { workflow_dispatch: {}, push: { branches: [windows-port] } }
+on: { workflow_dispatch: {}, push: { branches: [windows-port, owned-assets] } }
 jobs:
   suite:
     runs-on: windows-latest
@@ -22,6 +23,7 @@ jobs:
           bash scripts/setup.sh > out/setup.log 2>&1; rc=$?
           { echo "## setup.sh: rc=$rc, $(( ($(date +%s) - t0) / 60 )) min"; echo '```'; tail -40 out/setup.log; echo '```'; } >> $GITHUB_STEP_SUMMARY
           tail -60 out/setup.log
+          grep -q "TADCLIP_STATUS=ok" out/setup.log || echo "setup.sh: no TADCLIP_STATUS=ok (rc=$rc)" >> out/failures.txt
           for d in "$HOME/.local/bin" "$HOME/.local/share/tadclip-tools/node" "$HOME/.venvs/media/Scripts"; do cygpath -w "$d" >> $GITHUB_PATH; done
       - name: what setup installed
         run: |
@@ -33,6 +35,7 @@ jobs:
           got=$(HF_REAL_FFMPEG="$(cygpath -w "$(type -P echo)")" scripts/hf_ffmpeg.exe -i "a b.mp4" -c:v libx264 -vf "drawtext=text='x y'" "ไฟล์ out.mp4" | tr -d '\r')
           want="-i a b.mp4 -c:v libx264 -threads $(cat scripts/X264_THREADS) -vf drawtext=text='x y' ไฟล์ out.mp4"
           [ "$got" = "$want" ] && r=pass || r="FAIL: got [$got]"; echo "## hf_ffmpeg.exe: $r" | tee -a $GITHUB_STEP_SUMMARY
+          [ "$r" = pass ] || echo "hf_ffmpeg.exe: $r" >> out/failures.txt
       - name: unit tests
         if: always()
         run: |
@@ -40,18 +43,20 @@ jobs:
           for t in tests/test_*.py; do
             out=$(timeout 900 python3 "$t" 2>&1); rc=$?
             echo "| $t | $([ $rc = 0 ] && echo pass || echo "FAIL ($rc)") | $(echo "$out" | tail -1 | tr '|' '/' | cut -c1-120) |" >> $GITHUB_STEP_SUMMARY
-            echo "=== $t rc=$rc"; echo "$out" | tail -15
+            echo "=== $t rc=$rc"; echo "$out" | tail -15; [ $rc = 0 ] || echo "unit test $t: rc=$rc" >> out/failures.txt
           done
       - name: app tests (queue, guide, check a/b/c, matrix b)
         if: always()
         run: |
           cd app/test && npm ci --no-audit --no-fund > /dev/null && npx playwright install chromium > /dev/null; cd ../..
           for t in queue guide; do out=$(timeout 900 node app/test/$t.mjs out/shots-guide 2>&1); rc=$?; echo "$out" | tail -12
-            { echo "## $t.mjs: rc=$rc"; echo '```'; echo "$out" | tail -8; echo '```'; } >> $GITHUB_STEP_SUMMARY; done
+            { echo "## $t.mjs: rc=$rc"; echo '```'; echo "$out" | tail -8; echo '```'; } >> $GITHUB_STEP_SUMMARY; [ $rc = 0 ] || echo "$t.mjs: rc=$rc" >> out/failures.txt; done
           D=$(mktemp -d); TADCLIP_PORT=4848 TADCLIP_TEST=1 TADCLIP_DIR=$D TADCLIP_REPLAY=app/test/fixture TADCLIP_REPLAY_SECONDS=8 node app/server.mjs > out/server.log 2>&1 &
           sleep 3; mkdir -p out/states
           out=$(timeout 1500 node app/test/check.mjs a b c 2>&1); rc=$?; echo "$out" | tail -8; { echo "## check.mjs a b c: rc=$rc"; echo '```'; echo "$out" | tail -6; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          { [ $rc = 0 ] && ! echo "$out" | grep -qE "fails [1-9]"; } || echo "check.mjs: rc=$rc or fails > 0" >> out/failures.txt
           out=$(timeout 900 node app/test/matrix.mjs b --shots out/states 2>&1); rc=$?; echo "$out" | tail -4; { echo "## matrix.mjs b: rc=$rc"; echo '```'; echo "$out" | tail -3; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          [ $rc = 0 ] || echo "matrix.mjs: rc=$rc" >> out/failures.txt
       - name: Thai voices the page's ฟัง gets, in Edge (Windows' default browser) and in Chromium
         if: always()
         run: |
@@ -77,33 +82,42 @@ jobs:
           p = os.path.join(d, "sheet.png"); im.save(p)
           r = ocr.lines([p], "th-TH,en-US")[p]; print("ocr:", [x["text"] for x in r.get("lines", [])], r.get("error", ""))
           from pillow_heif import from_pillow; from_pillow(im).save(os.path.join(d, "logo.heic")); im.save(os.path.join(d, "guide.pdf"))
-          for f in ("logo.heic", "guide.pdf"):
+          open(os.path.join(d, "mark.svg"), "w").write('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="white"/></svg>')
+          for f in ("logo.heic", "guide.pdf", "mark.svg"):
               o = own_brand.to_png(d, f); print(f, "->", o and Image.open(o).size)
+              if not o: print("FAIL conversion", f)
           import finals   # TRACKER.csv lock: msvcrt on Windows
           with finals.tracker_lock(d): print("tracker lock: held")
           print("tracker lock: released")
           PY
-          ); echo "$out"; { echo "## brand intake on Windows"; echo '```'; echo "$out" | tail -5; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          ); echo "$out"; { echo "## brand intake on Windows"; echo '```'; echo "$out" | tail -6; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          if echo "$out" | grep -qE "FAIL conversion|Traceback"; then echo "brand intake: $(echo "$out" | grep -E 'FAIL conversion|Error' | head -2 | tr '\n' ' ')" >> out/failures.txt; fi
       - name: render fixture (build.mjs -> HyperFrames -> mp4)
         if: always()
         run: |
           out=$(timeout 1800 python3 tests/render_fixture.py out/render-win.mp4 --keep out/render-proj 2>&1); rc=$?
           echo "$out" | tail -30; { echo "## render fixture: rc=$rc"; echo '```'; echo "$out" | tail -3; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          [ $rc = 0 ] || echo "render fixture: rc=$rc" >> out/failures.txt
       - name: Thai speech-to-text through transcribe.asr (faster-whisper)
         if: always()
         run: |
           out=$(timeout 1800 python3 tests/asr_fixture.py --out out/asr-win.json 2>&1); rc=$?
           echo "$out" | tail -5; { echo "## ASR fixture: rc=$rc"; echo '```'; echo "$out" | tail -1 | cut -c1-300; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          [ $rc = 0 ] || echo "ASR fixture: rc=$rc" >> out/failures.txt
       - name: real Thai speech (FLEURS th_th dev, 40 clips, CC-BY 4.0) through transcribe.asr
         if: always()
         run: |
           # the default (float32: int8 math differed by CPU, runs 3-7); the CPU named
           cpu=$(powershell -NoProfile -Command "(Get-CimInstance Win32_Processor).Name" | tr -d '\r'); echo "cpu: $cpu"; echo "## FLEURS CPU: $cpu" >> $GITHUB_STEP_SUMMARY
           for c in float32; do out=$(FW_COMPUTE=$c timeout 3600 python3 tests/asr_fleurs.py --n 40 --out out/fleurs40-win-$c.json 2>&1); rc=$?
-            echo "$out" | tail -3; { echo "## FLEURS $c: rc=$rc"; echo '```'; echo "$out" | tail -1 | cut -c1-200; echo '```'; } >> $GITHUB_STEP_SUMMARY; done
+            echo "$out" | tail -3; { echo "## FLEURS $c: rc=$rc"; echo '```'; echo "$out" | tail -1 | cut -c1-200; echo '```'; } >> $GITHUB_STEP_SUMMARY
+            cer=$(echo "$out" | tail -1 | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['cer'])" 2>/dev/null)
+            python3 -c "import sys; sys.exit(0 if 0 < float('${cer:-9}') <= 0.1297 else 1)" || echo "FLEURS $c: CER ${cer:-none} (limit 0.1297, PARITY.md)" >> out/failures.txt; done
       - name: doctor
         if: always()
-        run: bash scripts/doctor.sh 2>&1 | tee out/doctor.txt | tail -50; { echo "## doctor"; echo '```'; grep -E "MISS|WARN|missing$" out/doctor.txt; echo '```'; } >> $GITHUB_STEP_SUMMARY
+        run: |
+          bash scripts/doctor.sh 2>&1 | tee out/doctor.txt | tail -50; { echo "## doctor"; echo '```'; grep -E "MISS|WARN|missing$" out/doctor.txt; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          grep -qE "^ *[0-9]+ ok, 0 missing" out/doctor.txt || echo "doctor: something missing" >> out/failures.txt
       - name: the one-line installer parses as a buyer gets it (irm over HTTP, Windows PowerShell 5.1), Thai intact
         if: always()
         shell: powershell
@@ -115,9 +129,10 @@ jobs:
           $s = $null; foreach ($i in 1..30) { try { $s = Invoke-RestMethod http://127.0.0.1:8765/install.ps1; break } catch { Start-Sleep 1 } }
           if ($null -eq $s) { Get-Content srv.err.txt -ErrorAction SilentlyContinue; throw 'test server never answered' }
           try { [scriptblock]::Create($s) | Out-Null; $p = 'parses' } catch { $p = "PARSE ERROR: $($_.Exception.Message)" }
-          $th = if ($s -match 'ติดตั้ง') { 'Thai intact' } else { 'THAI GARBLED' }
+          $th = if ($s.Contains((-join [char[]](0x0E15, 0x0E34, 0x0E14, 0x0E15, 0x0E31, 0x0E49, 0x0E07)))) { 'Thai intact' } else { 'THAI GARBLED' }   # "ติดตั้ง" from code points: this step's own file may be read as ANSI
           Stop-Process $srv
           "## install.ps1 via irm: $p, $th" | Add-Content $env:GITHUB_STEP_SUMMARY -Encoding UTF8; "$p, $th"
+          if ($p -ne 'parses' -or $th -ne 'Thai intact') { Add-Content out\failures.txt "irm install.ps1: $p, $th" }
       - name: Windows calls the app makes (toast, keep-awake) work in Windows PowerShell 5.1, the one server.mjs runs
         if: always()
         shell: powershell
@@ -127,13 +142,17 @@ jobs:
           Add-Type -Namespace W -Name P -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'
           $r += "SetThreadExecutionState -> $([W.P]::SetThreadExecutionState([uint32]2147483649)) (0 = failed)"
           "## Windows calls`n" + ($r -join "`n") | Tee-Object -Variable o; $o | Add-Content $env:GITHUB_STEP_SUMMARY -Encoding UTF8
+          if ($r[0] -ne 'toast types: ok' -or $r[1] -match '-> 0 ') { Add-Content out\failures.txt "Windows calls: $($r -join '; ')" }
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: windows-port-suite, path: out/, retention-days: 14 }
+      - name: any failed check fails the job
+        if: always()
+        run: if [ -s out/failures.txt ]; then echo "## FAILED CHECKS" >> $GITHUB_STEP_SUMMARY; cat out/failures.txt | tee -a $GITHUB_STEP_SUMMARY; exit 1; fi; echo "all checks passed"
 
   fresh-thai-user:
     runs-on: windows-latest
-    timeout-minutes: 120
+    timeout-minutes: 75   # a hang shows as a failure within the hour (a full pass takes ~30 min)
     defaults: { run: { shell: pwsh } }
     steps:
       - uses: actions/checkout@v4
@@ -164,26 +183,49 @@ jobs:
           "profile: $HOME"
           $t = Get-Date
           Get-Content -Raw -Encoding UTF8 C:\Users\Public\tadclip-src\install.ps1 | Invoke-Expression   # = irm | iex (GitHub serves it as UTF-8)
-          "install exit: $LASTEXITCODE, $([math]::Round(((Get-Date) - $t).TotalMinutes)) min"
+          $installRc = $LASTEXITCODE; "install exit: $installRc, $([math]::Round(((Get-Date) - $t).TotalMinutes)) min"
+          $fail = @(); if ("$installRc" -ne '0') { $fail += "install.ps1 exit $installRc" }
           $bash = [Environment]::GetEnvironmentVariable('CLAUDE_CODE_GIT_BASH_PATH', 'User'); "bash: $bash"
           $env:Path = [Environment]::GetEnvironmentVariable('Path', 'User') + ';' + $env:Path
           & $bash --noprofile --norc "$HOME/.claude/skills/tadclip/scripts/ready.sh" 2>&1
           # the parts a Thai profile path could break: the model cache, temp folders, a project, the render
           $env:PYTHONUTF8 = '1'; $t = Get-Date
-          & python3 "$HOME\.claude\skills\tadclip\tests\asr_fixture.py" 2>&1 | Select-Object -Last 2
+          & python3 "$HOME\.claude\skills\tadclip\tests\asr_fixture.py" 2>&1 | Select-Object -Last 2; if ($LASTEXITCODE) { $fail += "asr fixture exit $LASTEXITCODE" }
           "asr: $([math]::Round(((Get-Date) - $t).TotalSeconds)) s"; $t = Get-Date
-          & python3 "$HOME\.claude\skills\tadclip\tests\render_fixture.py" "$HOME\TadClip\render-thai-user.mp4" 2>&1 | Select-Object -Last 3
+          & python3 "$HOME\.claude\skills\tadclip\tests\render_fixture.py" "$HOME\TadClip\render-thai-user.mp4" 2>&1 | Select-Object -Last 3; if ($LASTEXITCODE) { $fail += "render fixture exit $LASTEXITCODE" }
           "render fixture: $([math]::Round(((Get-Date) - $t).TotalSeconds)) s"
           Copy-Item "$HOME\TadClip\render-thai-user.mp4" C:\Users\Public\ -ErrorAction SilentlyContinue
           "shortcuts: " + ((Get-ChildItem ([Environment]::GetFolderPath('Desktop')), ([Environment]::GetFolderPath('Startup')) -Filter TadClip.lnk).FullName -join ', ')
-          # the shortcut must hold the Thai path itself (stored as UTF-16), or a double-click opens nothing
+          # what a double-click does: run the Desktop shortcut's own target + arguments, then the page must answer
           $lnk = Join-Path ([Environment]::GetFolderPath('Desktop')) 'TadClip.lnk'
-          if (Test-Path -LiteralPath $lnk) { "shortcut holds the Thai path: " + [Text.Encoding]::Unicode.GetString([IO.File]::ReadAllBytes($lnk)).Contains($env:USERNAME) }
+          if (Test-Path -LiteralPath $lnk) {
+            # WScript can't open a .lnk under a Thai path either (it read back empty): copy it to an ASCII folder to read it
+            $rd = Join-Path $env:ProgramData ('tadclip-lnk-read-' + [guid]::NewGuid().ToString('N')); New-Item -ItemType Directory $rd | Out-Null
+            Copy-Item -LiteralPath $lnk -Destination "$rd\t.lnk"; $k = (New-Object -ComObject WScript.Shell).CreateShortcut("$rd\t.lnk"); "shortcut: $($k.TargetPath) $($k.Arguments)"
+            $sp = Start-Process $k.TargetPath -ArgumentList $k.Arguments -WindowStyle Hidden -PassThru
+            $up = $false; foreach ($i in 1..45) { try { Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 http://127.0.0.1:4747/api/state | Out-Null; $up = $true; break } catch { Start-Sleep 2 } }
+            "shortcut starts the app: $up"; if (-not $up) { $fail += 'the Desktop shortcut did not start the app' }
+            # the launcher keeps the server alive forever, and the caller's Start-Process -Wait waits for the whole process
+            # tree (run 13 hung 2 h right here, after a pass): stop the launcher, then the server it started
+            Stop-Process -Id $sp.Id -Force -ErrorAction SilentlyContinue
+            Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.CommandLine -match 'server\.mjs' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+          } else { $fail += 'no Desktop shortcut' }
+          $emoji = @(Get-ChildItem "$HOME\.claude\skills\tadclip\library\emoji" -Recurse -Filter *.webm -ErrorAction SilentlyContinue).Count
+          "animated emoji: $emoji"; if ($emoji -lt 30) { $fail += "animated emoji: $emoji (want 48)" }
+          $sfx = @(Get-ChildItem "$HOME\.claude\skills\tadclip\library\sfx" -Filter *.wav).Count; "sfx files: $sfx"
+          $mus = @(Get-ChildItem "$HOME\.claude\skills\tadclip\library\music" -Filter *.mp3).Count; "music beds: $mus"; if ($mus -lt 23) { $fail += "music beds: $mus of 23" }
+          Set-Content C:\Users\Public\fresh-failures.txt ($fail -join "`n") -Encoding UTF8
+          "checks failed: $($fail.Count)"; $fail
           '@
           Set-Content C:\Users\Public\fresh.ps1 $job -Encoding UTF8
-          $p = Start-Process powershell.exe -Credential $cred -LoadUserProfile -Wait -PassThru -WorkingDirectory C:\Users\Public `
+          # no -Wait: it waits for every process the user's session starts (the page the app opens in Edge kept runs 13-14
+          # waiting until the timeout); Wait-Process waits for the script itself, then the user's leftovers are closed
+          $p = Start-Process powershell.exe -Credential $cred -LoadUserProfile -PassThru -WorkingDirectory C:\Users\Public `
                  -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','C:\Users\Public\fresh.ps1' `
                  -RedirectStandardOutput C:\Users\Public\fresh.out.txt -RedirectStandardError C:\Users\Public\fresh.err.txt
+          Wait-Process -Id $p.Id -Timeout 3600 -ErrorAction SilentlyContinue
+          Get-CimInstance Win32_Process | Where-Object { try { (Invoke-CimMethod -InputObject $_ -MethodName GetOwner).User -eq $name } catch { $false } } |
+            ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
           Rename-Item 'C:\Program Files\Git.hidden' 'Git'
           Copy-Item C:\Users\Public\fresh.out.txt, C:\Users\Public\fresh.err.txt out\
           Copy-Item C:\Users\Public\render-thai-user.mp4 out\ -ErrorAction SilentlyContinue
@@ -194,3 +236,11 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: windows-port-fresh, path: out/, retention-days: 14 }
+      - name: any failed check fails the job
+        if: always()
+        shell: powershell
+        run: |
+          $f = Get-Content C:\Users\Public\fresh-failures.txt -ErrorAction SilentlyContinue | Where-Object { $_.Trim() }
+          if (-not (Test-Path C:\Users\Public\fresh-failures.txt)) { $f = @('the fresh-account script never finished') }
+          if ($f) { "## FAILED CHECKS`n" + ($f -join "`n") | Tee-Object -Variable o; $o | Add-Content $env:GITHUB_STEP_SUMMARY -Encoding UTF8; exit 1 }
+          'all checks passed'

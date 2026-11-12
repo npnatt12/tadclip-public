@@ -1,6 +1,6 @@
 ---
 name: tadclip
-description: "TadClip (ตัดต่อคลิป): AI video editor for talking-head reels. Turns a raw phone recording of someone talking to camera (retakes, pauses, false starts) into a finished vertical 1080x1920 reel for Instagram, TikTok or Shorts: the best take of each sentence, pause trimming, word-timed captions that never cover the face, motion scenes on the spoken word, sound effects mixed against the voice and checked B-roll. ClubGig, the Thai house style, is the default when no style is named. Use when the user hands over a talking-head video and says \"ตัดต่อคลิปนี้\", \"ตัดต่อให้หน่อย\", \"edit this\", \"make a reel\", \"add captions/sound effects\", \"pick the best takes\", \"remove the pauses\", asks for a re-cut, or names a style. Also when they ask for a creator's style (\"ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator\", \"make it look like this video\"): it measures that creator's reels with TadClip's format engine and layers the style over ClubGig. And when they want to clone a viral video: it writes a shooting script for a real person to film, then edits the take. Also tears down a video (\"วิเคราะห์คลิปนี้\", \"ทำไมคลิปนี้ปัง\", \"reverse-engineer this video\") or compares competitors' reels (\"วิเคราะห์คู่แข่ง\", \"competitor analysis\", several @handles) into a report the user can act on. Other named styles (recipes/, docs/PLAYBOOK.md): Clean OS, Seoul list, RESULT, Face RESULT, stan style, vector explainer, POV montage, Whiteboard, Kinetic doc, Step Deck, Product page, Tactile paper, Caption News, News Package, Telestrator, Halftone Dossier, Swiss Grid, Data Story, Hologram HUD, Coach Q&A; plus seven presets (clean, editorial, meme, cinematic, launch, kinetic, pop). Not for landscape screen recordings."
+description: "TadClip (ตัดต่อคลิป): AI video editor for talking-head reels. Turns a raw phone recording of someone talking to camera (retakes, pauses, false starts) into a finished vertical 1080x1920 reel for Instagram, TikTok or Shorts: the best take of each sentence, pause trimming, word-timed captions that never cover the face, motion scenes on the spoken word, sound effects mixed against the voice and checked B-roll. ClubGig, the Thai house style, is the default when no style is named. Use when the user hands over a talking-head video and says \"ตัดต่อคลิปนี้\", \"ตัดต่อให้หน่อย\", \"edit this\", \"make a reel\", \"add captions/sound effects\", \"pick the best takes\", \"remove the pauses\", asks for a re-cut, or names a style. Also when they ask for a creator's style (\"ตัดต่อคลิปนี้ให้เป็นสไตล์ @creator\", \"make it look like this video\"): it measures that creator's reels with TadClip's format engine and layers the style over ClubGig. And when they want to clone a viral video: it writes a shooting script for a real person to film, then edits the take. Also tears down a video (\"วิเคราะห์คลิปนี้\", \"ทำไมคลิปนี้ปัง\", \"reverse-engineer this video\") or compares competitors' reels (\"วิเคราะห์คู่แข่ง\", \"competitor analysis\", several @handles) into a report the user can act on. Other named styles (recipes/, docs/PLAYBOOK.md): Clean OS, Seoul list, RESULT, Face RESULT, stan style, vector explainer, POV montage, Whiteboard, Kinetic doc, Step Deck, Product page, Tactile paper, Caption News, News Package, Telestrator, Halftone Dossier, Swiss Grid, Data Story, Hologram HUD, Coach Q&A, Paper collage, Vox, New background, Animated film, Chalkboard, Life in weeks, Notes + bubble, Cinematic doc, Split demo, 3-step lesson, Screen callouts, Paper explainer, Motion light, Boxed UI, Board + face; plus seven presets (clean, editorial, meme, cinematic, launch, kinetic, pop). Not for landscape screen recordings."
 ---
 
 # TadClip
@@ -95,7 +95,7 @@ film_look.py / transitions.py reel           optional: graded plate, transition 
 build.mjs      -> $P/index.html             + SFX table + rule and taste warnings
 approval_sheet.py -> build/approval.html    lint, a frame at every cut and beat; WAIT for the user's yes
 own_footage.py -> the user's own clips for the lines (face-checked: only them); `sheet` -> show the picked frames, WAIT for yes
-broll_fetch.py -> $P/broll/: stock originals (Pexels by link, Mixkit search) + manifest.json; when to use which: references/broll.md 3
+broll_fetch.py -> $P/broll/: stock originals (Pexels, or Wikimedia Commons CC0/PD/CC BY without a key) + manifest.json; when to use which: references/broll.md 3
 pictures: wikimedia_fetch.py (archival first) -> google_images.py; EN + RU, >= 1080 px, people-checked (references/broll.md 3)
 brand_kit.py pull <tool URL> --dir $P/brand -> a reel about a named tool/app/company: its real logo (light + dark), icon, brand colour, nearest Cyrillic Google font, people-checked product shots; LOOK at brand/sheet.jpg
 image_pick.py brief/pull/score/pick/sheet -> per line 6-10 candidates scored 0-5 (says the line at a glance >= 4 or FLAG); the scores sheet goes next to the preview
@@ -472,8 +472,8 @@ Only the user's own feedback is `from: user` (quoted "you said"); a rule you lea
 - Meme sounds and green-screen clips from the internet are usually other people's media: the user adds them at their
   own risk (fine for many IG and TikTok reactions, not for YouTube Content ID). Say so if the user mentions YouTube.
 
-- Shoot or prefer 4K: one camera gives a wide and a tight shot with no upscaling. No 720p B-roll; on Mixkit only clips offered
-  in 2160p carry the free commercial licence. Your own unused frames are often the best B-roll.
+- Shoot or prefer 4K: one camera gives a wide and a tight shot with no upscaling. No 720p B-roll. Your own unused frames are
+  often the best B-roll.
 - HyperFrames: anything tweened more than once gets `fromTo` with explicit values (a bare `to()` locks a stale start value
   depending on the renderer's seek order). Grow SVG shapes with `attr`, not scale transforms. Every `<video>` needs an id.
   Lint, then snapshot every beat and look at it, before every render.
@@ -513,7 +513,7 @@ Only the user's own feedback is `from: user` (quoted "you said"); a rule you lea
   `people-rules.json` the configurable B-roll people rules (empty by default; `people-rules.example.json`);
   `recipes/<style>/house.json` the fixed house look per style (`scripts/house_look.py` measures; never applied to the face); `scripts/insert_prep.py` + `scripts/grade_lib.py` insert cut + SDR + fps +
   grade conform; `scripts/cover_windows.py` / `plan_cut.py` keep-or-cover verdict per off-lens window; `references/broll.md`
-- `scripts/sfx_fetch.py` build/refresh the SFX kit (Mixkit), normalized, manifest
+- `scripts/sfx_synth.py` TadClip's own SFX (synthesized, CC0; the old Mixkit slugs); `scripts/cc0_pack.py` the CC0 recordings; `scripts/sfx_fetch.py` private rips only
 - `scripts/meme_add.py` add a meme clip/still (key, crop, alpha WebM, preview)
 - `scripts/meme_find.py` shortlist memes and meme sounds for a line
 - `scripts/trends.py` trending meme names not yet in the library
@@ -560,7 +560,7 @@ Only the user's own feedback is `from: user` (quoted "you said"); a rule you lea
   the people rules anywhere on screen, not only in declared B-roll layers (a warning, never a pass: recall ~8/10, times ~1 s)
 - `templates/briefs/build-one-reel.txt` / `finish-one-reel.txt` the two hand-offs of one reel (Opus builds to the preview,
   Sonnet finishes after the user's OK); `scripts/reel_usage.py` sums a reel's helper transcripts (turns, tools, tokens, images)
-- `scripts/broll_fetch.py` stock B-roll originals (Pexels by link, Mixkit search) + manifest.json
+- `scripts/broll_fetch.py` stock B-roll originals (Pexels; keyless: Wikimedia Commons CC0/PD/CC BY) + manifest.json
 - `scripts/wikimedia_fetch.py` Wikimedia Commons pictures (search, categories, licence + author in the manifest); `scripts/google_images.py` Google Images via Apify; `scripts/image_sources.py` the shared order, EN+RU queries and size rule; `scripts/image_pick.py` brief -> candidates -> vision scores -> pick or flag -> contact sheet
 - `scripts/HF_VERSION` the one HyperFrames version; `scripts/hf.sh` / `scripts/hf_version.py` call it pinned
 - `scripts/toolchain.py` this machine's toolchain fingerprint vs another machine's (doctor.sh runs it); `scripts/venvs/*.txt` exact venvs

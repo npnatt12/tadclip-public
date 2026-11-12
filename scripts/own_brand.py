@@ -150,15 +150,23 @@ def tinted(im, rgb):   # same shape, one colour
 # ---------- any file a shop has -> a PNG Pillow reads ----------
 def to_png(src, f):
     """iPhone HEIC, SVG, a PDF guide (its first page), GIF, TIFF -> src/.converted/<f>.png (hidden, so never an input and
-    never a change the build reacts to); re-made only when the file is newer. macOS: sips, Quick Look. Windows: Pillow,
-    pillow-heif (HEIC), pypdfium2 (PDF); no SVG there yet (the page asks for a PNG)."""
+    never a change the build reacts to); re-made only when the file is newer. SVG: resvg (resvg-py, MIT; resvg Apache-2.0)
+    on both, transparent like the file. macOS: sips, Quick Look. Windows: Pillow, pillow-heif (HEIC), pypdfium2 (PDF)."""
     p, out = os.path.join(src, f), os.path.join(src, ".converted", f + ".png")
     if os.path.exists(out) and os.path.getmtime(out) >= os.path.getmtime(p): return out
+    if f.lower().endswith(".svg"):
+        try:
+            import resvg_py
+            os.makedirs(os.path.dirname(out), exist_ok=True)
+            open(out, "wb").write(bytes(resvg_py.svg_to_bytes(svg_path=p, width=1600)))
+            with Image.open(out) as im: im.load()
+            return out
+        except Exception:
+            if sys.platform == "win32": return None   # no other SVG renderer there: the page asks for a PNG
     if sys.platform == "win32":
         os.makedirs(os.path.dirname(out), exist_ok=True)
         try:
             fl = f.lower()
-            if fl.endswith(".svg"): return None   # ponytail: no SVG renderer on Windows; add one (with a clear licence) if shops send SVGs
             if fl.endswith((".heic", ".heif")):
                 from pillow_heif import register_heif_opener; register_heif_opener()
             if fl.endswith(".pdf"):
@@ -171,7 +179,7 @@ def to_png(src, f):
     if sys.platform != "darwin": return None
     os.makedirs(os.path.dirname(out), exist_ok=True)
     try:
-        if f.lower().endswith(".svg"):   # ponytail: Quick Look draws it on white; a white-only SVG logo vanishes (ask for a PNG)
+        if f.lower().endswith(".svg"):   # only when resvg is missing: Quick Look draws it on white (a white-only logo vanishes)
             d = tempfile.mkdtemp(); subprocess.run(["qlmanage", "-t", "-s", "1600", "-o", d, p], capture_output=True, timeout=60)
             shutil.move(os.path.join(d, f + ".png"), out)
         else: subprocess.run(["sips", "-s", "format", "png", p, "--out", out], capture_output=True, timeout=60, check=True)
